@@ -7,7 +7,8 @@
 var EventHistory = [];
 
 EventBus.on('all', function(eventName){
-    var eventArgs = arguments.splice(0,1);
+    var eventArgs = Array.prototype.slice.call(arguments, 1);
+    console.log(eventArgs);
     EventHistory.push({
         event:eventName,
         args:eventArgs

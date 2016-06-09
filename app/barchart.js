@@ -73,7 +73,22 @@ var MvBarChart = (function(){
             .attr('x', function(d){ return self.xRange(d.key); })
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(d.values.length); })
-            .attr('height', function(d){ return self.height - self.yRange(d.values.length); });
+            .attr('height', function(d){ return self.height - self.yRange(d.values.length); })
+            .on('click', function(d){
+                EventBus.trigger('selection', d.values);
+            });
+
+        EventBus.on('selection', function(selection){
+           selection = [].concat(selection);
+           bars.style('stroke-width', '0');
+            var highlightedBar = bars.filter(function(d){
+               return d.values.some(v => selection.indexOf(v) !== -1);
+            });
+            highlightedBar.style({
+                'stroke-width':'2px',
+                'stroke':'#F00'
+            });
+        });
 
         return self;
     };

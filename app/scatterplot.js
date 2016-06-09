@@ -7,8 +7,8 @@ var MvScatterPlot = (function(){
     // static variables
     var defaults = {};
     defaults.margin = {top: 20, right: 20, bottom: 30, left: 40};
-    defaults.width = 960 - defaults.margin.left - defaults.margin.right;
-    defaults.height = 500 - defaults.margin.top - defaults.margin.bottom;
+    defaults.width = 960;
+    defaults.height = 500;
 
     // constructor
     var ScatterPlot = function(svgElement, xLabel, yLabel, width, height){
@@ -19,7 +19,7 @@ var MvScatterPlot = (function(){
         this.yRange = d3.scale.linear().range([this.height, 0]);
 
         //TODO: what colors to use?
-        this.color = d3.scale.category10();
+        this.color = d3.scale.category20();
 
         this.xAxis = d3.svg.axis().scale(this.xRange).orient('bottom');
         this.yAxis = d3.svg.axis().scale(this.yRange).orient('left');
@@ -75,7 +75,7 @@ var MvScatterPlot = (function(){
             .call(self.yAxis);
 
         // data
-        var bubbles = self.svg.selectAll('.bubble').data(data);
+        var bubbles = self.svg.selectAll('.bubble').data(data, function(d){ return d.fifaPid; });
         bubbles.enter().append('circle')
             .attr('class', 'bubble')
             .attr('r', function(d){ return d.wage / 50000 || 3.5; })
@@ -83,12 +83,21 @@ var MvScatterPlot = (function(){
             .attr('cy', function(d){ return self.yRange(d.dislikes); })
             .style('fill', function(d){ return self.color(d.club || '0'); })
             .on('click', function(d){
-                console.log(d.name);
                 EventBus.trigger('selection', d);
             })
             .on('selection', function(d){
                console.log('d3Listener');
             });
+
+        EventBus.on('selection', function(selection){
+            selection = [].concat(selection);
+            bubbles.style('stroke-width','0');
+            var selectedBubbles = bubbles.filter( d => selection.indexOf(d) !== -1);
+            selectedBubbles.style({
+               'stroke':'#000',
+                'stroke-width':'2px'
+            });
+        });
 
         
         return self;
