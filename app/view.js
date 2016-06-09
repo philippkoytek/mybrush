@@ -3,7 +3,7 @@
  */
 
 class View {
-    constructor (svgElement, width, height, position, padding) {
+    constructor (type, width, height, position, padding) {
         padding = padding || {top:20, right:20, bottom:30, left:40};
         this.frameWidth = width || 960;
         this.frameHeight = height || 500;
@@ -11,19 +11,20 @@ class View {
         this.chartWidth = this.frameWidth - padding.left - padding.right;
         this.position = position || {x:0, y:0};
 
-        this.svg = d3.select(svgElement)
-            .attr('class', 'view')
+        this.svg = d3.select('.canvas').append('g')
+            .classed('view', true)
+            .classed(type, type || false)
             .attr('transform', 'translate(' + this.position.x + ',' + this.position.y + ')');
 
         this.svg.append('rect')
-            .attr('class', 'frame')
+            .classed('frame', true)
             .attr('x', 0)
             .attr('y', 0)
             .attr('width', this.frameWidth)
             .attr('height', this.frameHeight);
 
         this.chart = this.svg.append('g')
-            .attr('class', 'chart')
+            .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
     }
 

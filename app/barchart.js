@@ -3,10 +3,10 @@
  */
 
 class BarChart extends View {
-    constructor(svgElement, yLabel, width, height, position, padding){
+    constructor(yLabel, width, height, position, padding){
 
         padding = padding || {top:20, right:20, bottom:100, left:40};
-        super(svgElement, width, height, position, padding);
+        super('barchart', width, height, position, padding);
 
         this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.chartWidth], 0.1);
         this.yRange = d3.scale.linear().range([this.chartHeight, 0]);
@@ -15,15 +15,15 @@ class BarChart extends View {
         this.yAxis = d3.svg.axis().scale(this.yRange).orient('left');
 
         this.chart.append('g')
-            .attr('class', 'x axis')
+            .classed('x axis', true)
             .attr('transform', 'translate(0,' + this.chartHeight + ')')
             .call(this.xAxis);
 
         this.chart.append('g')
-            .attr('class', 'y axis')
+            .classed('y axis', true)
             .call(this.yAxis)
             .append('text')
-            .attr('class', 'label')
+            .classed('label', true)
             .attr('transform', 'rotate(-90)')
             .attr('y', 6)
             .attr('dy', '.71em')
@@ -66,7 +66,7 @@ class BarChart extends View {
 
         var bars = self.chart.selectAll('.bar').data(barsData);
         bars.enter().append('rect')
-            .attr('class', 'bar')
+            .classed('bar', true)
             .attr('x', function(d){ return self.xRange(d.key); })
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(d.values.length); })

@@ -3,9 +3,9 @@
  */
 
 class ScatterPlot extends View {
-    constructor (svgElement, xLabel, yLabel, width, height, position, padding){
+    constructor (xLabel, yLabel, width, height, position, padding){
 
-        super(svgElement, width, height, position, padding);
+        super('scatterplot',width, height, position, padding);
 
         this.xRange = d3.scale.linear().range([0, this.chartWidth]);
         this.yRange = d3.scale.linear().range([this.chartHeight, 0]);
@@ -16,21 +16,21 @@ class ScatterPlot extends View {
         this.yAxis = d3.svg.axis().scale(this.yRange).orient('left');
 
         this.chart.append('g')
-            .attr('class', 'x axis')
+            .classed('x axis', true)
             .attr('transform', 'translate(0,' + this.chartHeight + ')')
             .call(this.xAxis)
             .append('text')
-            .attr('class', 'label')
+            .classed('label', true)
             .attr('x', this.chartWidth)
             .attr('y', -6)
             .style('text-anchor', 'end')
             .text(xLabel || '');
 
         this.chart.append('g')
-            .attr('class', 'y axis')
+            .classed('y axis', true)
             .call(this.yAxis)
             .append('text')
-            .attr('class', 'label')
+            .classed('label', true)
             .attr('transform', 'rotate(-90)')
             .attr('y', 6)
             .attr('dy', '.71em')
@@ -74,7 +74,7 @@ class ScatterPlot extends View {
         // data
         var bubbles = self.chart.selectAll('.bubble').data(data, function(d){ return d.fifaPid; });
         bubbles.enter().append('circle')
-            .attr('class', 'bubble')
+            .classed('bubble', true)
             .attr('r', function(d){ return d.wage / 50000 || 3.5; })
             .attr('cx', function(d){ return self.xRange(d.likes); })
             .attr('cy', function(d){ return self.yRange(d.dislikes); })
