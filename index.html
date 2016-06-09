@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Brushing and Linking with personal agency</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 
-    <svg class="scatterplot">
-
+    <svg id="main">
+        <g class="canvas">
+            <g class="scatterplot"></g>
+            <g class="barchart"></g>
+        </g>
     </svg>
 
 
@@ -25,6 +29,7 @@
 
     <!--app scripts-->
     <script src="app/scatterplot.js"></script>
+    <script src="app/barchart.js"></script>
 
     <!--main script-->
     <script src="main.js"></script>

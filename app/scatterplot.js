@@ -12,8 +12,8 @@ var MvScatterPlot = (function(){
 
     // constructor
     var ScatterPlot = function(svgElement, xLabel, yLabel, width, height){
-        this.width = width || defaults.width;
-        this.height = height || defaults.height;
+        this.width = (width || defaults.width) - defaults.margin.left - defaults.margin.right;
+        this.height = (height || defaults.height) - defaults.margin.top - defaults.margin.bottom;
 
         this.xRange = d3.scale.linear().range([0, this.width]);
         this.yRange = d3.scale.linear().range([this.height, 0]);

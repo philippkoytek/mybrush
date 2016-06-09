@@ -1,0 +1,16 @@
+html, body, svg#main {
+    width:100%;
+    height:100%;
+    margin:0;
+}
+
+.axis {
+    font: 11px sans-serif;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
