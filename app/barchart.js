@@ -75,19 +75,17 @@ var MvBarChart = (function(){
             .attr('y', function(d){ return self.yRange(d.values.length); })
             .attr('height', function(d){ return self.height - self.yRange(d.values.length); })
             .on('click', function(d){
-                EventBus.trigger('selection', d.values);
+                EventBus.trigger(events.HIGHLIGHT, d.values);
             });
 
-        EventBus.on('selection', function(selection){
-           selection = [].concat(selection);
-           bars.style('stroke-width', '0');
-            var highlightedBar = bars.filter(function(d){
-               return d.values.some(v => selection.indexOf(v) !== -1);
-            });
-            highlightedBar.style({
-                'stroke-width':'2px',
-                'stroke':'#F00'
-            });
+        EventBus.on(events.HIGHLIGHT, function(selectedData){
+            selectedData = [].concat(selectedData);
+
+            self.svg.selectAll('.bar')
+                .classed('highlighted',false)
+            .filter( d => d.values.some(v => selectedData.indexOf(v) !== -1))
+                .classed('highlighted', true)
+                .moveToFront();
         });
 
         return self;

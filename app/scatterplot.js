@@ -83,20 +83,17 @@ var MvScatterPlot = (function(){
             .attr('cy', function(d){ return self.yRange(d.dislikes); })
             .style('fill', function(d){ return self.color(d.club || '0'); })
             .on('click', function(d){
-                EventBus.trigger('selection', d);
-            })
-            .on('selection', function(d){
-               console.log('d3Listener');
+                EventBus.trigger(events.HIGHLIGHT, d);
             });
 
-        EventBus.on('selection', function(selection){
-            selection = [].concat(selection);
-            bubbles.style('stroke-width','0');
-            var selectedBubbles = bubbles.filter( d => selection.indexOf(d) !== -1);
-            selectedBubbles.style({
-               'stroke':'#000',
-                'stroke-width':'2px'
-            });
+        EventBus.on(events.HIGHLIGHT, function(selectedData){
+            selectedData = [].concat(selectedData);
+            
+            self.svg.selectAll('.bubble')
+                .classed('highlighted',false)
+            .filter( d => selectedData.indexOf(d) !== -1)
+                .classed('highlighted', true)
+                .moveToFront();
         });
 
         
