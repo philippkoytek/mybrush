@@ -22,6 +22,20 @@ html, body, svg#main {
 }
 
 .highlighted {
-    stroke:red;
+    stroke:red !important;
     stroke-width: 2px;
+}
+
+
+/* parallel coords */
+
+.background path {
+    fill: none;
+    stroke: #ddd;
+    shape-rendering: crispEdges;
+}
+
+.foreground path {
+    fill: none;
+    stroke: steelblue;
 }
