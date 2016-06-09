@@ -51,6 +51,18 @@ var MvScatterPlot = (function(){
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text(yLabel || '');
+
+        var self = this;
+        EventBus.on(events.HIGHLIGHT, function(selectedData){
+            selectedData = [].concat(selectedData);
+
+            self.svg.selectAll('.bubble')
+                .classed('highlighted',false)
+                .filter( d => selectedData.indexOf(d) !== -1)
+                .classed('highlighted', true)
+                .moveToFront();
+        });
+
     };
 
 
@@ -85,17 +97,6 @@ var MvScatterPlot = (function(){
             .on('click', function(d){
                 EventBus.trigger(events.HIGHLIGHT, d);
             });
-
-        EventBus.on(events.HIGHLIGHT, function(selectedData){
-            selectedData = [].concat(selectedData);
-            
-            self.svg.selectAll('.bubble')
-                .classed('highlighted',false)
-            .filter( d => selectedData.indexOf(d) !== -1)
-                .classed('highlighted', true)
-                .moveToFront();
-        });
-
         
         return self;
     };

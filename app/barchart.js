@@ -43,6 +43,17 @@ var MvBarChart = (function(){
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text(yLabel || '');
+
+        var self = this;
+        EventBus.on(events.HIGHLIGHT, function(selectedData){
+            selectedData = [].concat(selectedData);
+
+            self.svg.selectAll('.bar')
+                .classed('highlighted',false)
+                .filter( d => d.values.some(v => selectedData.indexOf(v) !== -1))
+                .classed('highlighted', true)
+                .moveToFront();
+        });
     };
 
     // public variables and functions
@@ -77,16 +88,6 @@ var MvBarChart = (function(){
             .on('click', function(d){
                 EventBus.trigger(events.HIGHLIGHT, d.values);
             });
-
-        EventBus.on(events.HIGHLIGHT, function(selectedData){
-            selectedData = [].concat(selectedData);
-
-            self.svg.selectAll('.bar')
-                .classed('highlighted',false)
-            .filter( d => d.values.some(v => selectedData.indexOf(v) !== -1))
-                .classed('highlighted', true)
-                .moveToFront();
-        });
 
         return self;
     };
