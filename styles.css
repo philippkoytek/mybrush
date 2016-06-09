@@ -14,3 +14,8 @@ html, body, svg#main {
     stroke: #000;
     shape-rendering: crispEdges;
 }
+
+.highlighted {
+    stroke:red;
+    stroke-width: 2px;
+}
