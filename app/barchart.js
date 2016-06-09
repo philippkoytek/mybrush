@@ -11,15 +11,9 @@ var MvBarChart = (function(){
     defaults.height = 500;
 
     //constructor
-    var BarChart = function(svgElement, yLabel, width, height){
+    function BarChart(svgElement, yLabel, width, height){
         this.width = (width || defaults.width)  - defaults.margin.left - defaults.margin.right;
         this.height = (height || defaults.height)  - defaults.margin.top - defaults.margin.bottom;
-
-        this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.width], 0.1);
-        this.yRange = d3.scale.linear().range([this.height, 0]);
-
-        this.xAxis = d3.svg.axis().scale(this.xRange).orient('bottom');
-        this.yAxis = d3.svg.axis().scale(this.yRange).orient('left');
 
         this.svg = d3.select(svgElement)
             .attr('width', this.width + defaults.margin.left + defaults.margin.right)
@@ -27,6 +21,14 @@ var MvBarChart = (function(){
             .attr('transform', 'translate(0,' + (defaults.margin.top + this.height + defaults.margin.bottom) + ')')
             .append('g')
             .attr('transform', 'translate(' + defaults.margin.left + ',' + defaults.margin.top + ')');
+        
+        
+        
+        this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.width], 0.1);
+        this.yRange = d3.scale.linear().range([this.height, 0]);
+
+        this.xAxis = d3.svg.axis().scale(this.xRange).orient('bottom');
+        this.yAxis = d3.svg.axis().scale(this.yRange).orient('left');
 
         this.svg.append('g')
             .attr('class', 'x axis')
