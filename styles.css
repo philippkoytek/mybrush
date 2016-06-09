@@ -4,6 +4,12 @@ html, body, svg#main {
     margin:0;
 }
 
+.view .frame {
+    stroke:grey;
+    stroke-width:1px;
+    fill: transparent;
+}
+
 .axis {
     font: 11px sans-serif;
 }

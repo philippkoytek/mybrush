@@ -2,40 +2,24 @@
  * Created by Philipp Koytek on 6/8/2016.
  */
 
-var MvBarChart = (function(){
+class BarChart extends View {
+    constructor(svgElement, yLabel, width, height, position, padding){
 
-    // static variables
-    var defaults = {};
-    defaults.margin = {top: 20, right: 20, bottom: 70, left: 40};
-    defaults.width = 960;
-    defaults.height = 500;
+        padding = padding || {top:20, right:20, bottom:70, left:40};
+        super(svgElement, width, height, position, padding);
 
-    //constructor
-    function BarChart(svgElement, yLabel, width, height){
-        this.width = (width || defaults.width)  - defaults.margin.left - defaults.margin.right;
-        this.height = (height || defaults.height)  - defaults.margin.top - defaults.margin.bottom;
-
-        this.svg = d3.select(svgElement)
-            .attr('width', this.width + defaults.margin.left + defaults.margin.right)
-            .attr('height', this.height + defaults.margin.top + defaults.margin.bottom)
-            .attr('transform', 'translate(0,' + (defaults.margin.top + this.height + defaults.margin.bottom) + ')')
-            .append('g')
-            .attr('transform', 'translate(' + defaults.margin.left + ',' + defaults.margin.top + ')');
-        
-        
-        
-        this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.width], 0.1);
-        this.yRange = d3.scale.linear().range([this.height, 0]);
+        this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.chartWidth], 0.1);
+        this.yRange = d3.scale.linear().range([this.chartHeight, 0]);
 
         this.xAxis = d3.svg.axis().scale(this.xRange).orient('bottom');
         this.yAxis = d3.svg.axis().scale(this.yRange).orient('left');
 
-        this.svg.append('g')
+        this.chart.append('g')
             .attr('class', 'x axis')
-            .attr('transform', 'translate(0,' + this.height + ')')
+            .attr('transform', 'translate(0,' + this.chartHeight + ')')
             .call(this.xAxis);
 
-        this.svg.append('g')
+        this.chart.append('g')
             .attr('class', 'y axis')
             .call(this.yAxis)
             .append('text')
@@ -50,7 +34,7 @@ var MvBarChart = (function(){
         EventBus.on(events.HIGHLIGHT, function(selectedData){
             selectedData = [].concat(selectedData);
 
-            self.svg.selectAll('.bar')
+            self.chart.selectAll('.bar')
                 .classed('highlighted',false)
                 .filter( d => d.values.some(v => selectedData.indexOf(v) !== -1))
                 .classed('highlighted', true)
@@ -59,7 +43,7 @@ var MvBarChart = (function(){
     };
 
     // public variables and functions
-    BarChart.prototype.data = function(data){
+    data(data){
         var self = this;
 
         var barsData = d3.nest().key(function(d){ return d.club; }).entries(data);
@@ -67,7 +51,7 @@ var MvBarChart = (function(){
         self.xRange.domain(barsData.map(function(bar){ return bar.key; }));
         self.yRange.domain([0, d3.max(barsData, function(bar){ return bar.values.length; })]);
 
-        var transition = self.svg.transition();
+        var transition = self.chart.transition();
 
         transition.select('.x.axis')
             .duration(750)
@@ -80,13 +64,13 @@ var MvBarChart = (function(){
             .duration(750)
             .call(self.yAxis);
 
-        var bars = self.svg.selectAll('.bar').data(barsData);
+        var bars = self.chart.selectAll('.bar').data(barsData);
         bars.enter().append('rect')
             .attr('class', 'bar')
             .attr('x', function(d){ return self.xRange(d.key); })
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(d.values.length); })
-            .attr('height', function(d){ return self.height - self.yRange(d.values.length); })
+            .attr('height', function(d){ return self.chartHeight - self.yRange(d.values.length); })
             .on('click', function(d){
                 EventBus.trigger(events.HIGHLIGHT, d.values);
             });
@@ -94,5 +78,4 @@ var MvBarChart = (function(){
         return self;
     };
 
-    return BarChart;
-})();
+}
