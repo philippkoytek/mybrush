@@ -5,7 +5,7 @@
 class BarChart extends View {
     constructor(svgElement, yLabel, width, height, position, padding){
 
-        padding = padding || {top:20, right:20, bottom:70, left:40};
+        padding = padding || {top:20, right:20, bottom:100, left:40};
         super(svgElement, width, height, position, padding);
 
         this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.chartWidth], 0.1);
