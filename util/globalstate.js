@@ -8,9 +8,10 @@ var EventHistory = [];
 
 EventBus.on('all', function(eventName){
     var eventArgs = Array.prototype.slice.call(arguments, 1);
-    console.log(eventArgs);
+    console.log(eventName, eventArgs);
     EventHistory.push({
         event:eventName,
-        args:eventArgs
+        args:eventArgs,
+        timestamp:Date.now()
     });
 });
