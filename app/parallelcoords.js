@@ -25,6 +25,7 @@ class ParallelCoords extends View {
 
     data(data) {
         var self = this;
+        var dimensions = data[0].skillProperties.map(p => p.title);
 
         function valueForDim (d, dim){
             return d.skillProperties.find(p => p.title === dim).sumValue;
@@ -36,7 +37,6 @@ class ParallelCoords extends View {
             }));
         }
 
-        var dimensions = data[0].skillProperties.map(p => p.title);
         self.xRange.domain(dimensions);
         dimensions.forEach(function(dim){
             self.yRange[dim] = d3.scale.linear()
@@ -79,6 +79,25 @@ class ParallelCoords extends View {
             .attr('y', -9)
             .text(function(d){return d;});
 
+        dimensionGroups.append('g')
+            .classed('brush', true)
+            .each(function(d){
+                d3.select(this).call(
+                    self.yRange[d].brush = d3.svg.brush().y(self.yRange[d]).on('brush', brush)
+                );
+            })
+            .selectAll('rect')
+            .attr('x', -8)
+            .attr('width', 16);
 
+        function brush () {
+            var actives = dimensions.filter(dim => !self.yRange[dim].brush.empty());
+            var extents = actives.map(a => self.yRange[a].brush.extent());
+            foreground.style('display', function(d){
+                return actives.every(function(dim, i){
+                    return extents[i][0] <= valueForDim(d, dim) && valueForDim(d, dim) <= extents[i][1];
+                }) ? null : 'none';
+            });
+        }
     }
 }
