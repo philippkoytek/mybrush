@@ -8,7 +8,8 @@
 var EventBus = _.extend({}, Backbone.Events);
 
 var events = {
-    HIGHLIGHT:'highlight'
+    HIGHLIGHT:'highlight',
+    BRUSH:'brush'
 };
 
 

@@ -26,6 +26,14 @@ html, body, svg#main {
     stroke-width: 2px;
 }
 
+.ghost {
+    fill: #ddd !important;
+}
+
+path.ghost {
+    display:none;
+}
+
 
 /* parallel coords */
 
@@ -41,7 +49,8 @@ html, body, svg#main {
 }
 
 .brush .extent {
-    fill-opacity: .3;
-    stroke: #fff;
+    fill-opacity: .1;
+    stroke: #333;
+    fill: #fff;
     shape-rendering: crispEdges;
 }

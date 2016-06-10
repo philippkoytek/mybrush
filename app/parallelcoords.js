@@ -21,6 +21,23 @@ class ParallelCoords extends View {
                 .classed('highlighted', true)
                 .moveToFront();
         });
+
+        //FIXME: assign view ids in View class
+        var id = 0;
+        EventBus.on(events.BRUSH, function(source, ghostData){
+            if(!source == id){
+                self.chart.selectAll('.brush').each(
+                    function(dim) {
+                        d3.select(this).call(self.yRange[dim].brush.clear());
+                    });
+                self.chart.selectAll('.foreground path')
+                    .classed('ghost', false)
+                    .filter(function (d) {
+                        return ghostData.indexOf(d) !== -1;
+                    })
+                    .classed('ghost', true);
+            }
+        });
     }
 
     data(data) {
@@ -83,21 +100,29 @@ class ParallelCoords extends View {
             .classed('brush', true)
             .each(function(d){
                 d3.select(this).call(
-                    self.yRange[d].brush = d3.svg.brush().y(self.yRange[d]).on('brush', brush)
+                    self.yRange[d].brush = d3.svg.brush().y(self.yRange[d]).on('brush', brushed)
                 );
             })
             .selectAll('rect')
             .attr('x', -8)
             .attr('width', 16);
 
-        function brush () {
+        function brushed () {
             var actives = dimensions.filter(dim => !self.yRange[dim].brush.empty());
             var extents = actives.map(a => self.yRange[a].brush.extent());
-            foreground.style('display', function(d){
-                return actives.every(function(dim, i){
+            var ghostData = [];
+            foreground.classed('ghost', function(d){
+                if(actives.every(function(dim, i){
                     return extents[i][0] <= valueForDim(d, dim) && valueForDim(d, dim) <= extents[i][1];
-                }) ? null : 'none';
+                })){
+                    return false;
+                }
+                else {
+                    ghostData.push(d);
+                    return true;
+                }
             });
+            EventBus.trigger(events.BRUSH, 0, ghostData);
         }
     }
 }

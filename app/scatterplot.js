@@ -48,6 +48,21 @@ class ScatterPlot extends View {
                 .moveToFront();
         });
 
+        //FIXME: assign view ids in View class
+        var id = 1;
+        EventBus.on(events.BRUSH, function(source, ghostData){
+            if(!source == id){
+                self.brushArea.call(self.brush.clear());
+                self.chart.selectAll('.bubble')
+                    .classed('ghost', false)
+                    .filter(function (d) {
+                        return ghostData.indexOf(d) !== -1;
+                    })
+                    .classed('ghost', true)
+                    .moveToBack();
+            }
+        });
+
     };
 
 
@@ -71,6 +86,15 @@ class ScatterPlot extends View {
             .duration(750)
             .call(self.yAxis);
 
+        self.brush = d3.svg.brush()
+            .y(self.yRange)
+            .x(self.xRange)
+            .on('brush', brushed);
+
+        self.brushArea = self.chart.append('g')
+            .classed('brush', true)
+            .call(self.brush);
+
         // data
         var bubbles = self.chart.selectAll('.bubble').data(data, function(d){ return d.fifaPid; });
         bubbles.enter().append('circle')
@@ -82,6 +106,28 @@ class ScatterPlot extends View {
             .on('click', function(d){
                 EventBus.trigger(events.HIGHLIGHT, d);
             });
+
+
+
+        function brushed(){
+            var ghostData = [];
+            if(self.brush.empty()){
+                bubbles.classed('ghost', false);
+            }
+            else {
+                var extent = self.brush.extent();
+                bubbles.classed('ghost', function(d){
+                    if(extent[0][0] <= d.likes && d.likes <= extent[1][0]
+                    && extent[0][1] <= d.dislikes && d.dislikes <= extent[1][1]){
+                        return false;
+                    } else {
+                        ghostData.push(d);
+                        return true;
+                    }
+                });
+            }
+            EventBus.trigger(events.BRUSH, 1, ghostData);
+        }
         
         return self;
     };
