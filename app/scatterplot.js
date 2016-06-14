@@ -96,7 +96,8 @@ class ScatterPlot extends View {
             .call(self.brush);
 
         // data
-        var bubbles = self.chart.selectAll('.bubble').data(data, function(d){ return d.fifaPid; });
+        var content = self.chart.append('g').classed('content', true);
+        var bubbles = content.selectAll('.bubble').data(data, function(d){ return d.fifaPid; });
         bubbles.enter().append('circle')
             .classed('bubble', true)
             .attr('r', function(d){ return d.wage / 50000 || 3.5; })
