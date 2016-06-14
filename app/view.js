@@ -10,6 +10,7 @@ class View {
         this.chartHeight = this.frameHeight - padding.top - padding.bottom;
         this.chartWidth = this.frameWidth - padding.left - padding.right;
         this.position = position || {x:0, y:0};
+        this.viewId = View.counter;
 
         this.svg = d3.select('.canvas').append('g')
             .classed('view', true)
@@ -33,5 +34,11 @@ class View {
         this.position = position;
         return this.svg.attr('transform', 'translate(' + position.x + ',' + position.y + ')');
     };
+
+    static get counter() {
+        View._counter = (View._counter || 0) + 1;
+        return View._counter;
+    }
+    
 }
 

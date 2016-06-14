@@ -48,10 +48,8 @@ class ScatterPlot extends View {
                 .moveToFront();
         });
 
-        //FIXME: assign view ids in View class
-        var id = 1;
         EventBus.on(events.BRUSH, function(source, ghostData){
-            if(!source == id){
+            if(source !== self.viewId){
                 self.brushArea.call(self.brush.clear());
                 self.chart.selectAll('.bubble')
                     .classed('ghost', false)
@@ -127,7 +125,7 @@ class ScatterPlot extends View {
                     }
                 });
             }
-            EventBus.trigger(events.BRUSH, 1, ghostData);
+            EventBus.trigger(events.BRUSH, self.viewId, ghostData);
         }
         
         return self;

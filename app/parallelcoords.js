@@ -22,10 +22,8 @@ class ParallelCoords extends View {
                 .moveToFront();
         });
 
-        //FIXME: assign view ids in View class
-        var id = 0;
         EventBus.on(events.BRUSH, function(source, ghostData){
-            if(!source == id){
+            if(source !== self.viewId){
                 self.chart.selectAll('.brush').each(
                     function(dim) {
                         d3.select(this).call(self.yRange[dim].brush.clear());
@@ -122,7 +120,7 @@ class ParallelCoords extends View {
                     return true;
                 }
             });
-            EventBus.trigger(events.BRUSH, 0, ghostData);
+            EventBus.trigger(events.BRUSH, self.viewId, ghostData);
         }
     }
 }
