@@ -14,19 +14,6 @@ class ParallelCoords extends View {
         this.yRange = {};
 
         this.axis = d3.svg.axis().orient('left');
-
-
-        //TODO: refactor highlight event
-        var self = this;
-        EventBus.on(events.HIGHLIGHT, function(selectedData){
-            selectedData = [].concat(selectedData);
-
-            self.chart.selectAll('.foreground path')
-                .classed('highlighted',false)
-                .filter( d => selectedData.indexOf(d) !== -1)
-                .classed('highlighted', true)
-                .moveToFront();
-        });
     }
 
     data(data) {

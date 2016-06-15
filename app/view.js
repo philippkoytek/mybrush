@@ -28,6 +28,8 @@ class View {
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
 
+
+        //TODO: create Brushable and Highlightable Mixin to add Brushing Behaviour dynamically
         this.brushes = {};
         var self = this;
         EventBus.on(events.BRUSH, function(sourceView, ghostData){
@@ -48,6 +50,15 @@ class View {
            }
         });
 
+        EventBus.on(events.HIGHLIGHT, function(selectedData){
+            selectedData = [].concat(selectedData);
+
+            self.chart.selectAll('.data-item')
+                .classed('highlighted',false)
+                .filter( d => self.rawValues(d).some(v => selectedData.indexOf(v) !== -1))
+                .classed('highlighted', true)
+                .moveToFront();
+        });
     }
     
     // public functions and variables
@@ -62,7 +73,6 @@ class View {
     }
 
 
-    //TODO: create Brushable Mixin to add Brushing Behaviour dynamically
     get brush (){
         return this.brushes['default'];
     }
@@ -104,6 +114,16 @@ class View {
     yValue (){
         throw error('need to overwrite accessor method yValue for object: ' + this);
     };
+
+    /**
+     * function to overwrite in order to get the underlying values of an aggregation.
+     * Default: If d is not an aggregation of values it will just return a single-element array containing d.
+     * @param d
+     * @returns {Array.<*>}
+     */
+    rawValues (d) {
+        return [].concat(d);
+    }
 
     isWithinBrushExtent(d, brush, dim){
         var hasX = brush.x() !== null;

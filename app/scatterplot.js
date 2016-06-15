@@ -58,19 +58,6 @@ class ScatterPlot extends View {
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text(yLabel || '');
-
-        //TODO: refactor highlight event
-        var self = this;
-        EventBus.on(events.HIGHLIGHT, function(selectedData){
-            selectedData = [].concat(selectedData);
-
-            self.chart.selectAll('.bubble')
-                .classed('highlighted',false)
-                .filter( d => selectedData.indexOf(d) !== -1)
-                .classed('highlighted', true)
-                .moveToFront();
-        });
-
     };
 
 

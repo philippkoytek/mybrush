@@ -7,6 +7,10 @@ class BarChart extends View {
 
         padding = padding || {top:20, right:20, bottom:100, left:40};
         super('barchart', width, height, position, padding);
+        
+        this.rawValues = function(d){
+            return d.values;  
+        };
 
         this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.chartWidth], 0.1);
         this.yRange = d3.scale.linear().range([this.chartHeight, 0]);
@@ -29,17 +33,6 @@ class BarChart extends View {
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text(yLabel || '');
-
-        var self = this;
-        EventBus.on(events.HIGHLIGHT, function(selectedData){
-            selectedData = [].concat(selectedData);
-
-            self.chart.selectAll('.bar')
-                .classed('highlighted',false)
-                .filter( d => d.values.some(v => selectedData.indexOf(v) !== -1))
-                .classed('highlighted', true)
-                .moveToFront();
-        });
     };
 
     // public variables and functions
@@ -49,7 +42,7 @@ class BarChart extends View {
         var barsData = d3.nest().key(function(d){ return d.club; }).entries(data);
 
         self.xRange.domain(barsData.map(function(bar){ return bar.key; }));
-        self.yRange.domain([0, d3.max(barsData, function(bar){ return bar.values.length; })]);
+        self.yRange.domain([0, d3.max(barsData, function(bar){ return self.rawValues(bar).length; })]);
 
         var transition = self.chart.transition();
 
@@ -66,13 +59,13 @@ class BarChart extends View {
 
         var bars = self.chart.selectAll('.bar').data(barsData);
         bars.enter().append('rect')
-            .classed('bar', true)
+            .classed('bar data-item', true)
             .attr('x', function(d){ return self.xRange(d.key); })
             .attr('width', self.xRange.rangeBand())
-            .attr('y', function(d){ return self.yRange(d.values.length); })
-            .attr('height', function(d){ return self.chartHeight - self.yRange(d.values.length); })
+            .attr('y', function(d){ return self.yRange(self.rawValues(d).length); })
+            .attr('height', function(d){ return self.chartHeight - self.yRange(self.rawValues(d).length); })
             .on('click', function(d){
-                EventBus.trigger(events.HIGHLIGHT, d.values);
+                EventBus.trigger(events.HIGHLIGHT, self.rawValues(d));
             });
 
         return self;
