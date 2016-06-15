@@ -84,7 +84,7 @@ class View {
         this.chart.selectAll('.data-item.brushable').classed('ghost', function(d){
             if(brushedDimensions.every(function(dim){
                 var brush = self.brushes[dim];
-                return isWithinBrushExtent.call(self, d, brush, dim);
+                return self.isWithinBrushExtent(d, brush, dim);
             })){
                 return false;
             } else {
@@ -102,20 +102,20 @@ class View {
     yValue (){
         throw error('need to overwrite accessor method yValue for object: ' + this);
     };
-}
 
-function isWithinBrushExtent(d, brush, dim){
-    var hasX = brush.x() !== null;
-    var hasY = brush.y() !== null;
-    var extent = brush.extent();
-    if(hasX && hasY){
-        return extent[0][0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1][0]
-        && extent[0][1] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1][1];
-    } else if(hasX){
-        return extent[0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1];
-    } else if(hasY){
-        return extent[0] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1];
+    isWithinBrushExtent(d, brush, dim){
+        var hasX = brush.x() !== null;
+        var hasY = brush.y() !== null;
+        var extent = brush.extent();
+        if(hasX && hasY){
+            return extent[0][0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1][0]
+                && extent[0][1] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1][1];
+        } else if(hasX){
+            return extent[0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1];
+        } else if(hasY){
+            return extent[0] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1];
+        }
+        else return false;
     }
-    else return false;
 }
 
