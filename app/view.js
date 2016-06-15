@@ -60,7 +60,9 @@ class View {
         View._counter = (View._counter || 0) + 1;
         return View._counter;
     }
-    
+
+
+    //TODO: create Brushable Mixin to add Brushing Behaviour dynamically
     get brush (){
         return this.brushes['default'];
     }
