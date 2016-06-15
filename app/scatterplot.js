@@ -7,10 +7,32 @@ class ScatterPlot extends View {
 
         super('scatterplot',width, height, position, padding);
 
+        this.xValue = function(d){
+            return d.likes;
+        };
+
+        this.yValue = function(d){
+            return d.dislikes;
+        };
+        
+        this.rValue = function(d){
+            return d.wage / 50000;
+        };
+
+        var color = d3.scale.category20();
+        this.fillValue = function(d){ 
+            return color(d.club); 
+        };
+        
+        this.idValue = function(d){ 
+            return d.fifaPid; 
+        };
+        
+        //this.opacityValue =...
+               
+
         this.xRange = d3.scale.linear().range([0, this.chartWidth]);
         this.yRange = d3.scale.linear().range([this.chartHeight, 0]);
-
-        this.color = d3.scale.category20();
 
         this.xAxis = d3.svg.axis().scale(this.xRange).orient('bottom');
         this.yAxis = d3.svg.axis().scale(this.yRange).orient('left');
@@ -37,6 +59,7 @@ class ScatterPlot extends View {
             .style('text-anchor', 'end')
             .text(yLabel || '');
 
+        //TODO: refactor highlight event
         var self = this;
         EventBus.on(events.HIGHLIGHT, function(selectedData){
             selectedData = [].concat(selectedData);
@@ -48,31 +71,15 @@ class ScatterPlot extends View {
                 .moveToFront();
         });
 
-        EventBus.on(events.BRUSH, function(source, ghostData){
-            if(source !== self.viewId){
-                self.brushArea.call(self.brush.clear());
-                self.chart.selectAll('.bubble')
-                    .classed('ghost', false)
-                    .filter(function (d) {
-                        return ghostData.indexOf(d) !== -1;
-                    })
-                    .classed('ghost', true)
-                    .moveToBack();
-            }
-        });
-
     };
 
 
     // public variables and functions
     data (data){
-        // load data into plot
-
         var self = this;
-        // TODO: provide mapping functions for incoming data to map it as needed for the chart: d = {xValue, yValue, rValue, colorValue, opacityValue}
 
-        self.xRange.domain(d3.extent(data, function(d){ return d.likes; })).nice();
-        self.yRange.domain(d3.extent(data, function(d){ return d.dislikes; })).nice();
+        self.xRange.domain(d3.extent(data, self.xValue)).nice();
+        self.yRange.domain(d3.extent(data, self.yValue)).nice();
 
         var transition = self.chart.transition();
 
@@ -87,7 +94,7 @@ class ScatterPlot extends View {
         self.brush = d3.svg.brush()
             .y(self.yRange)
             .x(self.xRange)
-            .on('brush', brushed);
+            .on('brush', self.onBrush.bind(self));
 
         self.brushArea = self.chart.append('g')
             .classed('brush', true)
@@ -95,38 +102,16 @@ class ScatterPlot extends View {
 
         // data
         var content = self.chart.append('g').classed('content', true);
-        var bubbles = content.selectAll('.bubble').data(data, function(d){ return d.fifaPid; });
+        var bubbles = content.selectAll('.bubble').data(data, self.idValue);
         bubbles.enter().append('circle')
-            .classed('bubble', true)
-            .attr('r', function(d){ return d.wage / 50000 || 3.5; })
-            .attr('cx', function(d){ return self.xRange(d.likes); })
-            .attr('cy', function(d){ return self.yRange(d.dislikes); })
-            .style('fill', function(d){ return self.color(d.club || '0'); })
+            .classed('bubble data-item brushable', true)
+            .attr('r', self.rValue)
+            .attr('cx', function(d){ return self.xRange(self.xValue(d)); })
+            .attr('cy', function(d){ return self.yRange(self.yValue(d)); })
+            .style('fill', self.fillValue)
             .on('click', function(d){
                 EventBus.trigger(events.HIGHLIGHT, d);
             });
-
-
-
-        function brushed(){
-            var ghostData = [];
-            if(self.brush.empty()){
-                bubbles.classed('ghost', false);
-            }
-            else {
-                var extent = self.brush.extent();
-                bubbles.classed('ghost', function(d){
-                    if(extent[0][0] <= d.likes && d.likes <= extent[1][0]
-                    && extent[0][1] <= d.dislikes && d.dislikes <= extent[1][1]){
-                        return false;
-                    } else {
-                        ghostData.push(d);
-                        return true;
-                    }
-                });
-            }
-            EventBus.trigger(events.BRUSH, self.viewId, ghostData);
-        }
         
         return self;
     };

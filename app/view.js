@@ -27,8 +27,29 @@ class View {
         this.chart = this.svg.append('g')
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
-    }
 
+        this.brushes = {};
+        var self = this;
+        EventBus.on(events.BRUSH, function(sourceView, ghostData){
+           if(sourceView !== self.viewId){
+
+               self.chart.selectAll('.brush').each(function(dim){
+                   dim = dim || 'default';
+                   d3.select(this).call(self.brushes[dim].clear());
+               });
+
+               self.chart.selectAll('.data-item.brushable')
+                   .classed('ghost', false)
+                   .filter(function(d){
+                       return ghostData.indexOf(d) !== -1;
+                   })
+                   .classed('ghost', true)
+                   .moveToBack();
+           }
+        });
+
+    }
+    
     // public functions and variables
     position (position){
         this.position = position;
@@ -40,5 +61,61 @@ class View {
         return View._counter;
     }
     
+    get brush (){
+        return this.brushes['default'];
+    }
+
+    set brush (brush){
+        this.brushes['default'] = brush;
+    }
+
+    onBrush (){
+        var ghostData = [];
+        
+        //determine brushed dimension(s)
+        var brushedDimensions = [];
+        _.each(this.brushes, function(b, dim){
+            if(!b.empty()){
+                brushedDimensions.push(dim);
+            }
+        });
+        
+        var self = this;
+        this.chart.selectAll('.data-item.brushable').classed('ghost', function(d){
+            if(brushedDimensions.every(function(dim){
+                var brush = self.brushes[dim];
+                return isWithinBrushExtent.call(self, d, brush, dim);
+            })){
+                return false;
+            } else {
+                ghostData.push(d);
+                return true;
+            }
+        });
+        EventBus.trigger(events.BRUSH, self.viewId, ghostData);
+    }
+
+    xValue (){
+        throw error('need to overwrite accessor method xValue for object: ' + this);
+    };
+
+    yValue (){
+        throw error('need to overwrite accessor method yValue for object: ' + this);
+    };
+}
+
+function isWithinBrushExtent(d, brush, dim){
+    var hasX = brush.x() !== null;
+    var hasY = brush.y() !== null;
+    var extent = brush.extent();
+    if(hasX && hasY){
+        return extent[0][0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1][0]
+        && extent[0][1] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1][1];
+    } else if(hasX){
+        return extent[0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1];
+    } else if(hasY){
+        return extent[0] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1];
+    }
+    else return false;
 }
 
