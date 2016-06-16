@@ -12,6 +12,11 @@ class BarChart extends View {
             return d.values;  
         };
 
+        var self = this;
+        this.xValue = function(d){
+            return self.xRange(d.key) + self.xRange.rangeBand()/2;
+        };
+
         this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.chartWidth], 0.1);
         this.yRange = d3.scale.linear().range([this.chartHeight, 0]);
 
@@ -57,9 +62,21 @@ class BarChart extends View {
             .duration(750)
             .call(self.yAxis);
 
-        var bars = self.chart.selectAll('.bar').data(barsData);
+        self.brush = d3.svg.brush()
+            .x(self.xRange)
+            .on('brush', self.onBrush.bind(self));
+
+        self.brushArea = self.chart.append('g')
+            .classed('brush', true)
+            .call(self.brush)
+            .selectAll('rect')
+            .attr('y', -5)
+            .attr('height', self.chartHeight + 5);
+
+        var content = self.chart.append('g').classed('content', true);
+        var bars = content.selectAll('.bar').data(barsData);
         bars.enter().append('rect')
-            .classed('bar data-item', true)
+            .classed('bar data-item brushable', true)
             .attr('x', function(d){ return self.xRange(d.key); })
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(self.rawValues(d).length); })

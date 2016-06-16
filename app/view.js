@@ -32,7 +32,7 @@ class View {
         //TODO: create Brushable and Highlightable Mixin to add Brushing Behaviour dynamically
         this.brushes = {};
         var self = this;
-        EventBus.on(events.BRUSH, function(sourceView, ghostData){
+        EventBus.on(events.BRUSH, function(sourceView, brushedData){
            if(sourceView !== self.viewId){
 
                self.chart.selectAll('.brush').each(function(dim){
@@ -43,7 +43,7 @@ class View {
                self.chart.selectAll('.data-item.brushable')
                    .classed('ghost', false)
                    .filter(function(d){
-                       return ghostData.indexOf(d) !== -1;
+                       return self.rawValues(d).every(v => brushedData.indexOf(v) === -1);
                    })
                    .classed('ghost', true)
                    .moveToBack();
@@ -82,7 +82,7 @@ class View {
     }
 
     onBrush (){
-        var ghostData = [];
+        var brushedData = [];
         
         //determine brushed dimension(s)
         var brushedDimensions = [];
@@ -98,21 +98,21 @@ class View {
                 var brush = self.brushes[dim];
                 return self.isWithinBrushExtent(d, brush, dim);
             })){
+                brushedData = brushedData.concat(self.rawValues(d));
                 return false;
             } else {
-                ghostData.push(d);
                 return true;
             }
         });
-        EventBus.trigger(events.BRUSH, self.viewId, ghostData);
+        EventBus.trigger(events.BRUSH, self.viewId, brushedData);
     }
 
     xValue (){
-        throw error('need to overwrite accessor method xValue for object: ' + this);
+        throw Error('need to overwrite accessor method xValue for object: ' + this);
     };
 
     yValue (){
-        throw error('need to overwrite accessor method yValue for object: ' + this);
+        throw Error('need to overwrite accessor method yValue for object: ' + this);
     };
 
     /**
