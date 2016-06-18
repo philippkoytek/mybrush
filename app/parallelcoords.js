@@ -47,9 +47,7 @@ class ParallelCoords extends View {
             .enter().append('path')
             .classed('data-item brushable', true)
             .attr('d', drawPath)
-            .on('click', function(d){
-                EventBus.trigger(events.HIGHLIGHT, d);
-            });
+            .on('click', self.highlight.bind(self));
 
 
         var dimensionGroups = self.chart.selectAll('.dimension')

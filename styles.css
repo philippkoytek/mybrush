@@ -31,7 +31,9 @@ html, body, svg#main {
 }
 
 path.ghost {
-    display:none;
+    fill: none !important;
+    stroke: #ddd !important;
+    shape-rendering: crispEdges;
 }
 
 

@@ -35,11 +35,13 @@ class View {
         EventBus.on(events.BRUSH, function(sourceView, brushedData){
            if(sourceView !== self.viewId){
 
+               //clear all brushes of the view
                self.chart.selectAll('.brush').each(function(dim){
                    dim = dim || 'default';
                    d3.select(this).call(self.brushes[dim].clear());
                });
 
+               // mark unselected items as ghosts
                self.chart.selectAll('.data-item.brushable')
                    .classed('ghost', false)
                    .filter(function(d){
@@ -53,6 +55,7 @@ class View {
         EventBus.on(events.HIGHLIGHT, function(selectedData){
             selectedData = [].concat(selectedData);
 
+            // mark highlighted items
             self.chart.selectAll('.data-item')
                 .classed('highlighted',false)
                 .filter( d => self.rawValues(d).some(v => selectedData.indexOf(v) !== -1))
@@ -81,6 +84,15 @@ class View {
         this.brushes['default'] = brush;
     }
 
+    highlight (d){
+        if(constants.brushOnClick){
+            this.setBrushExtent(d);
+        }
+        else {
+            EventBus.trigger(events.HIGHLIGHT, this.rawValues(d));
+        }
+    }
+
     onBrush (){
         var brushedData = [];
         
@@ -99,6 +111,8 @@ class View {
                 return self.isWithinBrushExtent(d, brush, dim);
             })){
                 brushedData = brushedData.concat(self.rawValues(d));
+                //possible performance problems with selecting the brushed ones one by one?
+                d3.select(this).moveToFront();
                 return false;
             } else {
                 return true;
@@ -138,6 +152,33 @@ class View {
             return extent[0] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1];
         }
         else return false;
+    }
+
+    setBrushExtent(d){
+        var self = this;
+        _.each(this.brushes, function(brush, dim){
+            var hasX = brush.x() !== null;
+            var hasY = brush.y() !== null;
+            if(hasX && hasY){
+                var x = this.xValue(d, dim);
+                var y = this.yValue(d, dim);
+                this.brushAreaForDim(dim)
+                    .call(brush.extent([[x - 5, y - 5],[x + 5, y + 5]]))
+                    .call(brush.event);
+            }
+            else {
+                var point = hasX ? this.xValue(d, dim) : this.yValue(d, dim);
+                this.brushAreaForDim(dim)
+                    .call(brush.extent([point - 21, point + 21]))
+                    .call(brush.event);
+            }
+        }, this);
+    }
+
+    brushAreaForDim(dim = 'default'){
+        return this.chart.selectAll('.brush').filter(function(d = 'default'){
+            return d === dim;
+        });
     }
 }
 

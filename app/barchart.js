@@ -68,8 +68,8 @@ class BarChart extends View {
 
         self.brushArea = self.chart.append('g')
             .classed('brush', true)
-            .call(self.brush)
-            .selectAll('rect')
+            .call(self.brush);
+        self.brushArea.selectAll('rect')
             .attr('y', -5)
             .attr('height', self.chartHeight + 5);
 
@@ -81,9 +81,7 @@ class BarChart extends View {
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(self.rawValues(d).length); })
             .attr('height', function(d){ return self.chartHeight - self.yRange(self.rawValues(d).length); })
-            .on('click', function(d){
-                EventBus.trigger(events.HIGHLIGHT, self.rawValues(d));
-            });
+            .on('click', self.highlight.bind(self));
 
         return self;
     };
