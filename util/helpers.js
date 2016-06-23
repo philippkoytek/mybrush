@@ -16,3 +16,11 @@ d3.selection.prototype.moveToBack = function() {
         }
     });
 };
+
+
+var positions = {
+    offensive:['LW', 'ST', 'RW', 'CF', 'LF', 'RF'],
+    midfield:['CAM', 'LM', 'RM', 'CM', 'CDM'],
+    defensive:['LWB', 'RWB', 'LB', 'RB', 'CB'],
+    goalkeeper:['GK']
+};
