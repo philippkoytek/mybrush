@@ -35,12 +35,6 @@ class ParallelCoords extends View {
                 .range([self.chartHeight, 0]);
         });
 
-        var background = self.chart.append('g')
-            .classed('background', true)
-            .selectAll('path').data(data)
-            .enter().append('path')
-            .attr('d', drawPath);
-
         var foreground = self.chart.append('g')
             .classed('foreground', true)
             .selectAll('path').data(data)
