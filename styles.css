@@ -56,3 +56,11 @@ path.ghost {
     fill: #fff;
     shape-rendering: crispEdges;
 }
+
+.brush.active .background {
+    pointer-events: none;
+}
+
+.brush.ready .background {
+    pointer-events: all;
+}
