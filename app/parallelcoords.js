@@ -64,7 +64,7 @@ class ParallelCoords extends View {
             .classed('brush', true)
             .each(function(dim){
                 d3.select(this).call(
-                    self.brushes[dim] = d3.svg.brush().y(self.yRange[dim]).on('brush', self.onBrush.bind(self))
+                    self.multiBrushes[dim] = d3.svg.brush().y(self.yRange[dim]).on('brush', self.onBrush.bind(self))
                 );
             })
             .selectAll('rect')

@@ -30,16 +30,16 @@ class View {
 
 
         //TODO: create Brushable and Highlightable Mixin to add Brushing Behaviour dynamically
-        this.brushes = {};
+        this.multiBrushes = {};
         var self = this;
         EventBus.on(events.BRUSH, function(sourceView, brushedData){
            if(sourceView !== self.viewId){
 
                //clear all brushes of the view
-               self.chart.selectAll('.brush').each(function(dim){
+               /*self.chart.selectAll('.brush').each(function(dim){
                    dim = dim || 'default';
                    d3.select(this).call(self.brushes[dim].clear());
-               });
+               });*/
 
                // mark unselected items as ghosts
                self.chart.selectAll('.data-item.brushable')
@@ -75,15 +75,6 @@ class View {
         return View._counter;
     }
 
-
-    get brush (){
-        return this.brushes['default'];
-    }
-
-    set brush (brush){
-        this.brushes['default'] = brush;
-    }
-
     highlight (d){
         if(constants.brushOnClick){
             this.setBrushExtent(d);
@@ -98,7 +89,7 @@ class View {
         
         //determine brushed dimension(s)
         var brushedDimensions = [];
-        _.each(this.brushes, function(b, dim){
+        _.each(this.multiBrushes, function(b, dim){
             if(!b.empty()){
                 brushedDimensions.push(dim);
             }
@@ -107,11 +98,10 @@ class View {
         var self = this;
         this.chart.selectAll('.data-item.brushable').classed('ghost', function(d){
             if(brushedDimensions.every(function(dim){
-                var brush = self.brushes[dim];
-                return self.isWithinBrushExtent(d, brush, dim);
+                return self.multiBrushes[dim].extentsContain(d);
             })){
                 brushedData = brushedData.concat(self.rawValues(d));
-                //possible performance problems with selecting the brushed ones one by one?
+                //possible performance problems with selecting the brushed data items one by one?
                 d3.select(this).moveToFront();
                 return false;
             } else {
@@ -119,6 +109,50 @@ class View {
             }
         });
         EventBus.trigger(events.BRUSH, self.viewId, brushedData);
+    }
+    
+    onBrushEnd () { 
+        var targetBrush = d3.event.target;
+        var readyBrush = this.multiBrushes[targetBrush.dim].readyBrush();
+
+        if(readyBrush === targetBrush){
+            if(readyBrush.empty()){
+                console.log('reset brushes');
+                this.resetBrushes();
+            }
+            else {
+                console.log('insert new brush');
+                targetBrush.brushArea
+                    .classed('ready', false)
+                    .classed('active', true);
+                this.insertNewBrush();
+            }
+        }
+        //else: do nothing because active brush has been altered
+        else {
+            //TODO: remove output!
+            console.log('do nothing');
+        }
+    }
+
+    resetBrushes(){
+        console.log('reset');
+        this.multiBrushes['default'].reset();
+        //this.chart.selectAll('.brush.active').remove();
+    }
+
+    insertNewBrush (dim = 'default') {
+        if(!this.multiBrushes.hasOwnProperty(dim)){
+            this.multiBrushes[dim] = new Multibrush(dim, this);
+        }
+        this.multiBrushes[dim].addBrush(this.createBrush());
+    }
+
+    /**
+     * delegate methods that have to be overwritten by subclasses
+     */
+    createBrush(ranges){
+        throw Error('need to overwrite brush creator method createBrush for object: ' + this);
     }
 
     xValue (){
@@ -156,15 +190,13 @@ class View {
 
     setBrushExtent(d){
         var self = this;
-        _.each(this.brushes, function(brush, dim){
-            var hasX = brush.x() !== null;
-            var hasY = brush.y() !== null;
-            if(hasX && hasY){
+        _.each(this.multiBrushes, function(brush, dim){
+            if(brush.hasX() && brush.hasY()){
                 var x = this.xValue(d, dim);
                 var y = this.yValue(d, dim);
                 this.brushAreaForDim(dim)
-                    .call(brush.extent([[x - 5, y - 5],[x + 5, y + 5]]))
-                    .call(brush.event);
+                    .call(brush.readyBrush().extent([[x - 5, y - 5],[x + 5, y + 5]]))
+                    .call(brush.readyBrush().event);
             }
             else {
                 var point = hasX ? this.xValue(d, dim) : this.yValue(d, dim);

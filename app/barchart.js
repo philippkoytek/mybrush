@@ -66,12 +66,12 @@ class BarChart extends View {
             .x(self.xRange)
             .on('brush', self.onBrush.bind(self));
 
-        self.brushArea = self.chart.append('g')
+        /*self.brushArea = self.chart.append('g')
             .classed('brush', true)
-            .call(self.brush);
+            .call(self.multiBrushes['default']._brushes[0]);
         self.brushArea.selectAll('rect')
             .attr('y', -5)
-            .attr('height', self.chartHeight + 5);
+            .attr('height', self.chartHeight + 5);*/
 
         var content = self.chart.append('g').classed('content', true);
         var bars = content.selectAll('.bar').data(barsData);

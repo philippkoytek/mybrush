@@ -72,8 +72,4 @@ class Multibrush {
     hasY(){
         return this._brushes[0].y() !== null;
     }
-
-    event(){
-        
-    }
 }
