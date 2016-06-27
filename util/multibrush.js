@@ -50,10 +50,12 @@ class Multibrush {
      * removes all brushes but the one that was added last (ready brush)
      */
     reset() {
-        this._brushes.forEach(function(brush){
-            brush.clear();
-        });
-        //this._brushes.splice(0, this._brushes.length - 1);
+        while(this._brushes.length > 1){
+            var b = this._brushes.shift();
+            b.clear();
+        }
+        this.view.onBrush();
+        this.view.chart.selectAll('.brush.active').remove();
     }
     
     //Helper functions

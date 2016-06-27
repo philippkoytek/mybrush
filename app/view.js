@@ -117,8 +117,8 @@ class View {
 
         if(readyBrush === targetBrush){
             if(readyBrush.empty()){
-                console.log('reset brushes');
-                this.resetBrushes();
+                console.log('resetting brushes');
+                this.multiBrushes[targetBrush.dim].reset();
             }
             else {
                 console.log('insert new brush');
@@ -135,11 +135,6 @@ class View {
         }
     }
 
-    resetBrushes(){
-        console.log('reset');
-        this.multiBrushes['default'].reset();
-        //this.chart.selectAll('.brush.active').remove();
-    }
 
     insertNewBrush (dim = 'default') {
         if(!this.multiBrushes.hasOwnProperty(dim)){
@@ -173,20 +168,7 @@ class View {
         return [].concat(d);
     }
 
-    isWithinBrushExtent(d, brush, dim){
-        var hasX = brush.x() !== null;
-        var hasY = brush.y() !== null;
-        var extent = brush.extent();
-        if(hasX && hasY){
-            return extent[0][0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1][0]
-                && extent[0][1] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1][1];
-        } else if(hasX){
-            return extent[0] <= this.xValue(d, dim) && this.xValue(d, dim) <= extent[1];
-        } else if(hasY){
-            return extent[0] <= this.yValue(d, dim) && this.yValue(d, dim) <= extent[1];
-        }
-        else return false;
-    }
+
 
     setBrushExtent(d){
         var self = this;
