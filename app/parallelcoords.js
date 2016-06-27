@@ -29,10 +29,10 @@ class ParallelCoords extends View {
         self.xRange.domain(dimensions);
         dimensions.forEach(function(dim){
             self.yRange[dim] = d3.scale.linear()
-                .domain(d3.extent(data, function(d){
+                .domain([0, d3.max(data, function(d){
                     return self.yValue(d, dim);
-                }))
-                .range([self.chartHeight, 0]);
+                }) + 10])
+                .range([self.chartHeight, 0]).nice();
         });
 
         var foreground = self.chart.append('g')
