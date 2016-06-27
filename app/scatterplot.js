@@ -78,14 +78,7 @@ class ScatterPlot extends View {
             .duration(750)
             .call(self.yAxis);
 
-        self.brush = d3.svg.brush()
-            .y(self.yRange)
-            .x(self.xRange)
-            .on('brush', self.onBrush.bind(self));
-
-        self.brushArea = self.chart.append('g')
-            .classed('brush', true)
-            .call(self.brush);
+        self.insertNewBrush();
 
         // data
         var content = self.chart.append('g').classed('content', true);
@@ -100,4 +93,12 @@ class ScatterPlot extends View {
         
         return self;
     };
+
+    createBrush (ranges) {
+        return d3.svg.brush()
+            .y(this.yRange)
+            .x(this.xRange)
+            .on('brush', this.onBrush.bind(this))
+            .on('brushend', this.onBrushEnd.bind(this));
+    }
 }
