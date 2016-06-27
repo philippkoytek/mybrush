@@ -176,23 +176,18 @@ class View {
             if(brush.hasX() && brush.hasY()){
                 var x = this.xValue(d, dim);
                 var y = this.yValue(d, dim);
-                this.brushAreaForDim(dim)
+                console.log('set extent');
+                brush.readyBrush().brushArea
                     .call(brush.readyBrush().extent([[x - 5, y - 5],[x + 5, y + 5]]))
                     .call(brush.readyBrush().event);
             }
             else {
                 var point = hasX ? this.xValue(d, dim) : this.yValue(d, dim);
-                this.brushAreaForDim(dim)
+                brush.readyBrush().brushArea
                     .call(brush.extent([point - 21, point + 21]))
                     .call(brush.event);
             }
         }, this);
-    }
-
-    brushAreaForDim(dim = 'default'){
-        return this.chart.selectAll('.brush').filter(function(d = 'default'){
-            return d === dim;
-        });
     }
 }
 
