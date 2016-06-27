@@ -3,5 +3,6 @@
  */
 
 var constants = {
-    brushOnClick:true
+    brushOnClick:true,
+    colorScale:d3.scale.category20()
 };

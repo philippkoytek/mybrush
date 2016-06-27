@@ -62,14 +62,7 @@ class BarChart extends View {
             .duration(750)
             .call(self.yAxis);
 
-
         self.insertNewBrush();
-        /*FIXME: those three lines are neccessary to append to every brushArea
-            => ie. option/method needed to adjust brushAreas indivdually
-         .selectAll('rect')
-         .attr('y', -5)
-         .attr('height', self.chartHeight + 5);
-         */
 
         var content = self.chart.append('g').classed('content', true);
         var bars = content.selectAll('.bar').data(barsData);
@@ -84,11 +77,21 @@ class BarChart extends View {
         return self;
     };
 
+    /*
+     * Override methods
+     */
+
     createBrush () {
         return d3.svg.brush()
             .x(this.xRange)
             .on('brush', this.onBrush.bind(this))
             .on('brushend', this.onBrushEnd.bind(this));
+    }
+
+    adjustBrushArea (brushArea) {
+        brushArea.selectAll('rect')
+            .attr('y', -5)
+            .attr('height', this.chartHeight + 5);
     }
 
 }

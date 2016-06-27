@@ -39,6 +39,9 @@ class Multibrush {
         brush.brushArea = this.view.chart.insert('g', '.brush')
             .classed('brush ready', true)
             .call(brush);
+        if(this.view.adjustBrushArea){
+            this.view.adjustBrushArea(brush.brushArea);
+        }
         this._brushes.push(brush);
     }
 
