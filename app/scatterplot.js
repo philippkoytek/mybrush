@@ -94,7 +94,7 @@ class ScatterPlot extends View {
         return self;
     };
 
-    createBrush (ranges) {
+    createBrush () {
         return d3.svg.brush()
             .y(this.yRange)
             .x(this.xRange)
