@@ -125,7 +125,7 @@ class View {
                 targetBrush.brushArea
                     .classed('ready', false)
                     .classed('active', true);
-                this.insertNewBrush();
+                this.insertNewBrush(targetBrush.dim);
             }
         }
         //else: do nothing because active brush has been altered
@@ -136,11 +136,11 @@ class View {
     }
 
 
-    insertNewBrush (dim = 'default') {
+    insertNewBrush (dim = 'default', containerNode) {
         if(!this.multiBrushes.hasOwnProperty(dim)){
-            this.multiBrushes[dim] = new Multibrush(dim, this);
+            this.multiBrushes[dim] = new Multibrush(dim, this, containerNode);
         }
-        this.multiBrushes[dim].addBrush(this.createBrush());
+        this.multiBrushes[dim].addBrush(this.createBrush(dim));
     }
 
     /**
@@ -182,10 +182,10 @@ class View {
                     .call(brush.readyBrush().event);
             }
             else {
-                var point = hasX ? this.xValue(d, dim) : this.yValue(d, dim);
+                var point = brush.hasX() ? this.xValue(d, dim) : this.yValue(d, dim);
                 brush.readyBrush().brushArea
-                    .call(brush.extent([point - 21, point + 21]))
-                    .call(brush.event);
+                    .call(brush.readyBrush().extent([point - 21, point + 21]))
+                    .call(brush.readyBrush().event);
             }
         }, this);
     }

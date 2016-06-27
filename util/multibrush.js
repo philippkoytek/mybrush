@@ -5,10 +5,11 @@
 
 class Multibrush {
     
-    constructor(dim, view){
+    constructor(dim, view, containerNode){
         this._brushes = [];
         this.dim = dim;
         this.view = view;
+        this.containerNode = containerNode || this.view.chart;
     }
     
     empty(){
@@ -36,7 +37,7 @@ class Multibrush {
     
     addBrush(brush) {
         brush.dim = this.dim;
-        brush.brushArea = this.view.chart.insert('g', '.brush')
+        brush.brushArea = this.containerNode.insert('g', '.brush')
             .classed('brush ready', true)
             .call(brush);
         if(this.view.adjustBrushArea){
@@ -58,7 +59,7 @@ class Multibrush {
             b.clear();
         }
         this.view.onBrush();
-        this.view.chart.selectAll('.brush.active').remove();
+        this.containerNode.selectAll('.brush.active').remove();
     }
     
     //Helper functions

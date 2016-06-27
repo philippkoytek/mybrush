@@ -60,14 +60,22 @@ class ParallelCoords extends View {
             .attr('y', -9)
             .text(function(d){return d;});
 
-        dimensionGroups.append('g')
-            .classed('brush', true)
-            .each(function(dim){
-                d3.select(this).call(
-                    self.multiBrushes[dim] = d3.svg.brush().y(self.yRange[dim]).on('brush', self.onBrush.bind(self))
-                );
-            })
-            .selectAll('rect')
+        dimensionGroups.each(function(dim){
+            self.insertNewBrush(dim, d3.select(this));
+        });
+            
+    }
+    
+    
+    createBrush(dim){
+        return d3.svg.brush()
+            .y(this.yRange[dim])
+            .on('brush', this.onBrush.bind(this))
+            .on('brushend', this.onBrushEnd.bind(this));
+    }
+    
+    adjustBrushArea(brushArea) {
+        brushArea.selectAll('rect')
             .attr('x', -8)
             .attr('width', 16);
     }
