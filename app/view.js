@@ -36,7 +36,7 @@ class View {
            if(sourceView !== self.viewId){
 
                // mark unselected items as ghosts
-               self.chart.selectAll('.data-item.brushable')
+               self.chart.selectAll('.data-item')
                    .classed('ghost', false)
                    .filter(function(d){
                        return self.rawValues(d).every(v => brushedData.indexOf(v) === -1);
@@ -83,7 +83,7 @@ class View {
         });
         
         var self = this;
-        this.chart.selectAll('.data-item.brushable').classed('ghost', function(d){
+        this.chart.selectAll('.data-item').classed('ghost', function(d){
             if(brushedDimensions.every(function(dim){
                 return self.multiBrushes[dim].extentsContain(d);
             })){

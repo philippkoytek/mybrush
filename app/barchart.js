@@ -67,7 +67,7 @@ class BarChart extends View {
         var content = self.chart.append('g').classed('content', true);
         var bars = content.selectAll('.bar').data(barsData);
         bars.enter().append('rect')
-            .classed('bar data-item brushable', true)
+            .classed('bar data-item', true)
             .attr('x', function(d){ return self.xRange(d.key); })
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(self.rawValues(d).length); })

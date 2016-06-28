@@ -39,7 +39,7 @@ class ParallelCoords extends View {
             .classed('foreground', true)
             .selectAll('path').data(data)
             .enter().append('path')
-            .classed('data-item brushable', true)
+            .classed('line data-item', true)
             .attr('d', drawPath)
             .on('click', self.highlight.bind(self));
 

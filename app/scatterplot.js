@@ -84,7 +84,7 @@ class ScatterPlot extends View {
         var content = self.chart.append('g').classed('content', true);
         var bubbles = content.selectAll('.bubble').data(data, self.idValue);
         bubbles.enter().append('circle')
-            .classed('bubble data-item brushable', true)
+            .classed('bubble data-item', true)
             .attr('r', self.rValue)
             .attr('cx', function(d){ return self.xRange(self.xValue(d)); })
             .attr('cy', function(d){ return self.yRange(self.yValue(d)); })
