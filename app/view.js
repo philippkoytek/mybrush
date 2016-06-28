@@ -33,17 +33,17 @@ class View {
         this.multiBrushes = {};
         var self = this;
         EventBus.on(events.BRUSH, function(sourceView, brushedData){
-           if(sourceView !== self.viewId){
 
                // mark unselected items as ghosts
                self.chart.selectAll('.data-item')
                    .classed('ghost', false)
                    .filter(function(d){
-                       return self.rawValues(d).every(v => brushedData.indexOf(v) === -1);
+                       return self.rawValues(d).every(function(v){
+                           return v.meta.grey.size > 0;
+                       });
                    })
                    .classed('ghost', true)
                    .moveToBack();
-           }
         });
 
         EventBus.on(events.HIGHLIGHT, function(selectedData){
@@ -72,8 +72,6 @@ class View {
     }
 
     onBrush (){
-        var brushedData = [];
-        
         //determine brushed dimension(s)
         var brushedDimensions = [];
         _.each(this.multiBrushes, function(b, dim){
@@ -81,20 +79,20 @@ class View {
                 brushedDimensions.push(dim);
             }
         });
-        
+
         var self = this;
-        this.chart.selectAll('.data-item').classed('ghost', function(d){
-            if(brushedDimensions.every(function(dim){
-                return self.multiBrushes[dim].extentsContain(d);
-            })){
-                brushedData = brushedData.concat(self.rawValues(d));
-                d3.select(this).moveToFront();
-                return false;
+        this.chart.selectAll('.data-item').each(function(d){
+            if(self.isBrushedInAllDimensions(d, brushedDimensions)) {
+                self.rawValues(d).forEach(function(v){
+                    v.meta.grey.delete(self.viewId);
+                });
             } else {
-                return true;
+                self.rawValues(d).forEach(function(v){
+                    v.meta.grey.add(self.viewId);
+                });
             }
         });
-        EventBus.trigger(events.BRUSH, self.viewId, brushedData);
+        EventBus.trigger(events.BRUSH, self.viewId);
     }
     
     onBrushEnd () { 
@@ -135,6 +133,12 @@ class View {
     brushDataPoint(d){
         _.each(this.multiBrushes, function(brush){
             brush.setExtentOnData(d);
+        });
+    }
+
+    isBrushedInAllDimensions(d, dimensions){
+        return dimensions.every(function(dim){
+            return self.multiBrushes[dim].extentsContain(d);
         });
     }
 
