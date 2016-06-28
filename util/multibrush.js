@@ -12,13 +12,6 @@ class Multibrush {
         this.containerNode = containerNode || this.view.chart;
     }
     
-    empty(){
-        // possible performance improvement: return this._brushes.length <= 1;
-        return this._brushes.every(function(brush){
-            return brush.empty();
-        });
-    }
-    
     extentsContain(d){
         var self = this;
         return this._brushes.some(function(brush){
@@ -45,14 +38,8 @@ class Multibrush {
         }
         this._brushes.push(brush);
     }
-
-    readyBrush() {
-        return this._brushes[this._brushes.length - 1];
-    }
     
-    /*
-     * removes all brushes but the one that was added last (ready brush)
-     */
+    // removes all brushes but the one that was added last (ready brush)
     reset() {
         while(this._brushes.length > 1){
             var b = this._brushes.shift();
@@ -60,6 +47,17 @@ class Multibrush {
         }
         this.view.onBrush();
         this.containerNode.selectAll('.brush.active').remove();
+    }
+    
+    readyBrush() {
+        return this._brushes[this._brushes.length - 1];
+    }
+
+    empty(){
+        // possible performance improvement: return this._brushes.length <= 1;
+        return this._brushes.every(function(brush){
+            return brush.empty();
+        });
     }
     
     //Helper functions
