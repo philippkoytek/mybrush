@@ -11,7 +11,44 @@ class Multibrush {
         this.view = view;
         this.containerNode = containerNode || this.view.chart;
     }
-    
+
+    addBrush(brush) {
+        brush.dim = this.dim;
+        brush.brushArea = this.containerNode.insert('g', '.brush')
+            .classed('brush ready', true)
+            .call(brush);
+        if(this.view.adjustBrushArea){
+            this.view.adjustBrushArea(brush.brushArea);
+        }
+        this._brushes.push(brush);
+    }
+
+    // removes all brushes but the one that was added last (ready brush)
+    reset() {
+        while(this._brushes.length > 1){
+            var b = this._brushes.shift();
+            b.clear();
+        }
+        this.view.onBrush();
+        this.containerNode.selectAll('.brush.active').remove();
+    }
+
+    setExtentOnData(d){
+        if(this.hasX() && this.hasY()){
+            var x = this.xValue(d);
+            var y = this.yValue(d);
+            this.readyBrush().brushArea
+                .call(this.readyBrush().extent([[x - 5, y - 5],[x + 5, y + 5]]))
+                .call(this.readyBrush().event);
+        }
+        else {
+            var xOrY = this.hasX() ? this.xValue(d) : this.yValue(d);
+            this.readyBrush().brushArea
+                .call(this.readyBrush().extent([xOrY - 21, xOrY + 21]))
+                .call(this.readyBrush().event);
+        }
+    }
+
     extentsContain(d){
         var self = this;
         return this._brushes.some(function(brush){
@@ -27,28 +64,7 @@ class Multibrush {
             else return false;
         });
     }
-    
-    addBrush(brush) {
-        brush.dim = this.dim;
-        brush.brushArea = this.containerNode.insert('g', '.brush')
-            .classed('brush ready', true)
-            .call(brush);
-        if(this.view.adjustBrushArea){
-            this.view.adjustBrushArea(brush.brushArea);
-        }
-        this._brushes.push(brush);
-    }
-    
-    // removes all brushes but the one that was added last (ready brush)
-    reset() {
-        while(this._brushes.length > 1){
-            var b = this._brushes.shift();
-            b.clear();
-        }
-        this.view.onBrush();
-        this.containerNode.selectAll('.brush.active').remove();
-    }
-    
+
     readyBrush() {
         return this._brushes[this._brushes.length - 1];
     }

@@ -35,12 +35,6 @@ class View {
         EventBus.on(events.BRUSH, function(sourceView, brushedData){
            if(sourceView !== self.viewId){
 
-               //clear all brushes of the view
-               /*self.chart.selectAll('.brush').each(function(dim){
-                   dim = dim || 'default';
-                   d3.select(this).call(self.brushes[dim].clear());
-               });*/
-
                // mark unselected items as ghosts
                self.chart.selectAll('.data-item.brushable')
                    .classed('ghost', false)
@@ -63,21 +57,14 @@ class View {
                 .moveToFront();
         });
     }
+
+    /*
+     * event handlers
+     */
     
-    // public functions and variables
-    position (position){
-        this.position = position;
-        return this.svg.attr('transform', 'translate(' + position.x + ',' + position.y + ')');
-    };
-
-    static get counter() {
-        View._counter = (View._counter || 0) + 1;
-        return View._counter;
-    }
-
     highlight (d){
         if(constants.brushOnClick){
-            this.setBrushExtent(d);
+            this.brushDataPoint(d);
         }
         else {
             EventBus.trigger(events.HIGHLIGHT, this.rawValues(d));
@@ -101,7 +88,6 @@ class View {
                 return self.multiBrushes[dim].extentsContain(d);
             })){
                 brushedData = brushedData.concat(self.rawValues(d));
-                //possible performance problems with selecting the brushed data items one by one?
                 d3.select(this).moveToFront();
                 return false;
             } else {
@@ -134,7 +120,10 @@ class View {
             console.log('do nothing');
         }
     }
-
+    
+    /*
+     * brushing
+     */
 
     insertNewBrush (dim = 'default', containerNode) {
         if(!this.multiBrushes.hasOwnProperty(dim)){
@@ -143,6 +132,26 @@ class View {
         this.multiBrushes[dim].addBrush(this.createBrush(dim));
     }
 
+    brushDataPoint(d){
+        _.each(this.multiBrushes, function(brush){
+            brush.setExtentOnData(d);
+        });
+    }
+
+    /*
+     * utilities
+     */
+    
+    position (position){
+        this.position = position;
+        return this.svg.attr('transform', 'translate(' + position.x + ',' + position.y + ')');
+    };
+
+    static get counter() {
+        View._counter = (View._counter || 0) + 1;
+        return View._counter;
+    }
+    
     /**
      * delegate methods that have to be overwritten by subclasses
      */
@@ -166,28 +175,6 @@ class View {
      */
     rawValues (d) {
         return [].concat(d);
-    }
-
-
-
-    setBrushExtent(d){
-        var self = this;
-        _.each(this.multiBrushes, function(brush, dim){
-            if(brush.hasX() && brush.hasY()){
-                var x = this.xValue(d, dim);
-                var y = this.yValue(d, dim);
-                console.log('set extent');
-                brush.readyBrush().brushArea
-                    .call(brush.readyBrush().extent([[x - 5, y - 5],[x + 5, y + 5]]))
-                    .call(brush.readyBrush().event);
-            }
-            else {
-                var point = brush.hasX() ? this.xValue(d, dim) : this.yValue(d, dim);
-                brush.readyBrush().brushArea
-                    .call(brush.readyBrush().extent([point - 21, point + 21]))
-                    .call(brush.readyBrush().event);
-            }
-        }, this);
     }
 }
 
