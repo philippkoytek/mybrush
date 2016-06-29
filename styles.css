@@ -4,6 +4,10 @@ html, body, svg#main {
     margin:0;
 }
 
+#controls label {
+    margin-right:10px;
+}
+
 .view .frame {
     stroke:grey;
     stroke-width:1px;
@@ -56,6 +60,9 @@ path.ghost {
     fill: #fff;
     shape-rendering: crispEdges;
 }
+
+
+/* brushes */
 
 .brush.active .background {
     pointer-events: none;

@@ -31,11 +31,11 @@ class View {
 
         var self = this;
         EventBus.on(events.BRUSH, function(sourceView){
-               self.chart.selectAll('.data-item')
-                   .classed('ghost', false)
-                   .filter(self.isGhost.bind(self))
-                   .classed('ghost', true)
-                   .moveToBack();
+            self.chart.selectAll('.data-item')
+               .classed('ghost', false)
+               .filter(self.isGhost.bind(self))
+               .classed('ghost', true)
+               .moveToBack();
         });
 
         EventBus.on(events.HIGHLIGHT, function(selectedData){
