@@ -32,23 +32,16 @@ class View {
         //TODO: create Brushable and Highlightable Mixin to add Brushing Behaviour dynamically
         this.multiBrushes = {};
         var self = this;
-        EventBus.on(events.BRUSH, function(sourceView, brushedData){
-
-               // mark unselected items as ghosts
+        EventBus.on(events.BRUSH, function(sourceView){
                self.chart.selectAll('.data-item')
                    .classed('ghost', false)
-                   .filter(function(d){
-                       return self.rawValues(d).every(function(v){
-                           return v.meta.grey.size > 0;
-                       });
-                   })
+                   .filter(self.isGhost.bind(self))
                    .classed('ghost', true)
                    .moveToBack();
         });
 
         EventBus.on(events.HIGHLIGHT, function(selectedData){
             selectedData = [].concat(selectedData);
-
             // mark highlighted items
             self.chart.selectAll('.data-item')
                 .classed('highlighted',false)
@@ -73,6 +66,7 @@ class View {
 
     onBrush (){
         //determine brushed dimension(s)
+        var self = this;
         var brushedDimensions = [];
         _.each(this.multiBrushes, function(b, dim){
             if(!b.empty()){
@@ -80,18 +74,26 @@ class View {
             }
         });
 
-        var self = this;
-        this.chart.selectAll('.data-item').each(function(d){
-            if(self.isBrushedInAllDimensions(d, brushedDimensions)) {
-                self.rawValues(d).forEach(function(v){
-                    v.meta.grey.delete(self.viewId);
+        if(brushedDimensions.length == 0) {
+            this.chart.selectAll('.data-item').each(function (d) {
+                self.rawValues(d).forEach(function (v) {
+                    v.meta.unset(self.viewId);
                 });
-            } else {
-                self.rawValues(d).forEach(function(v){
-                    v.meta.grey.add(self.viewId);
-                });
-            }
-        });
+            });
+        } else {
+            this.chart.selectAll('.data-item').each(function(d){
+                if(self.brushesContain(d, brushedDimensions)) {
+                    self.rawValues(d).forEach(function(v){
+                        v.meta.brush(self.viewId);
+                    });
+                } else {
+                    self.rawValues(d).forEach(function(v){
+                        v.meta.grey(self.viewId);
+                    });
+                }
+            });
+        }
+
         EventBus.trigger(events.BRUSH, self.viewId);
     }
     
@@ -136,10 +138,23 @@ class View {
         });
     }
 
-    isBrushedInAllDimensions(d, dimensions){
+    brushesContain(d, dimensions){
+        var self = this;
         return dimensions.every(function(dim){
             return self.multiBrushes[dim].extentsContain(d);
         });
+    }
+
+    isGhost(d){
+        if(constants.unionBrushing){
+            return !this.rawValues(d).some(function(v){
+                return !v.meta.hasGreys() || v.meta.hasBrushes();
+            });
+        } else {
+            return this.rawValues(d).every(function(v){
+                return v.meta.hasGreys();
+            });
+        }
     }
 
     /*
