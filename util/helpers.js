@@ -17,7 +17,7 @@ d3.selection.prototype.moveToBack = function() {
     });
 };
 
-
+//TODO: remove this from here eventually
 var positions = {
     offensive:['LW', 'ST', 'RW', 'CF', 'LF', 'RF'],
     midfield:['CAM', 'LM', 'RM', 'CM', 'CDM'],

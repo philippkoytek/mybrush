@@ -23,7 +23,9 @@ class Multibrush {
         this._brushes.push(brush);
     }
 
-    // removes all brushes but the one that was added last (ready brush)
+    /**
+     * removes all brushes but the one that was added last (ready brush)
+     */
     reset() {
         while(this._brushes.length > 1){
             var b = this._brushes.shift();
@@ -33,7 +35,12 @@ class Multibrush {
         this.containerNode.selectAll('.brush.active').remove();
     }
 
+    /**
+     * programmatically sets the extent of the current ready brush to just include the data point d
+     * @param d
+     */
     setExtentOnData(d){
+        //TODO: calculate meaningful extent size around the data point (instead of hardcoded ranges)
         if(this.hasX() && this.hasY()){
             var x = this.xValue(d);
             var y = this.yValue(d);
@@ -49,6 +56,11 @@ class Multibrush {
         }
     }
 
+    /**
+     * checks if data point d is included in one of the brushes (on this dimension)
+     * @param d
+     * @returns {boolean}
+     */
     extentsContain(d){
         var self = this;
         return this._brushes.some(function(brush){

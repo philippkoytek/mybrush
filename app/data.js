@@ -35,8 +35,6 @@ function State () {
             this.greys.delete(viewId);
             this.brushes.delete(viewId);
         }
-
-
     }
 
     function fillInMetaData(array){
@@ -47,7 +45,6 @@ function State () {
 
     return class State {
         constructor(){}
-
         static request(url, key, callback){
             d3.json(url, function(error, data){
                 fillInMetaData(data);
@@ -55,7 +52,5 @@ function State () {
                 callback(error, data, key);
             });
         }
-
     }
-
 }

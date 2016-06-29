@@ -6,4 +6,5 @@ var constants = {
     brushOnClick:true,
     colorScale:d3.scale.category20(),
     unionBrushing:true
+    //TODO: multibrushes
 };

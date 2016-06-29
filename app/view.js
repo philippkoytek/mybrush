@@ -11,6 +11,7 @@ class View {
         this.chartWidth = this.frameWidth - padding.left - padding.right;
         this.position = position || {x:0, y:0};
         this.viewId = View.counter;
+        this.multiBrushes = {};
 
         this.svg = d3.select('.canvas').append('g')
             .classed('view', true)
@@ -28,9 +29,6 @@ class View {
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
 
-
-        //TODO: create Brushable and Highlightable Mixin to add Brushing Behaviour dynamically
-        this.multiBrushes = {};
         var self = this;
         EventBus.on(events.BRUSH, function(sourceView){
                self.chart.selectAll('.data-item')
@@ -51,19 +49,20 @@ class View {
         });
     }
 
-    /*
+    /**
      * event handlers
      */
-    
     highlight (d){
         if(constants.brushOnClick){
             this.brushDataPoint(d);
-        }
-        else {
+        } else {
             EventBus.trigger(events.HIGHLIGHT, this.rawValues(d));
         }
     }
 
+    /**
+     * update meta information of data on brush event
+     */
     onBrush (){
         //determine brushed dimension(s)
         var self = this;
@@ -96,33 +95,28 @@ class View {
 
         EventBus.trigger(events.BRUSH, self.viewId);
     }
-    
+
+    /**
+     * aftermath when brushing on the ready brush (ie. resetting the brushes or inserting a new brush)
+     */
     onBrushEnd () { 
         var targetBrush = d3.event.target;
         var readyBrush = this.multiBrushes[targetBrush.dim].readyBrush();
-
         if(readyBrush === targetBrush){
             if(readyBrush.empty()){
-                console.log('resetting brushes');
                 this.multiBrushes[targetBrush.dim].reset();
             }
             else {
-                console.log('insert new brush');
                 targetBrush.brushArea
                     .classed('ready', false)
                     .classed('active', true);
                 this.insertNewBrush(targetBrush.dim);
             }
         }
-        //else: do nothing because active brush has been altered
-        else {
-            //TODO: remove output!
-            console.log('do nothing');
-        }
     }
     
     /*
-     * brushing
+     * brushing utility and helper functions
      */
 
     insertNewBrush (dim = 'default', containerNode) {
@@ -138,6 +132,13 @@ class View {
         });
     }
 
+    /**
+     * checks if data point d is being brushed in this view.
+     * d is only brushed if it is contained in brushes of every dimension in dimensions
+     * @param d
+     * @param dimensions
+     * @returns {*|boolean} true if d is being brushed
+     */
     brushesContain(d, dimensions){
         var self = this;
         return dimensions.every(function(dim){
@@ -145,6 +146,12 @@ class View {
         });
     }
 
+    /**
+     * checks if d is supposed to be a ghost (ie. greyed out) or not (ie. colored/highlighted)
+     * depending on the kind of brushing that is active (union vs. intersect)
+     * @param d
+     * @returns {boolean}
+     */
     isGhost(d){
         if(constants.unionBrushing){
             return !this.rawValues(d).some(function(v){
@@ -157,10 +164,9 @@ class View {
         }
     }
 
-    /*
+    /**
      * utilities
      */
-    
     position (position){
         this.position = position;
         return this.svg.attr('transform', 'translate(' + position.x + ',' + position.y + ')');
