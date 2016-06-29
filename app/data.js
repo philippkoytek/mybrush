@@ -9,8 +9,34 @@ function State () {
 
     class Meta {
         constructor(){
-            this.grey = new Set();
+            this.greys = new Set();
+            this.brushes = new Set();
         }
+
+        hasGreys(){
+            return this.greys.size > 0;
+        }
+
+        hasBrushes(){
+            return this.brushes.size > 0;
+        }
+
+        brush(viewId){
+            this.greys.delete(viewId);
+            this.brushes.add(viewId);
+        }
+
+        grey(viewId){
+            this.greys.add(viewId);
+            this.brushes.delete(viewId);
+        }
+
+        unset(viewId){
+            this.greys.delete(viewId);
+            this.brushes.delete(viewId);
+        }
+
+
     }
 
     function fillInMetaData(array){
