@@ -20,7 +20,7 @@ class ListView extends View {
         var cards = content.selectAll('.cards').data(data, self.idValue);
         cards.enter().append('text')
             .classed('card data-item', true)
-            .attr('x', function(d, i){ return 140 * (Math.floor(i/self.namesPerColumn)); })
+            .attr('x', function(d, i){ return 150 * (Math.floor(i/self.namesPerColumn)); })
             .attr('y', function(d, i){ return 30 * (i % self.namesPerColumn); })
             .text(function(d){return d.name;})
             .on('click', self.highlight.bind(self));
