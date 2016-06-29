@@ -5,6 +5,7 @@
 var constants = {
     brushOnClick:true,
     colorScale:d3.scale.category20(),
-    unionBrushing:false
-    //TODO: multibrushes
+    unionBrushing:false,
+    touchInteraction:false
+    //TODO: multibrushes, singleViewBrushing
 };

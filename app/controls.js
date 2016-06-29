@@ -20,3 +20,12 @@ controls.append('input')
         constants.unionBrushing = d3.select(this).property('checked');
     });
 controls.append('label').text('union brushing');
+
+controls.append('input')
+    .attr('type', 'checkbox')
+    .attr('name', 'touch interaction')
+    .property('checked', constants.touchInteraction)
+    .on('click', function(){
+        constants.touchInteraction = d3.select(this).property('checked');
+    });
+controls.append('label').text('touch interaction');

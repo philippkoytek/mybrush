@@ -20,6 +20,9 @@ class Multibrush {
         if(this.view.adjustBrushArea){
             this.view.adjustBrushArea(brush.brushArea);
         }
+        if(constants.touchInteraction){
+            this.makeTouchable(brush.brushArea);
+        }
         this._brushes.push(brush);
     }
 
@@ -103,5 +106,12 @@ class Multibrush {
     
     hasY(){
         return this._brushes[0].y() !== null;
+    }
+
+    makeTouchable(brushArea){
+        brushArea.selectAll('g.resize')
+            .append('circle')
+            .classed('handle', true)
+            .attr('r', 10);
     }
 }

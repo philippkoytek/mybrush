@@ -3,6 +3,9 @@ html, body, svg#main {
     height:100%;
     margin:0;
 }
+#controls {
+    margin:15px 0 0 15px;
+}
 
 #controls label {
     margin-right:10px;
@@ -55,9 +58,9 @@ path.ghost {
 }
 
 .brush .extent {
-    fill-opacity: .1;
     stroke: #333;
-    fill: #fff;
+    fill: transparent;
+;
     shape-rendering: crispEdges;
 }
 
@@ -70,4 +73,10 @@ path.ghost {
 
 .brush.ready .background {
     pointer-events: all;
+}
+
+.brush .resize .handle {
+    fill:none;
+    stroke:#999;
+    shape-rendering: crispEdges;
 }
