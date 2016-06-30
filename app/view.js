@@ -74,6 +74,7 @@ class View {
         });
 
         if(brushedDimensions.length == 0) {
+            // no active brushes
             this.chart.selectAll('.data-item').each(function (d) {
                 self.rawValues(d).forEach(function (v) {
                     v.meta.unset(self.viewId);
@@ -82,12 +83,18 @@ class View {
         } else {
             this.chart.selectAll('.data-item').each(function(d){
                 if(self.brushesContain(d, brushedDimensions)) {
+                    // item is brushed
                     self.rawValues(d).forEach(function(v){
                         v.meta.brush(self.viewId);
-                    });
+                        if(constants.connect){
+                            v.meta.connectFrom(this);
+                        }
+                    }, this);
                 } else {
+                    // item is not brushed (-> grey)
                     self.rawValues(d).forEach(function(v){
                         v.meta.grey(self.viewId);
+                        //v.meta.disconnectFrom(this);
                     });
                 }
             });

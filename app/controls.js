@@ -29,3 +29,12 @@ controls.append('input')
         constants.touchInteraction = d3.select(this).property('checked');
     });
 controls.append('label').text('touch interaction');
+
+controls.append('input')
+    .attr('type', 'checkbox')
+    .attr('name', 'connect')
+    .property('checked', constants.connect)
+    .on('click', function(){
+        constants.connect = d3.select(this).property('checked');
+    });
+controls.append('label').text('connect');

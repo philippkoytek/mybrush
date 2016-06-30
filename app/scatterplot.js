@@ -89,7 +89,10 @@ class ScatterPlot extends View {
             .attr('cx', function(d){ return self.xRange(self.xValue(d)); })
             .attr('cy', function(d){ return self.yRange(self.yValue(d)); })
             .style('fill', self.fillValue)
-            .on('click', self.highlight.bind(self));
+            .on('click', self.highlight.bind(self))
+            .each(function(d){
+                d.meta.registerVisual(self.viewId, this);
+            });
         
         return self;
     };

@@ -72,7 +72,12 @@ class BarChart extends View {
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(self.rawValues(d).length); })
             .attr('height', function(d){ return self.chartHeight - self.yRange(self.rawValues(d).length); })
-            .on('click', self.highlight.bind(self));
+            .on('click', self.highlight.bind(self))
+            .each(function(d){
+                self.rawValues(d).forEach(function(v){
+                    v.meta.registerVisual(self.viewId, this);
+                }, this);
+            });
 
         return self;
     };

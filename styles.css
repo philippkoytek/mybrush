@@ -3,6 +3,11 @@ html, body, svg#main {
     height:100%;
     margin:0;
 }
+
+svg#main {
+    height: 90%;
+}
+
 #controls {
     margin:15px 0 0 15px;
 }
