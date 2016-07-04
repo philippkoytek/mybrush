@@ -2,30 +2,15 @@
  * Created by Philipp Koytek on 6/29/2016.
  */
 
-var controls = d3.select('#controls');
-controls.append('input')
-    .attr('type', 'checkbox')
-    .attr('name', 'brush on click')
-    .property('checked', constants.brushOnClick)
-    .on('click', function(){
-        constants.brushOnClick = d3.select(this).property('checked');
-    });
-controls.append('label').text('brush on click');
+var items = d3.map(constants).entries();
 
-controls.append('input')
+var controls = d3.select('#controls').selectAll('span').data(items);
+var cEnter = controls.enter().append('span');
+cEnter.append('input')
     .attr('type', 'checkbox')
-    .attr('name', 'union brushing')
-    .property('checked', constants.unionBrushing)
-    .on('click', function(){
-        constants.unionBrushing = d3.select(this).property('checked');
+    .attr('name', function(d){return d.key;})
+    .property('checked', function(d){return d.value;})
+    .on('click', function(d){
+        constants[d.key] = d.value = d3.select(this).property('checked');
     });
-controls.append('label').text('union brushing');
-
-controls.append('input')
-    .attr('type', 'checkbox')
-    .attr('name', 'touch interaction')
-    .property('checked', constants.touchInteraction)
-    .on('click', function(){
-        constants.touchInteraction = d3.select(this).property('checked');
-    });
-controls.append('label').text('touch interaction');
+cEnter.append('label').text(function(d){return d.key;});

@@ -37,12 +37,6 @@ html, body, svg#main {
     fill: #ddd !important;
 }
 
-path.ghost {
-    fill: none !important;
-    stroke: #ddd !important;
-    shape-rendering: crispEdges;
-}
-
 
 /* parallel coords */
 
@@ -52,20 +46,25 @@ path.ghost {
     shape-rendering: crispEdges;
 }
 
-.foreground path {
+.data-item.line {
     fill: none;
     stroke: steelblue;
 }
 
-.brush .extent {
-    stroke: #333;
-    fill: transparent;
-;
+.data-item.line.ghost {
+    fill: none !important;
+    stroke: #ddd !important;
     shape-rendering: crispEdges;
 }
 
 
 /* brushes */
+
+.brush .extent {
+    stroke: #333;
+    fill: transparent;
+    shape-rendering: crispEdges;
+}
 
 .brush.active .background {
     pointer-events: none;
