@@ -31,11 +31,13 @@ class View {
 
         var self = this;
         EventBus.on(events.BRUSH, function(sourceView){
-            self.chart.selectAll('.data-item')
-               .classed('ghost', false)
-               .filter(self.isGhost.bind(self))
-               .classed('ghost', true)
-               .moveToBack();
+            if(constants.greyOnBrush){
+                self.chart.selectAll('.data-item')
+                    .classed('ghost', false)
+                    .filter(self.isGhost.bind(self))
+                    .classed('ghost', true)
+                    .moveToBack();
+            }
         });
 
         EventBus.on(events.HIGHLIGHT, function(selectedData){
@@ -94,10 +96,11 @@ class View {
                     // item is not brushed (-> grey)
                     self.rawValues(d).forEach(function(v){
                         v.meta.grey(self.viewId);
-                        //v.meta.disconnectFrom(this);
-                    });
+                        v.meta.disconnectFrom(this);
+                    }, this);
                 }
             });
+            State().updateConns();
         }
 
         EventBus.trigger(events.BRUSH, self.viewId);
