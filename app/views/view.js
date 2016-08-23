@@ -88,10 +88,7 @@ class View {
                     // item is brushed
                     self.rawValues(d).forEach(function(v){
                         v.meta.brush(self.viewId);
-                        if(constants.connect){
-                            v.meta.connectFrom(this);
-                        }
-                    }, this);
+                    });
                 } else {
                     // item is not brushed (-> grey)
                     self.rawValues(d).forEach(function(v){

@@ -34,6 +34,9 @@ function State () {
         brush(viewId){
             this.greys.delete(viewId);
             this.brushes.add(viewId);
+            if(constants.connect){
+                this.connectFrom(viewId);
+            }
         }
 
         grey(viewId){
@@ -48,29 +51,18 @@ function State () {
 
         // keep track of all visuals that represent this data item (to be able to link them etc)
         registerVisual(viewId, visual){
-            this.visuals.add({view:viewId, visual:visual});
+            this.visuals.add({viewId:viewId, visual:visual});
         }
 
-        connectFrom(srcVisual){
+        connectFrom(viewId){
             this.visuals.forEach(function(dest){
-                if(dest.visual != srcVisual){
+                if(dest.viewId != viewId){
                     var isNew = theConnections.every(function(c){
                         return c[0] != srcVisual || c[1] != dest.visual;
                     });
                     if(isNew){
                         theConnections.push([srcVisual, dest.visual]);
                     }
-                    var lines = d3.select('svg#main').selectAll('.connection').data(theConnections);
-                    lines.enter().append('path')
-                        .classed('connection', true)
-                        .style('stroke', 'black')
-                        .attr('d', lineFunction);
-
-                    lines.exit().transition()
-                        .attr('d', function(d){
-                            return lineFunction([d[0], d[0]]);
-                        })
-                        .remove();
                 }
             });
         }
@@ -79,9 +71,12 @@ function State () {
             this.visuals.forEach(function(dest){
                 if(dest.visual != srcVisual){
                     var i = theConnections.findIndex(function(c){
-                        return c[0] == srcVisual && c[1] == dest.visual;
+                        return c.indexOf(srcVisual) >= 0 && c.indexOf(dest.visual) >=0;
                     });
-                    theConnections.splice(i, 1);
+                    if(i>=0){
+                        console.log(i);
+                        theConnections.splice(i, 1);
+                    }
                 }
             });
         }
@@ -102,16 +97,19 @@ function State () {
                 callback(error, data, key);
             });
         }
-    }
 
-    class Data {
-        constructor(data){
-            this.data = data;
-            this.meta = new Meta();
-        }
+        static updateConns(){
+            var lines = d3.select('svg#main').selectAll('.connection').data(theConnections);
+            lines.enter().append('path')
+                .classed('connection', true)
+                .style('stroke', 'black')
+                .attr('d', lineFunction);
 
-        get (){
-            return this.data;
+            lines.exit().transition()
+                .attr('d', function(d){
+                    return lineFunction([d[0], d[0]]);
+                })
+                .remove();
         }
-    }
+    };
 }

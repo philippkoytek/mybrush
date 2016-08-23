@@ -27,4 +27,13 @@ class ListView extends View {
 
         return self;
     }
+
+    //
+    //
+    // update(){
+    //     self.chart.selectAll('.data-item').attr({
+    //         fill: function(d){return d.}
+    //     })
+    //
+    // }
 }
