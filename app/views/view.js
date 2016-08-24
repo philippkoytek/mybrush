@@ -30,7 +30,7 @@ class View {
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
 
         var self = this;
-        EventBus.on(events.BRUSH, function(sourceView){
+        EventBus.on(events.UPDATE, function(){
             self.chart.selectAll('.data-item')
                .classed('ghost', false)
                .filter(self.isGhost.bind(self))
@@ -93,7 +93,7 @@ class View {
             });
         }
 
-        EventBus.trigger(events.BRUSH, self.viewId);
+        EventBus.trigger(events.UPDATE);
     }
 
     /**
