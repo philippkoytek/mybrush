@@ -37,6 +37,14 @@ class DataItem {
     unregisterVisual(element){
         this.visuals.delete(element);
     }
+
+    registerBrush(brush){
+        this.brushes.add(brush);
+    }
+
+    unregisterBrush(brush){
+        this.brushes.delete(brush);
+    }
 }
 
 class Meta {
