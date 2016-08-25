@@ -102,11 +102,17 @@ class ScatterPlot extends View {
      * Override methods
      */
     createBrush () {
-        return d3.svg.brush()
+        var self = this;
+        var brush = d3.svg.brush()
             .y(this.yRange)
-            .x(this.xRange)
-            .on('brush', this.onBrush.bind(this))
-            .on('brushend', this.onBrushEnd.bind(this));  
+            .x(this.xRange);
+        brush.on('brush', function(){
+                self.onBrush(brush);
+            })
+            .on('brushend', function(){
+                self.onBrushEnd(brush);
+            });
+        return brush;
     }
 /*
     updateView(){

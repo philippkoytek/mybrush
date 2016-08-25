@@ -67,7 +67,7 @@ class View {
     /**
      * update meta information of data on brush event
      */
-    onBrush (){
+    onBrush (brush){
         //determine brushed dimension(s)
         var self = this;
         var brushedDimensions = [];
@@ -103,8 +103,8 @@ class View {
     /**
      * aftermath when brushing on the ready brush (ie. resetting the brushes or inserting a new brush)
      */
-    onBrushEnd () { 
-        var targetBrush = d3.event.target;
+    onBrushEnd (brush) {
+        var targetBrush = brush;
         var readyBrush = this.multiBrushes[targetBrush.dim].readyBrush();
         if(readyBrush === targetBrush){
             if(readyBrush.empty()){
