@@ -35,8 +35,8 @@ class Multibrush {
         while(this._brushes.length > 1){
             var b = this._brushes.shift();
             b.clear();
+            this.view.onBrush(b);
         }
-        this.view.onBrush();
         this.containerNode.selectAll('.brush.active').remove();
     }
 
