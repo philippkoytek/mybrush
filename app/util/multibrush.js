@@ -19,7 +19,6 @@ class Multibrush {
             .call(brush);
         brush.modifiers = [function(d3Sel){}];
         brush.origin = this.view;
-        brush.targetViews = [VIEWS[2]];
         if(this.view.adjustBrushArea){
             this.view.adjustBrushArea(brush.brushArea);
         }

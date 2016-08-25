@@ -68,34 +68,30 @@ class View {
      * update meta information of data on brush event
      */
     onBrush (brush){
-        //determine brushed dimension(s)
+        // set target views  FIXME: currently hard coded default
+        brush.targetViews = [VIEWS[2]];
+        // (un)register brush with (un)brushed items
         var self = this;
-        var brushedDimensions = [];
-        _.each(this.multiBrushes, function(b, dim){
-            if(!b.empty()){
-                brushedDimensions.push(dim);
+        this.chart.selectAll('.data-item').each(function(d){
+            var extent = brush.extent();
+            var brushed = false;
+            
+            if(brush.x() !== null && brush.y() !== null){
+                brushed = extent[0][0] <= self.xValue(d, brush.dim) && self.xValue(d, brush.dim) <= extent[1][0]
+                    && extent[0][1] <= self.yValue(d, brush.dim) && self.yValue(d, brush.dim) <= extent[1][1];
+            } else if(brush.x() !== null){
+                brushed = extent[0] <= self.xValue(d, brush.dim) && self.xValue(d, brush.dim) <= extent[1];
+            } else if(brush.y() !== null){
+                brushed = extent[0] <= self.yValue(d, brush.dim) && self.yValue(d, brush.dim) <= extent[1];
+            }
+            
+            if(brushed){
+                d.registerBrush(brush);
+            }
+            else {
+                d.unregisterBrush(brush);
             }
         });
-
-        if(brushedDimensions.length == 0) {
-            this.chart.selectAll('.data-item').each(function (d) {
-                self.rawValues(d).forEach(function (v) {
-                    v.meta.unset(self.viewId);
-                });
-            });
-        } else {
-            this.chart.selectAll('.data-item').each(function(d){
-                if(self.brushesContain(d, brushedDimensions)) {
-                    self.rawValues(d).forEach(function(v){
-                        v.meta.brush(self.viewId);
-                    });
-                } else {
-                    self.rawValues(d).forEach(function(v){
-                        v.meta.grey(self.viewId);
-                    });
-                }
-            });
-        }
 
         EventBus.trigger(events.UPDATE);
     }

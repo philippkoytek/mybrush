@@ -114,13 +114,24 @@ class ScatterPlot extends View {
             });
         return brush;
     }
-/*
+
     updateView(){
+        var thisView = this;
         this.chart.selectAll('.data-item')
-            .call(this.applyStyles.bind(this));
+            .each(function(d){
+                var classes = {'highlighted': false, 'default':true};
+                d.brushes.forEach(function(brush){
+                    if(brush.origin == thisView || brush.targetViews.indexOf(thisView) >= 0){
+                        classes = {'highlighted': true, 'default':false};
+                    }
+                }, this);
+                d3.select(this).classed(classes);
+            });
         this.chart.selectAll('.data-item')
-            .filter(this.hasDefaultClass)
+            .filter(function(d){
+                return d3.select(this).classed('default');
+            })
             .moveToBack();
     }
-*/
+
 }
