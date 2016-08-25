@@ -119,16 +119,18 @@ class ScatterPlot extends View {
         var thisView = this;
         this.chart.selectAll('.data-item')
             .each(function(d){
-                var classes = {'highlighted': false, 'default':true};
+                var styles = {'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0};
                 d.brushes.forEach(function(brush){
                     if(brush.origin == thisView || brush.targetViews.indexOf(thisView) >= 0){
-                        classes = {'highlighted': true, 'default':false};
+                        styles = _.extend(styles, brush.styles);
                     }
                 }, this);
-                d3.select(this).classed(classes);
+                d3.select(this).style(styles);
             });
+
+
         this.chart.selectAll('.data-item')
-            .filter(function(d){
+            .filter(function(){
                 return d3.select(this).classed('default');
             })
             .moveToBack();

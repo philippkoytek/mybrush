@@ -1,7 +1,3 @@
-/**
- * Created by Philipp Koytek on 6/9/2016.
- */
-
 class View {
     constructor (type, width, height, position, padding) {
         padding = padding || {top:20, right:20, bottom:30, left:40};
@@ -66,8 +62,15 @@ class View {
      * update meta information of data on brush event
      */
     onBrush (brush){
-        // set target views  FIXME: currently hard coded default
-        brush.targetViews = [VIEWS[2]];
+        // FIXME: add local menu to brushes to set attributes instead of global
+        brush.targetViews = [];
+        if(constants.targetView1){brush.targetViews.push(VIEWS[0]);}
+        if(constants.targetView2){brush.targetViews.push(VIEWS[1]);}
+        if(constants.targetView3){brush.targetViews.push(VIEWS[2]);}
+        if(constants.fillGreen){brush.styles['fill'] = 'green';}
+        if(constants.strokeRed){_.extend(brush.styles,{stroke:'red', 'stroke-width':'2px'});}
+
+        
         // (un)register brush with (un)brushed items
         var self = this;
         this.chart.selectAll('.data-item').each(function(d){

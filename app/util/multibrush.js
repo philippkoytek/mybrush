@@ -12,7 +12,7 @@ class Multibrush {
         brush.brushArea = this.containerNode.insert('g', '.brush')
             .classed('brush ready', true)
             .call(brush);
-        brush.modifiers = [function(d3Sel){}];
+        brush.styles = {};
         brush.origin = this.view;
         if(this.view.adjustBrushArea){
             this.view.adjustBrushArea(brush.brushArea);
