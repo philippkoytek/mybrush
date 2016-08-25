@@ -119,13 +119,14 @@ class ScatterPlot extends View {
         var thisView = this;
         this.chart.selectAll('.data-item')
             .each(function(d){
-                var styles = {'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0};
+                var myStyles = {'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0};
                 d.brushes.forEach(function(brush){
                     if(brush.origin == thisView || brush.targetViews.indexOf(thisView) >= 0){
-                        styles = _.extend(styles, brush.styles);
+                        _.extend(myStyles, brush.styles);
                     }
                 }, this);
-                d3.select(this).style(styles);
+                console.log(myStyles);
+                d3.select(this).style(myStyles);
             });
 
 
