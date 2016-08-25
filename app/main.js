@@ -3,11 +3,12 @@
  */
 
 var DEBUG;
+var DATA;
 
-State().request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data, key) {
+Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data, key) {
 
     //TODO: positioning of views, make them draggable?
-    data = [data[0], data[1]];
+    DATA = data = [data[0], data[1]];
 
     var scatterplot = new ScatterPlot('likes', 'dislikes', 700, 400, {x: 20, y: 20}).data(data);
     var scatterplot2 = new ScatterPlot('likes', 'dislikes', 700, 400, {x: 20, y: 440}).data(data);

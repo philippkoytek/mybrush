@@ -31,11 +31,7 @@ class View {
 
         var self = this;
         EventBus.on(events.UPDATE, function(){
-            self.chart.selectAll('.data-item')
-               .classed('ghost', false)
-               .filter(self.isGhost.bind(self))
-               .classed('ghost', true)
-               .moveToBack();
+            self.updateView.apply(self, arguments);
         });
 
         EventBus.on(events.HIGHLIGHT, function(selectedData){
@@ -47,6 +43,14 @@ class View {
                 .classed('highlighted', true)
                 .moveToFront();
         });
+    }
+
+    updateView(){
+        this.chart.selectAll('.data-item')
+            .classed('ghost', false)
+            .filter(this.isGhost.bind(this))
+            .classed('ghost', true)
+            .moveToBack();
     }
 
     /**

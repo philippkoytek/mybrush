@@ -1,56 +1,72 @@
-/**
- * Created by Philipp Koytek on 6/28/2016.
- */
 
+class Data {
+    constructor(){}
 
-function State () {
+    static request(url, key, callback){
+        d3.json(url, function(error, data){
+            data = _.map(data, function(d){
+               return new DataItem(d);
+            });
 
-    var theData = {};
+            //TODO: remove this part
+            Data.fillInMetaData(data);
 
-    class Meta {
-        constructor(){
-            this.greys = new Set();
-            this.brushes = new Set();
-        }
-
-        hasGreys(){
-            return this.greys.size > 0;
-        }
-
-        hasBrushes(){
-            return this.brushes.size > 0;
-        }
-
-        brush(viewId){
-            this.greys.delete(viewId);
-            this.brushes.add(viewId);
-        }
-
-        grey(viewId){
-            this.greys.add(viewId);
-            this.brushes.delete(viewId);
-        }
-
-        unset(viewId){
-            this.greys.delete(viewId);
-            this.brushes.delete(viewId);
-        }
+            callback(error, data, key);
+        });
     }
 
-    function fillInMetaData(array){
+    static fillInMetaData(array){
         array.forEach(function(elem){
             elem.meta = new Meta();
         });
     }
+}
 
-    return class State {
-        constructor(){}
-        static request(url, key, callback){
-            d3.json(url, function(error, data){
-                fillInMetaData(data);
-                theData[key] = data;
-                callback(error, data, key);
-            });
-        }
+class DataItem {
+    constructor(item){
+        _.extend(this, item);
+        this.visuals = new Set();
+        this.brushes = new Set();
+    }
+
+    registerVisual(element, view){
+        element.view = view;
+        this.visuals.add(element);
+    }
+
+    unregisterVisual(element){
+        this.visuals.delete(element);
     }
 }
+
+class Meta {
+    constructor(){
+        this.greys = new Set();
+        this.brushes = new Set();
+    }
+
+    hasGreys(){
+        return this.greys.size > 0;
+    }
+
+    hasBrushes(){
+        return this.brushes.size > 0;
+    }
+
+    brush(viewId){
+        this.greys.delete(viewId);
+        this.brushes.add(viewId);
+    }
+
+    grey(viewId){
+        this.greys.add(viewId);
+        this.brushes.delete(viewId);
+    }
+
+    unset(viewId){
+        this.greys.delete(viewId);
+        this.brushes.delete(viewId);
+    }
+}
+
+

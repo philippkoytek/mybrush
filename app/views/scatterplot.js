@@ -65,8 +65,8 @@ class ScatterPlot extends View {
     data (data){
         var self = this;
 
-        self.xRange.domain(d3.extent(data, self.xValue)).nice();
-        self.yRange.domain(d3.extent(data, self.yValue)).nice();
+        self.xRange.domain(d3.extent(data, self.xValue)).nice(5);
+        self.yRange.domain(d3.extent(data, self.yValue)).nice(5);
 
         var transition = self.chart.transition();
 
@@ -84,12 +84,15 @@ class ScatterPlot extends View {
         var content = self.chart.append('g').classed('content', true);
         var bubbles = content.selectAll('.bubble').data(data, self.idValue);
         bubbles.enter().append('circle')
-            .classed('bubble data-item', true)
+            .classed('bubble data-item default', true)
             .attr('r', self.rValue)
             .attr('cx', function(d){ return self.xRange(self.xValue(d)); })
             .attr('cy', function(d){ return self.yRange(self.yValue(d)); })
             .style('fill', self.fillValue)
-            .on('click', self.highlight.bind(self));
+            .on('click', self.highlight.bind(self))
+            .each(function(d){
+                d.registerVisual(this, self);
+            });
         
         return self;
     };
@@ -103,6 +106,15 @@ class ScatterPlot extends View {
             .y(this.yRange)
             .x(this.xRange)
             .on('brush', this.onBrush.bind(this))
-            .on('brushend', this.onBrushEnd.bind(this));
+            .on('brushend', this.onBrushEnd.bind(this));  
     }
+/*
+    updateView(){
+        this.chart.selectAll('.data-item')
+            .call(this.applyStyles.bind(this));
+        this.chart.selectAll('.data-item')
+            .filter(this.hasDefaultClass)
+            .moveToBack();
+    }
+*/
 }
