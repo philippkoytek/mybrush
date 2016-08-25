@@ -8,9 +8,6 @@ class Data {
                return new DataItem(d);
             });
 
-            //TODO: remove this part
-            Data.fillInMetaData(data);
-
             callback(error, data, key);
         });
     }
@@ -44,36 +41,6 @@ class DataItem {
 
     unregisterBrush(brush){
         this.brushes.delete(brush);
-    }
-}
-
-class Meta {
-    constructor(){
-        this.greys = new Set();
-        this.brushes = new Set();
-    }
-
-    hasGreys(){
-        return this.greys.size > 0;
-    }
-
-    hasBrushes(){
-        return this.brushes.size > 0;
-    }
-
-    brush(viewId){
-        this.greys.delete(viewId);
-        this.brushes.add(viewId);
-    }
-
-    grey(viewId){
-        this.greys.add(viewId);
-        this.brushes.delete(viewId);
-    }
-
-    unset(viewId){
-        this.greys.delete(viewId);
-        this.brushes.delete(viewId);
     }
 }
 

@@ -29,6 +29,8 @@ class View {
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
 
+        
+
         var self = this;
         EventBus.on(events.UPDATE, function(){
             self.updateView.apply(self, arguments);
@@ -46,11 +48,7 @@ class View {
     }
 
     updateView(){
-        this.chart.selectAll('.data-item')
-            .classed('ghost', false)
-            .filter(this.isGhost.bind(this))
-            .classed('ghost', true)
-            .moveToBack();
+        //TODO
     }
 
     /**
@@ -130,38 +128,6 @@ class View {
         _.each(this.multiBrushes, function(brush){
             brush.setExtentOnData(d);
         });
-    }
-
-    /**
-     * checks if data point d is being brushed in this view.
-     * d is only brushed if it is contained in brushes of every dimension in dimensions
-     * @param d
-     * @param dimensions
-     * @returns {*|boolean} true if d is being brushed
-     */
-    brushesContain(d, dimensions){
-        var self = this;
-        return dimensions.every(function(dim){
-            return self.multiBrushes[dim].extentsContain(d);
-        });
-    }
-
-    /**
-     * checks if d is supposed to be a ghost (ie. greyed out) or not (ie. colored/highlighted)
-     * depending on the kind of brushing that is active (union vs. intersect)
-     * @param d
-     * @returns {boolean}
-     */
-    isGhost(d){
-        if(constants.unionBrushing){
-            return !this.rawValues(d).some(function(v){
-                return !v.meta.hasGreys() || v.meta.hasBrushes();
-            });
-        } else {
-            return this.rawValues(d).every(function(v){
-                return v.meta.hasGreys();
-            });
-        }
     }
 
     /**

@@ -1,8 +1,3 @@
-/**
- * Created by Philipp Koytek on 6/23/2016.
- */
-
-
 class Multibrush {
     
     constructor(dim, view, containerNode){
@@ -59,27 +54,6 @@ class Multibrush {
                 .call(this.readyBrush().extent([xOrY - 21, xOrY + 21]))
                 .call(this.readyBrush().event);
         }
-    }
-
-    /**
-     * checks if data point d is included in one of the brushes (on this dimension)
-     * @param d
-     * @returns {boolean}
-     */
-    extentsContain(d){
-        var self = this;
-        return this._brushes.some(function(brush){
-            var extent = brush.extent();
-            if(self.hasX() && self.hasY()){
-                return extent[0][0] <= self.xValue(d) && self.xValue(d) <= extent[1][0]
-                    && extent[0][1] <= self.yValue(d) && self.yValue(d) <= extent[1][1];
-            } else if(self.hasX()){
-                return extent[0] <= self.xValue(d) && self.xValue(d) <= extent[1];
-            } else if(self.hasY()){
-                return extent[0] <= self.yValue(d) && self.yValue(d) <= extent[1];
-            }
-            else return false;
-        });
     }
 
     readyBrush() {
