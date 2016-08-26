@@ -28,11 +28,20 @@ d3.radialMenu = function() {
     var pie;                                    // The pie layout
     var arc;                                    // The arc generator
     var segmentLayer;                           // The layer that contains the segments
-
+    var isCollapsed = true;                     // Convenient flag with getter accessor to tell if menu is collapsed or not
+    
     //#endregion
 
     //#region Getter/Setter Accessors
 
+    /**
+     * 
+     * @returns {boolean} returns true if menu is hidden and false when shown
+     */
+    control.isCollapsed =  function(){
+        return isCollapsed;
+    };
+    
     /**
      * The function to execute on a menu click
      * @param {object} onClick - The function to execute on a menu click
@@ -159,7 +168,7 @@ d3.radialMenu = function() {
      * @returns {object} The control
      */
     control.show = function(_) {
-
+        isCollapsed = false;
         // Calculate the new offset angle based on the number of data items and
         // then rotate the menu to re-centre the first segment
         data = _;
@@ -253,7 +262,7 @@ d3.radialMenu = function() {
      * @returns {object} The control
      */
     control.hide = function() {
-
+        isCollapsed = true;
         // Join the data with an empty array so that we'll exit all actors
         var dataJoin = segmentLayer .selectAll(".menu-segment-container")
             .data(pie([]))

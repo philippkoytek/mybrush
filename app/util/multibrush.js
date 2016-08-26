@@ -43,7 +43,12 @@ class Multibrush {
             .on('mousedown', function(){
                 // prevent brush background to react on click as this will remove the brush
                 d3.event.stopPropagation();
-                brush.menu.show(brush.menuItems);
+                if(brush.menu.isCollapsed()){
+                    brush.menu.show(brush.menuItems);
+                }
+                else {
+                    brush.menu.hide();
+                }
             });
         if(this.view.adjustBrushArea){
             this.view.adjustBrushArea(brush.brushArea);
