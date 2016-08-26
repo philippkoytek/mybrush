@@ -1,6 +1,7 @@
 /**
  * Radial Menu plugin for d3. Code from:
  * http://bl.ocks.org/IPWright83/165131183939d4936166#menu.js
+ * retrieved on August 26, 2016 at 10:00am
  */
 
 d3.radialMenu = function() {
@@ -207,7 +208,9 @@ d3.radialMenu = function() {
         menuSegments.append("path")
             .attr("class", "menu-segment")
             .each(function(d) { this._current = d; })                   // store the initial data value for later
-            .on("click", function(d) { alert(d.data.action); })
+            .on("click", function(d) {
+                onClick(d.data.action);
+            })
             .transition()
             .duration(animationDuration)
             .attrTween("d", function(a) {
