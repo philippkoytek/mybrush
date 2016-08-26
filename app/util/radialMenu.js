@@ -172,12 +172,13 @@ d3.radialMenu = function() {
         // Calculate the new offset angle based on the number of data items and
         // then rotate the menu to re-centre the first segment
         data = _;
+        init();
         offsetAngleDeg = -180 / data.length;
         segmentLayer.attr("transform", "rotate(" + offsetAngleDeg + ")");
 
         // Join the data to the elements
         var dataJoin = segmentLayer .selectAll(".menu-segment-container")
-            .data(pie(data));
+            .data(pie(data), function(d){return JSON.stringify(d.data);});
 
         // Updates first
 
