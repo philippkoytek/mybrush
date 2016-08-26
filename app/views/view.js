@@ -62,14 +62,12 @@ class View {
      * update meta information of data on brush event
      */
     onBrush (brush){
-        // FIXME: add local menu to brushes to set attributes instead of global
-        brush.targetViews = [];
-        if(constants.targetView1){brush.targetViews.push(VIEWS[0]);}
-        if(constants.targetView2){brush.targetViews.push(VIEWS[1]);}
-        if(constants.targetView3){brush.targetViews.push(VIEWS[2]);}
-        if(constants.fillGreen){brush.styles['fill'] = 'green';}
-        if(constants.strokeRed){_.extend(brush.styles,{stroke:'red', 'stroke-width':'2px'});}
 
+        // reposition menu
+        var extentRect = brush.brushArea.select('.extent');
+        var brushMenu = brush.brushArea.select('.brush-menu');
+        brushMenu.attr('transform','translate('+ (+extentRect.attr('x') + (+extentRect.attr('width')*2/3)) + ','
+            + extentRect.attr('y') + ')');
         
         // (un)register brush with (un)brushed items
         var self = this;
@@ -85,7 +83,8 @@ class View {
             } else if(brush.y() !== null){
                 brushed = extent[0] <= self.yValue(d, brush.dim) && self.yValue(d, brush.dim) <= extent[1];
             }
-            
+
+            //TODO: probably missing rawValues
             if(brushed){
                 d.registerBrush(brush);
             }

@@ -79,3 +79,20 @@ html, body, svg#main {
     stroke:#999;
     shape-rendering: crispEdges;
 }
+
+.brush.ready .brush-menu {
+    display:none;
+}
+
+.brush.active .brush-menu {
+    display:block;
+    pointer-events: all;
+}
+
+.brush-menu path.menu-segment {
+    fill: antiquewhite;
+}
+
+
+
+

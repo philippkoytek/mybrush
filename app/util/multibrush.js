@@ -9,11 +9,43 @@ class Multibrush {
 
     addBrush(brush) {
         brush.dim = this.dim;
+        brush.styles = {};
+        brush.origin = this.view;
+        brush.targetViews = new Set();
         brush.brushArea = this.containerNode.insert('g', '.brush')
             .classed('brush ready', true)
             .call(brush);
-        brush.styles = {};
-        brush.origin = this.view;
+        var brushMenu = brush.brushArea.append('g').classed('brush-menu', true);
+        brush.menuItems = [
+            {icon:'https://github.com/favicon.ico', action:{styles:{fill:'green'}}},
+            {icon:'https://github.com/favicon.ico', action:{styles:{stroke:'red', 'stroke-width':'2px'}}},
+            {icon:'https://github.com/favicon.ico', action:{target:1}},
+            {icon:'https://github.com/favicon.ico', action:{target:2}}
+        ];
+        brush.menu = new d3.radialMenu()
+            .thickness(35)
+            .radius(20)
+            .iconSize(20)
+            .appendTo(brushMenu.node())
+            .onClick(function(action){
+                if(action.hasOwnProperty('styles')){
+                    _.extend(brush.styles, action.styles);
+                }
+                if(action.hasOwnProperty('target')){
+                    brush.targetViews.add(VIEWS[action.target]);
+                }
+                EventBus.trigger(events.UPDATE);
+            });
+
+        brushMenu.append('circle')
+            .classed('trigger', true)
+            .attr('r', 15)
+            .attr('role', 'button')
+            .on('mousedown', function(){
+                // prevent brush background to react on click as this will remove the brush
+                d3.event.stopPropagation();
+                brush.menu.show(brush.menuItems);
+            });
         if(this.view.adjustBrushArea){
             this.view.adjustBrushArea(brush.brushArea);
         }

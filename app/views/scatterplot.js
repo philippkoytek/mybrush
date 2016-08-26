@@ -121,11 +121,10 @@ class ScatterPlot extends View {
             .each(function(d){
                 var myStyles = {'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0};
                 d.brushes.forEach(function(brush){
-                    if(brush.origin == thisView || brush.targetViews.indexOf(thisView) >= 0){
+                    if(brush.origin == thisView || brush.targetViews.has(thisView)){
                         _.extend(myStyles, brush.styles);
                     }
                 }, this);
-                console.log(myStyles);
                 d3.select(this).style(myStyles);
             });
 

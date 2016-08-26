@@ -7,11 +7,6 @@ var constants = {
     unionBrushing:false,
     touchInteraction:false,
     connect:false,
-    greyOnBrush: true,
-    targetView1: false,
-    targetView2: false,
-    targetView3:true,
-    fillGreen:true,
-    strokeRed:false
+    greyOnBrush: true
     //TODO: multibrushes, singleViewBrushing
 };
