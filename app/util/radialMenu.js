@@ -15,7 +15,7 @@ d3.radialMenu = function() {
 
     // The following variables have getter/setter functions exposed so are configurable
     var data = [{}];
-    var padding = 1;
+    var padding = 5;
     var radius = 50;
     var thickness = 20;
     var iconSize = 16;
