@@ -93,6 +93,11 @@ html, body, svg#main {
     fill: antiquewhite;
 }
 
+.brush-menu .menu-icon {
+    pointer-events: none;
+}
+
+
 
 
 

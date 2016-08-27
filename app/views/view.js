@@ -66,7 +66,7 @@ class View {
         // reposition menu
         var extentRect = brush.brushArea.select('.extent');
         var brushMenu = brush.brushArea.select('.brush-menu');
-        brushMenu.attr('transform','translate('+ (+extentRect.attr('x') + (+extentRect.attr('width')*2/3)) + ','
+        brushMenu.attr('transform','translate('+ (+extentRect.attr('x') + (+extentRect.attr('width')*1/2)) + ','
             + extentRect.attr('y') + ')');
         
         // (un)register brush with (un)brushed items
