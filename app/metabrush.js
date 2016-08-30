@@ -23,7 +23,8 @@ function Metabrush (d3brush, multibrush) {
             .call(brush);
 
 
-        var brushMenu = brush.brushArea.append('g').classed('brush-menu', true);
+        var brushMenuWrap = brush.brushArea.append('g').classed('brush-menu', true);
+        var brushMenu = brushMenuWrap.append('g').classed('source-menu', true);
         brush.menu = new d3.radialMenu()
             .thickness(35)
             .radius(20)
@@ -42,16 +43,40 @@ function Metabrush (d3brush, multibrush) {
                 EventBus.trigger(events.UPDATE);
             });
 
+        var dragBehave = d3.behavior.drag()
+            //.origin(function(d){return d;})  add x and y data to every circle object to remember original position
+            .on('dragstart', function(){
+                brushMenu.__originT = d3.transform(brushMenu.attr('transform'));
+            })
+            .on('drag', function(d){
+                var ot = brushMenu.__originT;
+                var t = d3.transform(brushMenu.attr('transform'));
+                t.translate[0] += d3.event.x;
+                t.translate[1] += d3.event.y;
+                var circle = d3.select(this);
+                if(+circle.attr('r')*2 < Math.sqrt(Math.pow(t.translate[0]-ot.translate[0], 2) + Math.pow(t.translate[1]-ot.translate[1], 2))){
+                    brushMenu.attr('transform', t.toString());
+                }
+            }).on('dragend', function(){
+                d3.event.preventDefault();
+            });
+
         brushMenu.append('circle')
             .classed('trigger', true)
             .attr('r', 15)
-            .on('mousedown', toggleMenu).on('touchstart', function(){
-            d3.event.stopPropagation();
-        });
+            .on('mousedown', stopPropagation).on('touchstart', stopPropagation)
+            .on('click', toggleMenu)
+            .call(dragBehave);
 
-        function toggleMenu(){
+
+        function stopPropagation(){
             // prevent brush background to react on click as otherwise this will remove the brush
             d3.event.stopPropagation();
+        }
+        function toggleMenu(){
+            if(d3.event.defaultPrevented){
+                return;
+            }
             if(brush.menu.isCollapsed()){
                 brush.menu.show(brush.menuItems);
             }
