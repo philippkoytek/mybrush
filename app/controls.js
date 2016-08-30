@@ -4,8 +4,8 @@
 
 var items = d3.map(constants).entries();
 
-var controls = d3.select('#controls').selectAll('span').data(items);
-var cEnter = controls.enter().append('span');
+var controls = d3.select('#controls').selectAll('span.control').data(items);
+var cEnter = controls.enter().append('span').classed('control', true);
 cEnter.append('input')
     .attr('type', 'checkbox')
     .attr('name', function(d){return d.key;})

@@ -5,8 +5,6 @@
 var constants = {
     brushOnClick:true,
     unionBrushing:false,
-    touchInteraction:false,
-    connect:false,
-    greyOnBrush: true
+    touchInteraction:false
     //TODO: multibrushes, singleViewBrushing
 };
