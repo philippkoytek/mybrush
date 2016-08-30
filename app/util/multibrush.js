@@ -6,50 +6,11 @@ class Multibrush {
         this.view = view;
         this.containerNode = containerNode || this.view.chart;
     }
-
+    
     addBrush(brush) {
-        brush.dim = this.dim;
-        brush.styles = {};
-        brush.origin = this.view;
-        brush.targetViews = new Set();
-        brush.brushArea = this.containerNode.insert('g', '.brush')
-            .classed('brush ready', true)
-            .call(brush);
-        var brushMenu = brush.brushArea.append('g').classed('brush-menu', true);
-        brush.menuItems = [
-            {icon:'icons/svg/paint.svg', action:{styles:{fill:'green'}}},
-            {icon:'icons/svg/number-one-bull-eye.svg', action:{target:2}},
-            {icon:'icons/svg/number-one-bull-eye.svg', action:{target:1}},
-            {icon:'icons/svg/brush-stroke.svg', action:{styles:{stroke:'red', 'stroke-width':'2px'}}}
-        ];
-        brush.menu = new d3.radialMenu()
-            .thickness(35)
-            .radius(20)
-            .iconSize(20)
-            .appendTo(brushMenu.node())
-            .onClick(function(action){
-                if(action.hasOwnProperty('styles')){
-                    _.extend(brush.styles, action.styles);
-                }
-                if(action.hasOwnProperty('target')){
-                    brush.targetViews.add(VIEWS[action.target]);
-                }
-                EventBus.trigger(events.UPDATE);
-            });
-
-        brushMenu.append('circle')
-            .classed('trigger', true)
-            .attr('r', 15)
-            .on('mousedown', function(){
-                // prevent brush background to react on click as this will remove the brush
-                d3.event.stopPropagation();
-                if(brush.menu.isCollapsed()){
-                    brush.menu.show(brush.menuItems);
-                }
-                else {
-                    brush.menu.hide();
-                }
-            });
+                
+        brush = Metabrush(brush, this);
+        
         if(this.view.adjustBrushArea){
             this.view.adjustBrushArea(brush.brushArea);
         }

@@ -119,12 +119,58 @@ class ScatterPlot extends View {
         var thisView = this;
         this.chart.selectAll('.data-item')
             .each(function(d){
+
+                //default styles and reset connections
                 var myStyles = {'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0};
+                this.connections = [];
+
                 d.brushes.forEach(function(brush){
                     if(brush.origin == thisView || brush.targetViews.has(thisView)){
                         _.extend(myStyles, brush.styles);
                     }
+                    //rebuild connections data
+                    if(brush.connect && brush.origin == thisView){
+                        d.visuals.forEach(function(visual){
+                            //only connect to visuals in target views and not to self (in origin view)
+                            if(brush.targetViews.has(visual.view)){
+                                this.connections.push({from:this, to:visual, brush:brush});
+                            }
+                        }, this);
+                    }
                 }, this);
+
+
+
+
+                var lineFunction = d3.svg.line()
+                    .x(function (d) {
+                        return d.getBoundingClientRect().left;
+                    })
+                    .y(function (d) {
+                        return d.getBoundingClientRect().top;
+                    })
+                    .interpolate("linear");
+
+
+                var dataId = thisView.idValue(d);
+                var links = d3.select('.canvas').selectAll('path.data' + dataId + '.from-view-' + thisView.viewId)
+                    .data(this.connections, function(d){return dataId + '-from' + thisView.viewId + '-to' + d.to.view.viewId});
+
+                links.enter().append('path')
+                    .classed('data'+dataId, true)
+                    .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
+                    .attr('d', function(d){
+                        return lineFunction([d.from, d.from]);
+                    })
+                    .style('stroke', 'black')
+                    .transition()
+                    .attr('d', function(d){
+                        return lineFunction([d.from,d.to]);
+                    });
+
+                links.exit().transition().attr('d', function(d){
+                    return lineFunction([d.from, d.from]);
+                }).remove();
                 d3.select(this).style(myStyles);
             });
 
