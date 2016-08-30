@@ -1,7 +1,9 @@
 html, body, svg#main {
     width:100%;
-    height:99%;
+    height: 100%;
     margin:0;
+    padding: 0;
+    overflow: hidden;
 }
 #controls {
     margin:15px 0 0 15px;
@@ -90,7 +92,7 @@ html, body, svg#main {
 }
 
 .brush-menu path.menu-segment {
-    fill: antiquewhite;
+    fill: tomato;
 }
 
 .brush-menu .menu-icon {
