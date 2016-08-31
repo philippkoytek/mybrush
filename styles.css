@@ -82,20 +82,20 @@ html, body, svg#main {
     shape-rendering: crispEdges;
 }
 
-.brush.ready .brush-menu {
+.brush.ready .brush-menus {
     display:none;
 }
 
-.brush.active .brush-menu {
+.brush.active .brush-menus {
     display:block;
     pointer-events: all;
 }
 
-.brush-menu path.menu-segment {
+.brush-menus path.menu-segment {
     fill: tomato;
 }
 
-.brush-menu .menu-icon {
+.brush-menus .menu-icon {
     pointer-events: none;
 }
 

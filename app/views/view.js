@@ -65,7 +65,7 @@ class View {
 
         // reposition menu
         var extentRect = brush.brushArea.select('.extent');
-        var brushMenu = brush.brushArea.selectAll('.brush-menu');
+        var brushMenu = brush.brushArea.selectAll('.brush-menus');
         brushMenu.attr('transform','translate('+ (+extentRect.attr('x') + (+extentRect.attr('width')/2)) + ','
             + extentRect.attr('y') + ')');
         
