@@ -1,6 +1,6 @@
 function Metabrush (d3brush, multibrush) {
     var brush = d3brush;
-    var counter = (counter || 0) + 1;
+    //var counter = (counter || 0) + 1;
     init();
 
     function init(){
@@ -65,23 +65,27 @@ function Metabrush (d3brush, multibrush) {
 
         var dragBehave = d3.behavior.drag()
             //.origin(function(d){return d;})  add x and y data to every circle object to remember original position
-            .on('dragstart', function(){
-                this.parentNode.__originT = d3.transform(d3.select(this.parentNode).attr('transform'));
-            })
+            .on('dragstart', function(){})
+            .on('dragend', function(){ d3.event.sourceEvent.preventDefault(); })
             .on('drag', function(d){
+                //move menu
                 var menu = d3.select(this.parentNode);
-                var ot = this.parentNode.__originT;
                 var t = d3.transform(menu.attr('transform'));
                 t.translate[0] += d3.event.x;
                 t.translate[1] += d3.event.y;
-                var circle = d3.select(this);
-                if(+circle.attr('r') < Math.sqrt(Math.pow(t.translate[0]-ot.translate[0], 2) + Math.pow(t.translate[1]-ot.translate[1], 2))){
-                    menu.attr('transform', t.toString());
-                }
-                //TODO: if menu is more than circle-radius away from the rectangle's frame: draw a connector line
-            }).on('dragend', function(){
-                d3.event.sourceEvent.preventDefault();
+                menu.attr('transform', t.toString());
+
+                //update connection line
+                var menusT = d3.transform(brushMenuWrap.attr('transform'));
+                var rect = brush.brushArea.select('.extent');
+                var rectCoords = [rect.attr('x') - (t.translate[0] + menusT.translate[0]), rect.attr('y') - (t.translate[1] + menusT.translate[1])];
+                menu.select('.menu-line').datum([[0,0], rectCoords])
+                    .attr('d', d3.svg.line());
             });
+
+        brushMenu.insert('path', ':first-child')
+            .classed('menu-line', true)
+            .style('stroke','black');
 
         brushMenu.append('circle')
             .classed('trigger', true)
