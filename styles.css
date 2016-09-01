@@ -92,10 +92,11 @@ html, body, svg#main {
 }
 
 .brush-menus path.menu-segment {
-    fill: tomato;
+    fill: #efefef;
+    stroke: grey;
 }
 
-.brush-menus .menu-icon {
+.brush-menus .menu-icon, .brush-menus .trigger-icon {
     pointer-events: none;
 }
 

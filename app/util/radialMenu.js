@@ -2,6 +2,7 @@
  * Radial Menu plugin for d3. Code from:
  * http://bl.ocks.org/IPWright83/165131183939d4936166#menu.js
  * retrieved on August 26, 2016 at 10:00am
+ * edited a couple times
  */
 
 d3.radialMenu = function() {
@@ -164,15 +165,14 @@ d3.radialMenu = function() {
     };
 
     /**
-     * Display the menu
+     * Setup the menu with data
      * @returns {object} The control
      */
-    control.show = function(_) {
-        isCollapsed = false;
+    control.setup = function(_) {
+        init();
         // Calculate the new offset angle based on the number of data items and
         // then rotate the menu to re-centre the first segment
         data = _;
-        init();
         offsetAngleDeg = -180 / data.length;
         segmentLayer.attr("transform", "rotate(" + offsetAngleDeg + ")");
 
@@ -219,19 +219,9 @@ d3.radialMenu = function() {
             .attr("class", "menu-segment")
             .each(function(d) { this._current = d; })                   // store the initial data value for later
             .on("click", function(d) {
-                onClick(d.data.action);
+                onClick.call(this, d.data.action);
             })
-            .transition()
-            .duration(animationDuration)
-            .attrTween("d", function(a) {
-                // Create interpolations from the 0 to radius - to give the impression of an expanding menu
-                var innerTween = d3.interpolate(0, radius);
-                var outerTween = d3.interpolate(0, arc.outerRadius()());
-                return function(t) {
-                    // Re-configure the radius of the arc
-                    return arc.innerRadius(innerTween(t)).outerRadius(outerTween(t))(a);
-                };
-            });
+            .attr('d', arc.innerRadius(0).outerRadius(0)); //do not display the menu yet. Only with show method
 
         // Add the icons
         menuSegments.append("image")
@@ -247,16 +237,49 @@ d3.radialMenu = function() {
                 var angle = -offsetAngleDeg;
                 return "rotate(" + angle + "," + mp.x + "," + mp.y + ")";
             })
-            .style("opacity", 0)
-            .transition()
-            .delay(animationDuration)
-            .style("opacity", 1);       // Fade in the icons
+            .style("opacity", 0); //do not display the menu yet. Only with show method
 
         // Remove old groups
         dataJoin.exit().remove();
 
         return control;
     };
+
+
+    /**
+     * Display the menu
+     * @returns {object} The control
+     */
+    control.show = function(){
+        init();
+        isCollapsed = false;
+        var dataJoin = segmentLayer.selectAll(".menu-segment-container");
+
+        // Select all the segments and expand them from the centre
+        dataJoin.select("path.menu-segment")
+            .transition()       // wait for the icons to fade
+            .duration(animationDuration)
+            .attrTween("d", function(a) {
+                // Create interpolations from the 0 to radius - to give the impression of an expanding menu
+                var innerTween = d3.interpolate(0, radius);
+                var outerTween = d3.interpolate(0, arc.outerRadius()());
+                return function(t) {
+                    // Re-configure the radius of the arc
+                    return arc.innerRadius(innerTween(t)).outerRadius(outerTween(t))(a);
+                };
+            });
+
+        // Select all the icons and fade them in
+        dataJoin.select(".menu-icon")
+            .style("opacity", 0)
+            .transition()
+            .delay(animationDuration)
+            .duration(animationDuration)
+            .style("opacity", 1);
+        
+        return control;
+    };
+
 
     /**
      * Hide the menu
@@ -265,9 +288,7 @@ d3.radialMenu = function() {
     control.hide = function() {
         isCollapsed = true;
         // Join the data with an empty array so that we'll exit all actors
-        var dataJoin = segmentLayer .selectAll(".menu-segment-container")
-            .data(pie([]))
-            .exit();
+        var dataJoin = segmentLayer.selectAll(".menu-segment-container");
 
         // Select all the icons and fade them out
         dataJoin.select(".menu-icon")
@@ -289,9 +310,6 @@ d3.radialMenu = function() {
                     // Re-configure the radius of the arc
                     return arc.innerRadius(innerTween(t)).outerRadius(outerTween(t))(a);
                 };
-            })
-            .each("end", function(d) {
-                dataJoin.remove();      // Remove all of the segment groups once the transition has completed
             });
 
         return control;

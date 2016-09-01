@@ -52,6 +52,7 @@ function Metabrush (d3brush, multibrush) {
                     .onClick(function(action){
                         if(action.hasOwnProperty('styles')){
                             _.extend(brush.styles, action.styles);
+                            d3.select(this).style(action.styles);
                         }
                         if(action.hasOwnProperty('target')){
                             brush.targetViews.add(VIEWS[action.target]);
@@ -60,7 +61,8 @@ function Metabrush (d3brush, multibrush) {
                             brush.connect = !brush.connect || false;
                         }
                         EventBus.trigger(events.UPDATE);
-                    });
+                    })
+                    .setup(d.items);
             });
 
         var dragBehave = d3.behavior.drag()
@@ -94,6 +96,9 @@ function Metabrush (d3brush, multibrush) {
             .on('click', toggleMenu)
             .call(dragBehave);
 
+        brushMenu.append('circle')
+            .classed('trigger-icon', true)
+            .attr('r', 8);
 
         function stopPropagation(){
             // prevent brush background to react on click as otherwise this will remove the brush
@@ -105,7 +110,7 @@ function Metabrush (d3brush, multibrush) {
             }
             var menu = brush.menu[d.id];
             if(menu.isCollapsed()){
-                menu.show(d.items);
+                menu.show();
             }
             else {
                 menu.hide();
