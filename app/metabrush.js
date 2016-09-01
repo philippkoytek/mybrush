@@ -44,15 +44,17 @@ function Metabrush (d3brush, multibrush) {
                 return 'translate('+ (i-1)*60 +',0)';
             })
             .each(function(d){
+                var menuG = this;
                 brush.menu[d.id] = new d3.radialMenu()
                     .thickness(35)
                     .radius(20)
                     .iconSize(20)
-                    .appendTo(this)
+                    .appendTo(menuG)
                     .onClick(function(action){
                         if(action.hasOwnProperty('styles')){
                             _.extend(brush.styles, action.styles);
                             d3.select(this).style(action.styles);
+                            d3.select(menuG).select('.trigger-icon').style(brush.styles);
                         }
                         if(action.hasOwnProperty('target')){
                             brush.targetViews.add(VIEWS[action.target]);

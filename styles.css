@@ -91,9 +91,13 @@ html, body, svg#main {
     pointer-events: all;
 }
 
-.brush-menus path.menu-segment {
+.brush-menus path.menu-segment, .brush-menus .trigger {
     fill: #efefef;
     stroke: grey;
+}
+
+.brush-menus .trigger-icon {
+    fill:transparent;
 }
 
 .brush-menus .menu-icon, .brush-menus .trigger-icon {
