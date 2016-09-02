@@ -93,11 +93,16 @@ html, body, svg#main {
 
 .brush-menus path.menu-segment, .brush-menus .trigger {
     fill: #efefef;
-    stroke: grey;
+    stroke: lightgray;
 }
 
 .brush-menus .trigger-icon {
     fill:transparent;
+}
+
+.brush-menus .link-menu-icon .point {
+    stroke: none !important;
+    fill: lightgrey !important;
 }
 
 .brush-menus .menu-icon, .brush-menus .trigger-icon {
