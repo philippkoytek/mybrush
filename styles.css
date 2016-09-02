@@ -107,9 +107,9 @@ html, body, svg#main {
 
 .brush-menus .menu-icon, .brush-menus .trigger-icon {
     pointer-events: none;
+    stroke:grey;
+    stroke-dasharray: 1;
 }
-
-
 
 
 

@@ -121,9 +121,7 @@ function Metabrush (d3brush, multibrush) {
                         .append('circle').classed('point', true)
                         .attr('r', 8);
                 }
-            })
-            .style('stroke', 'grey')
-            .style('stroke-dasharray', 1);
+            });
 
 
 
