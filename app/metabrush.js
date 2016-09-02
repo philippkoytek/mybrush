@@ -11,21 +11,25 @@ function Metabrush (d3brush, multibrush) {
         brush.menuItems = [{
                 id:'source',
                 items:[
-                    {icon:'icons/svg/paint.svg', action:{styles:{fill:'green'}}},
+                    {icon:'icons/svg/paint.svg', action:{styles:{fill:'green'}}, items:['green', 'blue', 'red']},
                     {icon:'icons/svg/brush-stroke.svg', action:{styles:{stroke:'red', 'stroke-width':'2px'}}}
                 ]
             },{
                 id:'link',
                 items:[
-                    {icon:'icons/svg/number-one-bull-eye.svg', action:{connect:true}}
+                    {icon:'icons/svg/brush-stroke.svg', action:{styles:{stroke:'green'}}, items:['green', 'blue', 'red']},
+                    {icon:'icons/svg/pk-curve.svg', action:{connect:true}},
+                    {icon:'icons/svg/pk-line.svg', action:{connect:true}},
+                    {icon:'icons/svg/number-one-bull-eye.svg', action:{target:2}},
+                    {icon:'icons/svg/number-one-bull-eye.svg', action:{target:1}}
                 ]
-            },{
+            }/*,{
                 id:'target',
                 items:[
                     {icon:'icons/svg/number-one-bull-eye.svg', action:{target:2}},
                     {icon:'icons/svg/number-one-bull-eye.svg', action:{target:1}}
                 ]
-            }];
+            }*/];
 
         brush.dim = multibrush.dim;
         brush.origin = multibrush.view;
@@ -98,9 +102,30 @@ function Metabrush (d3brush, multibrush) {
             .on('click', toggleMenu)
             .call(dragBehave);
 
-        brushMenu.append('circle')
+        brushMenu.append('g')
             .classed('trigger-icon', true)
-            .attr('r', 8);
+            .each(function(d){
+                var icon = d3.select(this);
+                if(d.id == 'link'){
+                    icon.classed('link-menu-icon', true)
+                        .append('path').classed('link', true)
+                        .attr('d', 'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5');
+                        //.attr('d', 'M -8 5 L 8 -5'); straight line
+                    icon.append('circle').classed('point start', true)
+                        .attr({r:2, cx:-10, cy:5});
+                    icon.append('circle').classed('point end', true)
+                        .attr({r:2, cx:10, cy:-5});
+                }
+                else {
+                    icon.classed('point-menu-icon ' + d.id, true)
+                        .append('circle').classed('point', true)
+                        .attr('r', 8);
+                }
+            })
+            .style('stroke', 'grey')
+            .style('stroke-dasharray', 1);
+
+
 
         function stopPropagation(){
             // prevent brush background to react on click as otherwise this will remove the brush
