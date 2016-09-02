@@ -27,7 +27,9 @@ d3.radialMenu = function() {
     var offsetAngleDeg = -180 / data.length;    // Initial rotation angle designed to put centre the first segment at the top
     var control = {};                           // The control that will be augmented and returned
     var pie;                                    // The pie layout
+    var outerPie;
     var arc;                                    // The arc generator
+    var outerArc;
     var segmentLayer;                           // The layer that contains the segments
     var isCollapsed = true;                     // Convenient flag with getter accessor to tell if menu is collapsed or not
     
@@ -140,10 +142,17 @@ d3.radialMenu = function() {
             .value(function(d) { return data.length; })
             .padAngle(padding * Math.PI / 180);
 
+        outerPie = d3.layout.pie()
+            .padAngle(2 * Math.PI / 180);
+
         // Create the arc function
         arc = d3.svg.arc()
             .innerRadius(radius)
             .outerRadius(radius + thickness);
+
+        outerArc = d3.svg.arc()
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + 10);
     }
 
     /**
@@ -220,8 +229,39 @@ d3.radialMenu = function() {
             .each(function(d) { this._current = d; })                   // store the initial data value for later
             .on("click", function(d) {
                 onClick.call(this, d.data.action);
+                d3.select(this.parentNode).selectAll('.menu-subsegment')
+                    .transition()
+                    .duration(animationDuration)
+                    .style("opacity", function(){
+                        return (+d3.select(this).style('opacity') + 1) % 2;
+                    });
+
             })
             .attr('d', arc.innerRadius(0).outerRadius(0)); //do not display the menu yet. Only with show method
+
+        var subSegments = menuSegments.selectAll('.menu-subsegment')
+            .data(function(d){
+                return d3.layout.pie()
+                        .value(function(){return (d.data.items || []).length;})
+                        .padAngle(2 * Math.PI / 180)
+                        .startAngle(d.startAngle)
+                        .endAngle(d.endAngle)(d.data.items || []);
+            });
+
+        subSegments.enter().append('path')
+            .classed('menu-subsegment', true)
+            .attr('d', function(d){
+                return outerArc(d);
+            })
+            .style({
+                'fill': function(d){
+                    return d.data;
+                 },
+                 'opacity':'0'
+            })
+            .on('click', function(d){
+                onClick.call(d3.select(this.parentNode).select('.menu-segment').node(), {styles:{fill:d.data}});
+            });
 
         // Add the icons
         menuSegments.append("image")
@@ -294,7 +334,12 @@ d3.radialMenu = function() {
         dataJoin.select(".menu-icon")
             .style("opacity", 1)
             .transition()
-            .delay(animationDuration)
+            .duration(animationDuration)
+            .style("opacity", 0);
+
+        d3.selectAll('.menu-subsegment')
+            .transition()
+            .duration(animationDuration)
             .style("opacity", 0);
 
         // Select all the segments and animate them back into the centre
@@ -314,6 +359,16 @@ d3.radialMenu = function() {
 
         return control;
     };
+
+    function tweenArcRadius (a){
+        // Create interpolations from the radius to 0 - to give the impression of a shrinking menu
+        var innerTween = d3.interpolate(radius, 0);
+        var outerTween = d3.interpolate(arc.outerRadius()(), 0);
+        return function(t) {
+            // Re-configure the radius of the arc
+            return arc.innerRadius(innerTween(t)).outerRadius(outerTween(t))(a);
+        };
+    }
 
     // Initialize and then return the control
     init();
