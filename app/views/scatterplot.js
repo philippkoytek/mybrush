@@ -143,13 +143,15 @@ class ScatterPlot extends View {
 
 
                 var lineFunction = d3.svg.line()
-                    .x(function (d) {
+                    /*.x(function (d) {
                         return d.getBoundingClientRect().left;
                     })
                     .y(function (d) {
                         return d.getBoundingClientRect().top;
-                    })
-                    .interpolate("linear");
+                    })*/
+                    .interpolate("bundle").tension(0.4);
+
+
 
 
                 var dataId = thisView.idValue(d);
@@ -160,19 +162,22 @@ class ScatterPlot extends View {
                     .classed('data'+dataId, true)
                     .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
                     .attr('d', function(d){
-                        return lineFunction([d.from, d.from]);
+                        return lineFunction(getLinePoints(d.from, d.to));
                     })
                     .style('stroke', 'black')
+                    .style('fill', 'none')
                     .transition()
                     .attr('d', function(d){
-                        return lineFunction([d.from,d.to]);
+                        return lineFunction(getLinePoints(d.from, d.to));
                     });
 
                 links.exit().transition().attr('d', function(d){
-                    return lineFunction([d.from, d.from]);
+                    return lineFunction(getLinePoints(d.from, d.from));
                 }).remove();
                 d3.select(this).style(myStyles);
             });
+
+
 
 
         this.chart.selectAll('.data-item')
@@ -180,6 +185,34 @@ class ScatterPlot extends View {
                 return d3.select(this).classed('default');
             })
             .moveToBack();
+
+        function getLinePoints(from, to){
+            var start = [from.getBoundingClientRect().left + from.getBoundingClientRect().width/2,
+                        from.getBoundingClientRect().top + from.getBoundingClientRect().height/2];
+            var end = [to.getBoundingClientRect().left + to.getBoundingClientRect().width/2,
+                to.getBoundingClientRect().top + to.getBoundingClientRect().height/2];
+            return [start, [(start[0] + end[0])/2, end[1]], [(start[0] + end[0])/2, start[1]], end];
+        }
     }
 
 }
+
+/*var sdLineFunction = d3.svg.line()
+ .x(function(d) { return d.point.x; })
+ .y(function(d) { return d.point.y; })
+ .interpolate("linear");
+
+ var curvePts = myCurve.curve();
+ var mySlices = []
+ var half1 = curvePts.slice(0,curvePts.length/2);
+ var half2 = curvePts.slice(curvePts.length/2+1, curvePts.length);
+
+ var pts = getLinePoints(d.from, d.to).map(function(p){
+ return {x:p[0], y:p[1]};
+ });
+ var myCurve = new SDCurve({
+ points: pts,
+ degree: 5
+ });
+ return sdLineFunction(myCurve.curve());
+ */
