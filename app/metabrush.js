@@ -5,23 +5,47 @@ function Metabrush (d3brush, multibrush) {
 
     function init(){
 
-        brush.styles = {};
+        brush.styles = {
+            source:{},
+            link:{},
+            target:{}
+        };
         brush.targetViews = new Set();
         brush.menu = {};
         brush.menuItems = [{
                 id:'source',
                 items:[
-                    {icon:'icons/svg/paint.svg', action:{styles:{fill:'green'}}, items:['green', 'blue', 'red']},
-                    {icon:'icons/svg/brush-stroke.svg', action:{styles:{stroke:'red', 'stroke-width':'2px'}}}
-                ]
-            },{
+                    {
+                        icon:'icons/svg/paint.svg', 
+                        actions:[{styles:{fill:'green'}},{styles:{fill:'blue'}},{styles:{fill:'red'}},{styles:{fill:undefined}}]
+                    },
+                    {
+                        icon:'icons/svg/brush-stroke.svg',
+                        actions:[{styles:{stroke:'green', 'stroke-width':'2px'}},
+                            {styles:{stroke:'blue', 'stroke-width':'2px'}},
+                            {styles:{stroke:'red', 'stroke-width':'2px'}},
+                            {styles:{stroke:undefined, 'stroke-width':undefined}}]
+                    }
+                ]},
+            {
                 id:'link',
                 items:[
-                    {icon:'icons/svg/brush-stroke.svg', action:{styles:{stroke:'green'}}, items:['green', 'blue', 'red']},
-                    {icon:'icons/svg/pk-curve.svg', action:{connect:true}},
-                    {icon:'icons/svg/pk-line.svg', action:{connect:true}},
-                    {icon:'icons/svg/number-one-bull-eye.svg', action:{target:2}},
-                    {icon:'icons/svg/number-one-bull-eye.svg', action:{target:1}}
+                    {
+                        icon:'icons/svg/brush-stroke.svg',
+                        actions:[{styles:{stroke:'green', 'stroke-width':'1px'}},
+                            {styles:{stroke:'blue', 'stroke-width':'1px'}},
+                            {styles:{stroke:'red', 'stroke-width':'1px'}},
+                            {styles:{stroke:undefined, 'stroke-width':undefined}}]
+                    },
+                    {
+                        icon:'icons/svg/number-one-bull-eye.svg', 
+                        actions:[{target:2}, {target:1}]
+                    },
+                    {
+                        icon:'icons/svg/pk-curve.svg',
+                        actions:[{connect:true}]
+                    },
+                   // {icon:'icons/svg/pk-line.svg', action:{connect:true}}
                 ]
             }/*,{
                 id:'target',
@@ -56,9 +80,10 @@ function Metabrush (d3brush, multibrush) {
                     .appendTo(menuG)
                     .onClick(function(action){
                         if(action.hasOwnProperty('styles')){
-                            _.extend(brush.styles, action.styles);
+                            // overwrite brush.styles with selected styles (if selected style is explicitly undefined it will overwrite the brush style to mark it undefined)
+                            _.assign(brush.styles[d.id], action.styles);
                             d3.select(this).style(action.styles);
-                            d3.select(menuG).select('.trigger-icon').style(brush.styles);
+                            d3.select(menuG).select('.trigger-icon').style(brush.styles[d.id]);
                         }
                         if(action.hasOwnProperty('target')){
                             brush.targetViews.add(VIEWS[action.target]);

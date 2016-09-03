@@ -121,12 +121,16 @@ class ScatterPlot extends View {
             .each(function(d){
 
                 //default styles and reset connections
-                var myStyles = {'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0};
+                var myStyles = {
+                    source:{'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0},
+                    link:{stroke:'black', fill:'none'}
+                };
                 this.connections = [];
 
                 d.brushes.forEach(function(brush){
                     if(brush.origin == thisView || brush.targetViews.has(thisView)){
-                        _.extend(myStyles, brush.styles);
+                        // overwrites myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
+                        _.merge(myStyles, brush.styles);
                     }
                     //rebuild connections data
                     if(brush.connect && brush.origin == thisView){
@@ -158,14 +162,16 @@ class ScatterPlot extends View {
                 var links = d3.select('.canvas').selectAll('path.data' + dataId + '.from-view-' + thisView.viewId)
                     .data(this.connections, function(d){return dataId + '-from' + thisView.viewId + '-to' + d.to.view.viewId});
 
+                // todo: update lines
+                links.style(myStyles.link);
+
                 links.enter().append('path')
                     .classed('data'+dataId, true)
                     .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
                     .attr('d', function(d){
-                        return lineFunction(getLinePoints(d.from, d.to));
+                        return lineFunction(getLinePoints(d.from, d.from));
                     })
-                    .style('stroke', 'black')
-                    .style('fill', 'none')
+                    .style(myStyles.link)
                     .transition()
                     .attr('d', function(d){
                         return lineFunction(getLinePoints(d.from, d.to));
@@ -174,7 +180,7 @@ class ScatterPlot extends View {
                 links.exit().transition().attr('d', function(d){
                     return lineFunction(getLinePoints(d.from, d.from));
                 }).remove();
-                d3.select(this).style(myStyles);
+                d3.select(this).style(myStyles.source);
             });
 
 

@@ -228,8 +228,9 @@ d3.radialMenu = function() {
             .attr("class", "menu-segment")
             .each(function(d) { this._current = d; })                   // store the initial data value for later
             .on("click", function(d) {
-                onClick.call(this, d.data.action);
+                //onClick.call(this, d.data);
                 d3.select(this.parentNode).selectAll('.menu-subsegment')
+                    .style('display', null)
                     .transition()
                     .duration(animationDuration)
                     .style("opacity", function(){
@@ -242,10 +243,10 @@ d3.radialMenu = function() {
         var subSegments = menuSegments.selectAll('.menu-subsegment')
             .data(function(d){
                 return d3.layout.pie()
-                        .value(function(){return (d.data.items || []).length;})
+                        .value(function(){return (d.data.actions || []).length;})
                         .padAngle(2 * Math.PI / 180)
                         .startAngle(d.startAngle)
-                        .endAngle(d.endAngle)(d.data.items || []);
+                        .endAngle(d.endAngle)(d.data.actions || []);
             });
 
         subSegments.enter().append('path')
@@ -253,14 +254,12 @@ d3.radialMenu = function() {
             .attr('d', function(d){
                 return outerArc(d);
             })
-            .style({
-                'fill': function(d){
-                    return d.data;
-                 },
-                 'opacity':'0'
+            .style({opacity:0, display:'none'})
+            .each(function(d){
+                d3.select(this).style(d.data.styles);
             })
             .on('click', function(d){
-                onClick.call(d3.select(this.parentNode).select('.menu-segment').node(), {styles:{fill:d.data}});
+                onClick.call(d3.select(this.parentNode).select('.menu-segment').node(), d.data);
             });
 
         // Add the icons
@@ -340,7 +339,10 @@ d3.radialMenu = function() {
         d3.selectAll('.menu-subsegment')
             .transition()
             .duration(animationDuration)
-            .style("opacity", 0);
+            .style({opacity:0, display:'none'})
+            .each('end', function(){
+               // d3.select(this).style('display:none');
+            });
 
         // Select all the segments and animate them back into the centre
         dataJoin.select("path")
