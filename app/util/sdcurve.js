@@ -1,3 +1,8 @@
+/**
+ * https://github.com/rpusch/sdcurve.js/wiki
+ */
+
+
 function SDCurve(params){
 	this.init(params);
 }
