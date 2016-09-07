@@ -21,10 +21,10 @@ function Metabrush (d3brush, multibrush) {
                     },
                     {
                         icon:'icons/svg/brush-stroke.svg',
-                        actions:[{styles:{stroke:'green', 'stroke-width':'2px'}},
-                            {styles:{stroke:'blue', 'stroke-width':'2px'}},
-                            {styles:{stroke:'red', 'stroke-width':'2px'}},
-                            {styles:{stroke:undefined, 'stroke-width':undefined}}]
+                        actions:[{styles:{stroke:'green', 'stroke-width':'2px', 'stroke-dasharray':0}},
+                            {styles:{stroke:'blue', 'stroke-width':'2px', 'stroke-dasharray':0}},
+                            {styles:{stroke:'red', 'stroke-width':'2px', 'stroke-dasharray':0}},
+                            {styles:{stroke:undefined, 'stroke-width':undefined, 'stroke-dasharray':undefined}}]
                     }
                 ]},
             {
@@ -32,10 +32,10 @@ function Metabrush (d3brush, multibrush) {
                 items:[
                     {
                         icon:'icons/svg/brush-stroke.svg',
-                        actions:[{styles:{stroke:'green', 'stroke-width':'1px'}},
-                            {styles:{stroke:'blue', 'stroke-width':'1px'}},
-                            {styles:{stroke:'red', 'stroke-width':'1px'}},
-                            {styles:{stroke:undefined, 'stroke-width':undefined}}]
+                        actions:[{styles:{stroke:'green', 'stroke-width':'1px', 'stroke-dasharray':0}},
+                            {styles:{stroke:'blue', 'stroke-width':'1px', 'stroke-dasharray':0}},
+                            {styles:{stroke:'red', 'stroke-width':'1px', 'stroke-dasharray':0}},
+                            {styles:{stroke:undefined, 'stroke-width':undefined, 'stroke-dasharray':undefined}}]
                     },
                     {
                         icon:'icons/svg/number-one-bull-eye.svg', 
@@ -44,7 +44,7 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/pk-curve.svg',
                         actions:[{connect:true}]
-                    },
+                    }
                    // {icon:'icons/svg/pk-line.svg', action:{connect:true}}
                 ]
             }/*,{
