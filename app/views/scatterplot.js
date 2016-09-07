@@ -183,15 +183,7 @@ class ScatterPlot extends View {
                 d3.select(this).style(myStyles.source);
             });
 
-
-
-
-        this.chart.selectAll('.data-item')
-            .filter(function(){
-                return d3.select(this).classed('default');
-            })
-            .moveToBack();
-
+        
         function getLinePoints(from, to){
             var start = [from.getBoundingClientRect().left + from.getBoundingClientRect().width/2,
                         from.getBoundingClientRect().top + from.getBoundingClientRect().height/2];

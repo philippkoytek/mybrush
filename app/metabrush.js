@@ -116,8 +116,8 @@ function Metabrush (d3brush, multibrush) {
                 //update connection line
                 var menusT = d3.transform(brushMenuWrap.attr('transform'));
                 var rect = brush.brushArea.select('.extent');
-                var rectCoords = [rect.attr('x') - (t.translate[0] + menusT.translate[0]), rect.attr('y') - (t.translate[1] + menusT.translate[1])];
-                menu.select('.menu-line').datum([[0,0], rectCoords])
+                var rectOrigin = [rect.attr('x') - (t.translate[0] + menusT.translate[0]), rect.attr('y') - (t.translate[1] + menusT.translate[1])];
+                menu.select('.menu-line').datum([[0,0], rectOrigin])
                     .attr('d', d3.svg.line());
             });
 
