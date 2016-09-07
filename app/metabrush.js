@@ -16,11 +16,13 @@ function Metabrush (d3brush, multibrush) {
                 id:'source',
                 items:[
                     {
-                        icon:'icons/svg/paint.svg', 
+                        icon:'icons/svg/paint.svg',
+                        class:'fill',
                         actions:[{styles:{fill:'green'}},{styles:{fill:'blue'}},{styles:{fill:'red'}},{styles:{fill:undefined}}]
                     },
                     {
                         icon:'icons/svg/brush-stroke.svg',
+                        class:'stroke',
                         actions:[{styles:{stroke:'green', 'stroke-width':'2px', 'stroke-dasharray':0}},
                             {styles:{stroke:'blue', 'stroke-width':'2px', 'stroke-dasharray':0}},
                             {styles:{stroke:'red', 'stroke-width':'2px', 'stroke-dasharray':0}},
@@ -32,18 +34,21 @@ function Metabrush (d3brush, multibrush) {
                 items:[
                     {
                         icon:'icons/svg/brush-stroke.svg',
+                        class:'stroke',
                         actions:[{styles:{stroke:'green', 'stroke-width':'1px', 'stroke-dasharray':0}},
                             {styles:{stroke:'blue', 'stroke-width':'1px', 'stroke-dasharray':0}},
                             {styles:{stroke:'red', 'stroke-width':'1px', 'stroke-dasharray':0}},
-                            {styles:{stroke:undefined, 'stroke-width':undefined, 'stroke-dasharray':undefined}}]
+                            {styles:{stroke:'black', 'stroke-width':'1px', 'stroke-dasharray':0}}]
                     },
                     {
-                        icon:'icons/svg/number-one-bull-eye.svg', 
+                        icon:'icons/svg/number-one-bull-eye.svg',
+                        class:'target-constraint',
                         actions:[{target:2}, {target:1}]
                     },
                     {
                         icon:'icons/svg/pk-curve.svg',
-                        actions:[{connect:true}]
+                        class:'curvature',
+                        actions:[{connect:true}] //todo: missing stroke dasharray
                     }
                    // {icon:'icons/svg/pk-line.svg', action:{connect:true}}
                 ]

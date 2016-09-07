@@ -221,7 +221,9 @@ d3.radialMenu = function() {
         // Enter the groups
         var menuSegments = dataJoin .enter()
             .append("g")
-            .attr("class", "menu-segment-container");
+            .attr("class", function(d){
+                return d.data.class + ' menu-segment-container';
+            });
 
         // Add the segments
         menuSegments.append("path")

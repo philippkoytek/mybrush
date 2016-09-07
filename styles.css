@@ -82,18 +82,25 @@ html, body, svg#main {
     shape-rendering: crispEdges;
 }
 
+
+/* brush menus */
+
 .brush.ready .brush-menus {
     display:none;
 }
 
 .brush.active .brush-menus {
-    display:block;
+    display:inline;
     pointer-events: all;
 }
 
 .brush-menus path.menu-segment, .brush-menus .trigger {
     fill: #efefef;
     stroke: lightgray;
+}
+
+.brush-menus {
+    opacity: 0.8;
 }
 
 .brush-menus .trigger-icon {
@@ -111,5 +118,17 @@ html, body, svg#main {
     stroke-dasharray: 1;
 }
 
+.menu-segment-container .menu-subsegment {
+    fill: #efefef;
+    stroke: none;
+}
 
+.fill.menu-segment-container .menu-subsegment {
+    fill: url(#noContentPattern);
+}
 
+.stroke.menu-segment-container .menu-subsegment {
+    stroke:lightgrey;
+    stroke-width: 2;
+    stroke-dasharray:1;
+}
