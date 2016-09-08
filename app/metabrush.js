@@ -46,13 +46,13 @@ function Metabrush (d3brush, multibrush) {
                         actions:[{target:2}, {target:1}]
                     },
                     {
-                        icon:'icons/svg/pk-curve.svg',
+                        icon:'icons/svg/pk-nolink.svg',
                         class:'curvature',
-                        actions:[{connect:'linear', icon:'icons/svg/pk-line.svg'},
-                            {connect:'step', icon:'icons/svg/pk-curve.svg'},
-                            {connect:'basis', icon:'icons/svg/pk-nolink.svg'},
-                            {connect:'cardinal', icon:'icons/svg/pk-nolink.svg'},
-                            {connect:false, icon:'icons/svg/pk-nolink.svg'}] //todo: missing stroke dasharray
+                        actions:[{connect:'linear', icon:'icons/svg/pk-line.svg', d:'M -10 5 L 10 -5'},
+                            {connect:'step', icon:'icons/svg/pk-step.svg', d:'M -10 5 L 0 5 L 0 -5 L 10 -5'},
+                            {connect:'basis', icon:'icons/svg/pk-curve.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5'},
+                            {connect:'cardinal', icon:'icons/svg/pk-curve2.svg', d:'M -10 5 Q -7 -6 0 0 Q 7 6 10 -5'},
+                            {connect:false, icon:'icons/svg/pk-nolink.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5'}] //todo: missing stroke dasharray
                     }
                 ]
             }/*,{
@@ -98,6 +98,8 @@ function Metabrush (d3brush, multibrush) {
                         }
                         if(action.hasOwnProperty('connect')){
                             brush.connect = action.connect;
+                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
+                            d3.select(menuG).select('.trigger-icon').select('path.link').attr('d',action.d);
                         }
                         EventBus.trigger(events.UPDATE);
                     })

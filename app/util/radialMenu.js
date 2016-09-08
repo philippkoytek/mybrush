@@ -205,7 +205,7 @@ d3.radialMenu = function() {
 
         // Join the data to the elements
         var dataJoin = segmentLayer .selectAll(".menu-segment-container")
-            .data(pie(data), function(d){return JSON.stringify(d.data);});
+            .data(pie(data), function(d){return d.data.class;});
 
         // Updates first
 
