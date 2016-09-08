@@ -176,10 +176,9 @@ class ScatterPlot extends View {
 
 
                 var dataId = thisView.idValue(d);
-                var links = d3.select('.canvas').selectAll('path.data' + dataId + '.from-view-' + thisView.viewId)
+                var links = d3.select('.canvas > .links').selectAll('path.data' + dataId + '.from-view-' + thisView.viewId)
                     .data(this.connections, function(d){return dataId + '-from' + thisView.viewId + '-to' + d.to.view.viewId});
 
-                console.log(this.connections);
                 // todo: update lines (including line interpolation etc)
                 links.style(myStyles.link).transition().attr('d', function(d){
                     return makeLine(d.from, d.to, d.brush.connect, this);
@@ -211,22 +210,4 @@ class ScatterPlot extends View {
 
 }
 
-/*var sdLineFunction = d3.svg.line()
- .x(function(d) { return d.point.x; })
- .y(function(d) { return d.point.y; })
- .interpolate("linear");
 
- var curvePts = myCurve.curve();
- var mySlices = []
- var half1 = curvePts.slice(0,curvePts.length/2);
- var half2 = curvePts.slice(curvePts.length/2+1, curvePts.length);
-
- var pts = getLinePoints(d.from, d.to).map(function(p){
- return {x:p[0], y:p[1]};
- });
- var myCurve = new SDCurve({
- points: pts,
- degree: 5
- });
- return sdLineFunction(myCurve.curve());
- */

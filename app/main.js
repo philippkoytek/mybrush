@@ -34,4 +34,5 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     // var barchart = new BarChart('number of players', 700, 400, {x: 20, y: 440}).data(data);
     // var parallelcoords = new ParallelCoords(700, 400, {x: 740, y: 20}).data(data);
     // var listview = new ListView(700, 400, {x: 740, y: 440}).data(data);
+    d3.select('.canvas').append('g').classed('links', true);
 });
