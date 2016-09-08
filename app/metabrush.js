@@ -48,9 +48,12 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/pk-curve.svg',
                         class:'curvature',
-                        actions:[{connect:true}] //todo: missing stroke dasharray
+                        actions:[{connect:'linear', icon:'icons/svg/pk-line.svg'},
+                            {connect:'step', icon:'icons/svg/pk-curve.svg'},
+                            {connect:'basis', icon:'icons/svg/pk-nolink.svg'},
+                            {connect:'cardinal', icon:'icons/svg/pk-nolink.svg'},
+                            {connect:false, icon:'icons/svg/pk-nolink.svg'}] //todo: missing stroke dasharray
                     }
-                   // {icon:'icons/svg/pk-line.svg', action:{connect:true}}
                 ]
             }/*,{
                 id:'target',
@@ -94,7 +97,7 @@ function Metabrush (d3brush, multibrush) {
                             brush.targetViews.add(VIEWS[action.target]);
                         }
                         if(action.hasOwnProperty('connect')){
-                            brush.connect = !brush.connect || false;
+                            brush.connect = action.connect;
                         }
                         EventBus.trigger(events.UPDATE);
                     })

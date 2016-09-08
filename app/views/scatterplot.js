@@ -143,17 +143,34 @@ class ScatterPlot extends View {
                     }
                 }, this);
 
+                d3.select(this).style(myStyles.source);
 
 
+                var makeLine = function(start, end, interpolation, pathNode){
+                    var s = getCenter(start);
+                    var e = getCenter(end);
+                    var points;
+                    var res = 5;
+                    var type = 'bspline';
+                    if(interpolation == 'linear'){
+                        points = [s, s, e, e];
+                        res = 0;
+                    }
+                    else {
+                        points = [s, [(s[0] + e[0])/2, s[1]], [(s[0] + e[0])/2, e[1]], e];
+                    }
 
-                var lineFunction = d3.svg.line()
-                    /*.x(function (d) {
-                        return d.getBoundingClientRect().left;
-                    })
-                    .y(function (d) {
-                        return d.getBoundingClientRect().top;
-                    })*/
-                    .interpolate("bundle").tension(0.4);
+                    if(interpolation == 'step'){
+                        interpolation = 'linear';
+                        res = 0;
+                    }
+
+                    if(interpolation == 'cardinal'){
+                        type = 'catmull-rom';
+                    }
+
+                    return d3.svg.line().interpolate(interpolation)(points);
+                };
 
 
 
@@ -162,34 +179,33 @@ class ScatterPlot extends View {
                 var links = d3.select('.canvas').selectAll('path.data' + dataId + '.from-view-' + thisView.viewId)
                     .data(this.connections, function(d){return dataId + '-from' + thisView.viewId + '-to' + d.to.view.viewId});
 
-                // todo: update lines
-                links.style(myStyles.link);
+                console.log(this.connections);
+                // todo: update lines (including line interpolation etc)
+                links.style(myStyles.link).transition().attr('d', function(d){
+                    return makeLine(d.from, d.to, d.brush.connect, this);
+                });
 
                 links.enter().append('path')
                     .classed('data'+dataId, true)
                     .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
                     .attr('d', function(d){
-                        return lineFunction(getLinePoints(d.from, d.from));
+                        return makeLine(d.from, d.from, d.brush.connect, this);
                     })
                     .style(myStyles.link)
                     .transition()
                     .attr('d', function(d){
-                        return lineFunction(getLinePoints(d.from, d.to));
+                        return makeLine(d.from, d.to, d.brush.connect, this);
                     });
 
                 links.exit().transition().attr('d', function(d){
-                    return lineFunction(getLinePoints(d.from, d.from));
+                    return makeLine(d.from, d.from, d.brush.connect, this);
                 }).remove();
-                d3.select(this).style(myStyles.source);
             });
 
         
-        function getLinePoints(from, to){
-            var start = [from.getBoundingClientRect().left + from.getBoundingClientRect().width/2,
-                        from.getBoundingClientRect().top + from.getBoundingClientRect().height/2];
-            var end = [to.getBoundingClientRect().left + to.getBoundingClientRect().width/2,
-                to.getBoundingClientRect().top + to.getBoundingClientRect().height/2];
-            return [start, [(start[0] + end[0])/2, end[1]], [(start[0] + end[0])/2, start[1]], end];
+        function getCenter(visual){
+            return [visual.getBoundingClientRect().left + visual.getBoundingClientRect().width/2,
+                visual.getBoundingClientRect().top + visual.getBoundingClientRect().height/2];
         }
     }
 

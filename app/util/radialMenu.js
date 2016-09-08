@@ -29,7 +29,8 @@ d3.radialMenu = function() {
     var pie;                                    // The pie layout
     var outerPie;
     var arc;                                    // The arc generator
-    var outerArc;
+    var smallOuterArc;
+    var bigOuterArc;
     var segmentLayer;                           // The layer that contains the segments
     var isCollapsed = true;                     // Convenient flag with getter accessor to tell if menu is collapsed or not
     
@@ -99,6 +100,12 @@ d3.radialMenu = function() {
         radius = _;
         arc.innerRadius(radius);
         arc.outerRadius(radius + thickness);
+        smallOuterArc
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + 10);
+        bigOuterArc
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + thickness);
         return control;
     };
 
@@ -111,6 +118,12 @@ d3.radialMenu = function() {
         if (!arguments.length) return thickness;
         thickness = _;
         arc.outerRadius(radius + thickness);
+        smallOuterArc
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + 10);
+        bigOuterArc
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + thickness);
         return control;
     };
 
@@ -121,11 +134,12 @@ d3.radialMenu = function() {
     /**
      * Calculates the mid point of an arc
      * @param {object} d - The D3 data object that represents the arc
+     * @param {boolean} isOuterArc - whether to use the radius of the outerArc
      * @returns {object} A co-ordinate with an x, y location
      */
-    function calcMidPoint(d) {
+    function calcMidPoint(d, isOuterArc) {
         var angle = d.startAngle + ((d.endAngle - d.startAngle) / 2);
-        var r = radius + (thickness / 2);
+        var r = (isOuterArc ? bigOuterArc.innerRadius()() : radius) + (thickness / 2);
         return {
             x: r * Math.sin(angle),
             y: -r * Math.cos(angle)
@@ -150,9 +164,13 @@ d3.radialMenu = function() {
             .innerRadius(radius)
             .outerRadius(radius + thickness);
 
-        outerArc = d3.svg.arc()
+        smallOuterArc = d3.svg.arc()
             .innerRadius(radius + thickness + padding)
             .outerRadius(radius + thickness + padding + 10);
+        
+        bigOuterArc = d3.svg.arc()
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + thickness);
     }
 
     /**
@@ -230,39 +248,15 @@ d3.radialMenu = function() {
             .attr("class", "menu-segment")
             .each(function(d) { this._current = d; })                   // store the initial data value for later
             .on("click", function(d) {
-                //onClick.call(this, d.data);
-                d3.select(this.parentNode).selectAll('.menu-subsegment')
+                d3.select(this.parentNode).selectAll('.menu-subsegment-container')
                     .style('display', null)
                     .transition()
                     .duration(animationDuration)
                     .style("opacity", function(){
                         return (+d3.select(this).style('opacity') + 1) % 2;
                     });
-
             })
             .attr('d', arc.innerRadius(0).outerRadius(0)); //do not display the menu yet. Only with show method
-
-        var subSegments = menuSegments.selectAll('.menu-subsegment')
-            .data(function(d){
-                return d3.layout.pie()
-                        .value(function(){return (d.data.actions || []).length;})
-                        .padAngle(2 * Math.PI / 180)
-                        .startAngle(d.startAngle)
-                        .endAngle(d.endAngle)(d.data.actions || []);
-            });
-
-        subSegments.enter().append('path')
-            .classed('menu-subsegment', true)
-            .attr('d', function(d){
-                return outerArc(d);
-            })
-            .style({opacity:0, display:'none'})
-            .each(function(d){
-                d3.select(this).style(d.data.styles);
-            })
-            .on('click', function(d){
-                onClick.call(d3.select(this.parentNode).select('.menu-segment').node(), d.data);
-            });
 
         // Add the icons
         menuSegments.append("image")
@@ -280,6 +274,48 @@ d3.radialMenu = function() {
             })
             .style("opacity", 0); //do not display the menu yet. Only with show method
 
+        // Add sub segments
+        var subSegments = menuSegments.selectAll('.menu-subsegment-container')
+            .data(function(d){
+                return d3.layout.pie()
+                    .value(function(){return (d.data.actions || []).length;})
+                    .padAngle(2 * Math.PI / 180)
+                    .startAngle(d.startAngle)
+                    .endAngle(d.endAngle)(d.data.actions || []);
+            })
+            .enter().append('g')
+            .classed('menu-subsegment-container', true)
+            .style({opacity:0, display:'none'});
+
+        subSegments.append('path')
+            .classed('menu-subsegment', true)
+            .attr('d', function(d){
+                if(d.data.icon){
+                    return bigOuterArc(d);
+                }
+                return smallOuterArc(d);
+            })
+            .each(function(d){
+                d3.select(this).style(d.data.styles);
+            })
+            .on('click', function(d){
+                onClick.call(d3.select(this.parentNode.parentNode).select('.menu-segment').node(), d.data);
+            });
+        
+        subSegments.append("image")
+            .attr("class", "menu-icon")
+            .attr("xlink:href", function(d) { return d.data.icon; })
+            .attr("width", iconSize)
+            .attr("height", iconSize)
+            .attr("x", function(d) { return calcMidPoint(d, true).x - iconSize / 2; })
+            .attr("y", function(d) { return calcMidPoint(d, true).y - iconSize / 2; })
+            .attr("transform", function(d) {
+                // We need to rotate the images backwards to compensate for the rotation of the menu as a whole
+                var mp = calcMidPoint(d, true);
+                var angle = -offsetAngleDeg;
+                return "rotate(" + angle + "," + mp.x + "," + mp.y + ")";
+            });
+        
         // Remove old groups
         dataJoin.exit().remove();
 
@@ -338,7 +374,7 @@ d3.radialMenu = function() {
             .duration(animationDuration)
             .style("opacity", 0);
 
-        d3.selectAll('.menu-subsegment')
+        dataJoin.selectAll('.menu-subsegment-container')
             .transition()
             .duration(animationDuration)
             .style({opacity:0, display:'none'})
@@ -347,7 +383,7 @@ d3.radialMenu = function() {
             });
 
         // Select all the segments and animate them back into the centre
-        dataJoin.select("path")
+        dataJoin.select("path.menu-segment")
             .transition()
             .delay(animationDuration)       // wait for the icons to fade
             .duration(animationDuration)
