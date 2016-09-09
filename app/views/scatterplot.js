@@ -124,18 +124,22 @@ class ScatterPlot extends View {
 
                 //default styles and reset connections
                 var myStyles = {
-                    source:{'fill': thisView.fillValue(d), 'stroke':thisView.fillValue(d), 'stroke-width':2},
+                    point:{'fill': thisView.fillValue(d), 'stroke':thisView.fillValue(d), 'stroke-width':2},
                     link:{stroke:'black', fill:'none'}
                 };
                 this.connections = [];
 
                 d.brushes.forEach(function(brush){
-                    if(brush.origin == thisView || brush.targetViews.has(thisView)){
+                    if(brush.origin == thisView){
                         // overwrites myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
-                        _.merge(myStyles, brush.styles);
+                        _.merge(myStyles.point, brush.styles.source);
+                    } else if (brush.targetViews.has(thisView)){
+                        // overwrites myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
+                        _.merge(myStyles.point, brush.styles.target);
                     }
                     //rebuild connections data
                     if(brush.connect && brush.origin == thisView){
+                        _.merge(myStyles.link, brush.styles.link);
                         d.visuals.forEach(function(visual){
                             //only connect to visuals in target views and not to self (in origin view)
                             if(brush.targetViews.has(visual.view)){
@@ -145,7 +149,8 @@ class ScatterPlot extends View {
                     }
                 }, this);
 
-                d3.select(this).style(myStyles.source);
+                d3.select(this).style(myStyles.point);
+
 
 
                 var makeLine = function(start, end, curveStyle, pathNode){

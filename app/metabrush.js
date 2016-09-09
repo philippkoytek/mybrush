@@ -65,14 +65,14 @@ function Metabrush (d3brush, multibrush) {
                             {animate:'fade', icon:'icons/svg/pk-animate-fade.svg'}]
                     }
                 ]
-            },{
-                id:'target',
-                items:[
-                    {icon:'icons/svg/number-one-bull-eye.svg', action:{target:2}},
-                    {icon:'icons/svg/number-one-bull-eye.svg', action:{target:1}}
-                ]
             }];
 
+        //duplicate source menu for target
+        var targetItems = {id:'target'};
+        targetItems.items = _.cloneDeep(brush.menuItems[0].items);
+        brush.menuItems.push(targetItems);
+
+        brush.targetSourceCoupled = true;
         brush.dim = multibrush.dim;
         brush.origin = multibrush.view;
 
@@ -102,6 +102,16 @@ function Metabrush (d3brush, multibrush) {
                             _.assign(brush.styles[d.id], action.styles);
                             d3.select(this).style(action.styles);
                             d3.select(menuG).select('.trigger-icon').style(brush.styles[d.id]);
+                            if(d.id == 'source' && brush.targetSourceCoupled){
+                                _.assign(brush.styles['target'], action.styles);
+                                var targetMenuG = d3.select(menuG.parentNode).selectAll('.target-menu');
+                                var menuSegmentContainerClass = _.replace(d3.select(this.parentNode).attr('class'), ' ', '.');
+                                targetMenuG.selectAll('.' + menuSegmentContainerClass).selectAll('.menu-segment').style(action.styles);
+                                targetMenuG.select('.trigger-icon').style(brush.styles['target']);
+                            }
+                            if(d.id == 'target'){
+                                brush.targetSourceCoupled = false;
+                            }
                         }
                         if(action.hasOwnProperty('target')){
                             brush.targetViews.add(VIEWS[action.target]);
