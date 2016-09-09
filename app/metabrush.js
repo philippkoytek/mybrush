@@ -179,6 +179,12 @@ function Metabrush (d3brush, multibrush) {
                     icon.classed('point-menu-icon ' + d.id, true)
                         .append('circle').classed('point', true)
                         .attr('r', 8);
+                    icon.append('path')
+                        .attr('d', "M 0 0 L 10 0 L 10 -3 L 13 0 L 10 3 L 10 0")
+                        .attr('transform', function(d){
+                            return d.id == 'target' ? 'translate(-13, 0)' : null;
+                        })
+                        .style({'stroke': 'grey', 'stroke-dasharray':0, fill:'grey', 'stroke-width':1});
                 }
             });
 
