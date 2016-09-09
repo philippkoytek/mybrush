@@ -16,7 +16,7 @@ class ScatterPlot extends View {
         };
         
         this.rValue = function(d){
-            return d.wage / 50000;
+            return (d.wage / 50000) - 1;
         };
 
         var color = d3.scale.category20();
@@ -89,6 +89,8 @@ class ScatterPlot extends View {
             .attr('cx', function(d){ return self.xRange(self.xValue(d)); })
             .attr('cy', function(d){ return self.yRange(self.yValue(d)); })
             .style('fill', self.fillValue)
+            .style('stroke', self.fillValue)
+            .style('stroke-width', 2)
             .on('click', self.highlight.bind(self))
             .each(function(d){
                 d.registerVisual(this, self);
@@ -122,7 +124,7 @@ class ScatterPlot extends View {
 
                 //default styles and reset connections
                 var myStyles = {
-                    source:{'fill': thisView.fillValue(d), 'stroke':'none', 'stroke-width':0},
+                    source:{'fill': thisView.fillValue(d), 'stroke':thisView.fillValue(d), 'stroke-width':2},
                     link:{stroke:'black', fill:'none'}
                 };
                 this.connections = [];
@@ -146,13 +148,13 @@ class ScatterPlot extends View {
                 d3.select(this).style(myStyles.source);
 
 
-                var makeLine = function(start, end, interpolation, pathNode){
+                var makeLine = function(start, end, curveStyle, pathNode){
                     var s = getCenter(start);
                     var e = getCenter(end);
                     var points;
                     var res = 5;
                     var type = 'bspline';
-                    if(interpolation == 'linear'){
+                    if(curveStyle == 'linear'){
                         points = [s, e];
                         res = 0;
                     }
@@ -160,12 +162,12 @@ class ScatterPlot extends View {
                         points = [s, {x:(s.x + e.x)/2, y:s.y}, {x:(s.x + e.x)/2, y:e.y}, e];
                     }
 
-                    if(interpolation == 'step'){
-                        interpolation = 'linear';
+                    if(curveStyle == 'step'){
+                        curveStyle = 'linear';
                         res = 0;
                     }
 
-                    if(interpolation == 'cardinal'){
+                    if(curveStyle == 'cardinal'){
                         type = 'catmull-rom';
                     }
 
@@ -178,7 +180,7 @@ class ScatterPlot extends View {
                         return d.point;
                     });
                     
-                    if(pathNode._curve){
+                    if(pathNode._curve && curveStyle){
                         if(pathNode._curve.length > newCurve.length){
                             insertPoints(newCurve, pathNode._curve.length - newCurve.length);
                         }
@@ -260,18 +262,42 @@ class ScatterPlot extends View {
                 links.enter().append('path')
                     .classed('data'+dataId, true)
                     .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
-                    .attr('d', function(d){
-                        return makeLine(d.from, d.from, d.brush.connect, this);
-                    })
                     .style(myStyles.link)
+                    .style('opacity', function(d){
+                        return d.brush.animate == 'fade' ? 0 : 1;
+                    })
+                    .attr('d', function(d){
+                        var to = d.to;
+                        if(d.brush.animate == 'draw'){
+                            to = d.from;
+                        }
+                        return makeLine(d.from, to, d.brush.connect, this);
+                    })
                     .transition()
+                    .duration(function(d){
+                        return d.brush.animate && d.brush.animate != 'none'? 350 : 0;
+                    })
+                    .style('opacity', 1)
                     .attr('d', function(d){
                         return makeLine(d.from, d.to, d.brush.connect, this);
                     });
 
-                links.exit().transition().attr('d', function(d){
-                    return makeLine(d.from, d.from, d.brush.connect, this);
-                }).remove();
+
+                links.exit()
+                    .transition()
+                    .duration(function(d){
+                        return d.brush.animate && d.brush.animate != 'none'? 350 : 0;
+                    })
+                    .style('opacity', function(d){
+                        return d.brush.animate == 'fade' ? 0 : 1;
+                    })
+                    .attr('d', function(d){
+                        if(d.brush.animate == 'draw'){
+                            return makeLine(d.from, d.from, d.brush.connect, this);
+                        }
+                        return drawCurve(this._curve);
+                    })
+                    .remove();
             });
 
         

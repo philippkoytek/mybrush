@@ -43,7 +43,10 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/number-one-bull-eye.svg',
                         class:'target-constraint',
-                        actions:[{target:2}, {target:1}]
+                        //todo: only make the OTHER views available (not own view as target)
+                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg'},
+                            {target:0, icon:'icons/svg/pk-scatterplot.svg'},
+                            {target:1, icon:'icons/svg/pk-barchart.svg'}]
                     },
                     {
                         icon:'icons/svg/pk-nolink.svg',
@@ -53,6 +56,13 @@ function Metabrush (d3brush, multibrush) {
                             {connect:'basis', icon:'icons/svg/pk-curve.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5'},
                             {connect:'cardinal', icon:'icons/svg/pk-curve2.svg', d:'M -10 5 Q -7 -6 0 0 Q 7 6 10 -5'},
                             {connect:false, icon:'icons/svg/pk-nolink.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5'}] //todo: missing stroke dasharray
+                    },
+                    {
+                        icon:'icons/svg/number-one-bull-eye.svg',
+                        class:'animation',
+                        actions:[{animate:'none', icon:'icons/svg/pk-animate-none.svg'},
+                            {animate:'draw', icon:'icons/svg/pk-animate-draw.svg'},
+                            {animate:'fade', icon:'icons/svg/pk-animate-fade.svg'}]
                     }
                 ]
             }/*,{
@@ -100,6 +110,9 @@ function Metabrush (d3brush, multibrush) {
                             brush.connect = action.connect;
                             d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
                             d3.select(menuG).select('.trigger-icon').select('path.link').attr('d',action.d);
+                        }
+                        if(action.hasOwnProperty('animate')){
+                            brush.animate = action.animate;
                         }
                         EventBus.trigger(events.UPDATE);
                     })
