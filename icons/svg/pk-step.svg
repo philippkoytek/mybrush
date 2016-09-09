@@ -4,7 +4,7 @@
 	 width="20px" height="20px" viewBox="-12 -12 24 24" style="enable-background:new 0 0 20 20;"
 	 xml:space="preserve">
 
-    <g id="pk-icon-curve" class="pk-icon link">
+    <g id="pk-icon-step" class="pk-icon link">
         <path class="link" d="M -10 5 L 0 5 L 0 -5 L 10 -5" style="fill:none; stroke-width:2px; stroke:black"></path>
         <circle class="point start" r="2" cx="-10" cy="5"></circle>
         <circle class="point end" r="2" cx="10" cy="-5"></circle>
