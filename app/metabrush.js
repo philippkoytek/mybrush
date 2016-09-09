@@ -134,8 +134,8 @@ function Metabrush (d3brush, multibrush) {
                 //update connection line
                 var menusT = d3.transform(brushMenuWrap.attr('transform'));
                 var rect = brush.brushArea.select('.extent');
-                var rectOrigin = [rect.attr('x') - (t.translate[0] + menusT.translate[0]), rect.attr('y') - (t.translate[1] + menusT.translate[1])];
-                menu.select('.menu-line').datum([[0,0], rectOrigin])
+                var rectTopCenter = [rect.attr('x') - (t.translate[0] + menusT.translate[0]) + rect.attr('width')/2, rect.attr('y') - (t.translate[1] + menusT.translate[1])];
+                menu.select('.menu-line').datum([[0,0], rectTopCenter])
                     .attr('d', d3.svg.line());
             });
 
