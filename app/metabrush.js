@@ -35,10 +35,10 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/brush-stroke.svg',
                         class:'stroke',
-                        actions:[{styles:{stroke:'green', 'stroke-width':'1px', 'stroke-dasharray':0}},
-                            {styles:{stroke:'blue', 'stroke-width':'1px', 'stroke-dasharray':0}},
-                            {styles:{stroke:'red', 'stroke-width':'1px', 'stroke-dasharray':0}},
-                            {styles:{stroke:'black', 'stroke-width':'1px', 'stroke-dasharray':0}}]
+                        actions:[{styles:{stroke:'green', 'stroke-width':'1px'}},
+                            {styles:{stroke:'blue', 'stroke-width':'1px'}},
+                            {styles:{stroke:'red', 'stroke-width':'1px'}},
+                            {styles:{stroke:'black', 'stroke-width':'1px'}}]
                     },
                     {
                         icon:'icons/svg/number-one-bull-eye.svg',
@@ -51,14 +51,14 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/pk-nolink.svg',
                         class:'curvature',
-                        actions:[{connect:'linear', icon:'icons/svg/pk-line.svg', d:'M -10 5 L 10 -5'},
-                            {connect:'step', icon:'icons/svg/pk-step.svg', d:'M -10 5 L 0 5 L 0 -5 L 10 -5'},
-                            {connect:'basis', icon:'icons/svg/pk-curve.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5'},
-                            {connect:'cardinal', icon:'icons/svg/pk-curve2.svg', d:'M -10 5 Q -7 -6 0 0 Q 7 6 10 -5'},
-                            {connect:false, icon:'icons/svg/pk-nolink.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5'}] //todo: missing stroke dasharray
+                        actions:[{connect:'linear', icon:'icons/svg/pk-line.svg', d:'M -10 5 L 10 -5', styles:{'stroke-dasharray':0}},
+                            {connect:'step', icon:'icons/svg/pk-step.svg', d:'M -10 5 L 0 5 L 0 -5 L 10 -5', styles:{'stroke-dasharray':0}},
+                            {connect:'basis', icon:'icons/svg/pk-curve.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5', styles:{'stroke-dasharray':0}},
+                            {connect:'cardinal', icon:'icons/svg/pk-curve2.svg', d:'M -10 5 Q -7 -6 0 0 Q 7 6 10 -5', styles:{'stroke-dasharray':0}},
+                            {connect:false, icon:'icons/svg/pk-nolink.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5', styles:{'stroke-dasharray':1}}] //todo: missing stroke dasharray
                     },
                     {
-                        icon:'icons/svg/number-one-bull-eye.svg',
+                        icon:'icons/svg/pk-animate-none.svg',
                         class:'animation',
                         actions:[{animate:'none', icon:'icons/svg/pk-animate-none.svg'},
                             {animate:'draw', icon:'icons/svg/pk-animate-draw.svg'},
@@ -87,7 +87,7 @@ function Metabrush (d3brush, multibrush) {
         brushMenu.enter().append('g')
             .attr('class', function(d){return d.id + '-menu menu';})
             .attr('transform', function(d, i){
-                return 'translate('+ (i-1)*60 +',0)';
+                return 'translate('+ (i-1)*60 +',-8)';
             })
             .each(function(d){
                 var menuG = this;
@@ -113,6 +113,7 @@ function Metabrush (d3brush, multibrush) {
                         }
                         if(action.hasOwnProperty('animate')){
                             brush.animate = action.animate;
+                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
                         }
                         EventBus.trigger(events.UPDATE);
                     })
