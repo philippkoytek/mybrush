@@ -65,13 +65,13 @@ function Metabrush (d3brush, multibrush) {
                             {animate:'fade', icon:'icons/svg/pk-animate-fade.svg'}]
                     }
                 ]
-            }/*,{
+            },{
                 id:'target',
                 items:[
                     {icon:'icons/svg/number-one-bull-eye.svg', action:{target:2}},
                     {icon:'icons/svg/number-one-bull-eye.svg', action:{target:1}}
                 ]
-            }*/];
+            }];
 
         brush.dim = multibrush.dim;
         brush.origin = multibrush.view;
@@ -123,21 +123,31 @@ function Metabrush (d3brush, multibrush) {
             //.origin(function(d){return d;})  add x and y data to every circle object to remember original position
             .on('dragstart', function(){})
             .on('dragend', function(){ d3.event.sourceEvent.preventDefault(); })
-            .on('drag', function(d){
+            .on('drag', function(d, i){
                 //move menu
                 var menu = d3.select(this.parentNode);
                 var t = d3.transform(menu.attr('transform'));
                 t.translate[0] += d3.event.x;
                 t.translate[1] += d3.event.y;
                 menu.attr('transform', t.toString());
+                menu.select('.menu-line').call(updateConnectionLine, t, i);
 
-                //update connection line
-                var menusT = d3.transform(brushMenuWrap.attr('transform'));
-                var rect = brush.brushArea.select('.extent');
-                var rectTopCenter = [rect.attr('x') - (t.translate[0] + menusT.translate[0]) + rect.attr('width')/2, rect.attr('y') - (t.translate[1] + menusT.translate[1])];
-                menu.select('.menu-line').datum([[0,0], rectTopCenter])
-                    .attr('d', d3.svg.line());
             });
+
+        function updateConnectionLine(line, t, i){
+            var menusT = d3.transform(brushMenuWrap.attr('transform'));
+            var rect = brush.brushArea.select('.extent');
+            var rectTopCenter = [rect.attr('x') - (t.translate[0] + menusT.translate[0])  + rect.attr('width')/2, rect.attr('y') - (t.translate[1] + menusT.translate[1])];
+
+            //if this is not an active brush or if only 10px away from rectangle top border ==> don't draw the line
+            if(brush.brushArea.classed('ready') || (Math.abs(rectTopCenter[0]) <= rect.attr('width')/2 && Math.abs(rectTopCenter[1]) <= 10)){
+                line.attr('d', null);
+            } else {
+                var lineOrigin = [rectTopCenter[0]  + (i-1)*3, rectTopCenter[1]];
+                line.datum([[0,0], lineOrigin])
+                    .attr('d', d3.svg.line());
+            }
+        }
 
         brushMenu.insert('path', ':first-child')
             .classed('menu-line', true)
