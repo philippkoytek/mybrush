@@ -111,6 +111,7 @@ function Metabrush (d3brush, multibrush) {
                             }
                             if(d.id == 'target'){
                                 brush.targetSourceCoupled = false;
+                                d3.select(menuG.parentNode).selectAll('.target-coupling-icon').attr('xlink:href', 'icons/svg/link-decoupled.svg');
                             }
                         }
                         if(action.hasOwnProperty('target')){
@@ -195,6 +196,15 @@ function Metabrush (d3brush, multibrush) {
                             return d.id == 'target' ? 'translate(-13, 0)' : null;
                         })
                         .style({'stroke': 'grey', 'stroke-dasharray':0, fill:'grey', 'stroke-width':1});
+                    if(d.id == 'target'){
+                        var tcouple = icon.append('g').classed('target-coupling', true);
+                        tcouple.append('circle').classed('target-coupling-bg', true)
+                            .attr({r:7, cx:11, cy:-11})
+                            .style({fill:'#efefef', stroke:'lightgrey', 'stroke-width':1, 'stroke-dasharray':0});
+                        tcouple.append('image').classed('target-coupling-icon', true)
+                            .attr('xlink:href', 'icons/svg/link-coupled.svg')
+                            .attr({ x:7, y:-16, width:9, height:9 });
+                    }
                 }
             });
 
