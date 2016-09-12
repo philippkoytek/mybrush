@@ -91,10 +91,7 @@ class ScatterPlot extends View {
             .style('fill', self.fillValue)
             .style('stroke', self.fillValue)
             .style('stroke-width', 2)
-            .on('click', self.highlight.bind(self))
-            .each(function(d){
-                d.registerVisual(this, self);
-            });
+            .call(self.addHover.bind(self));
         
         return self;
     };

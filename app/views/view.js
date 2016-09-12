@@ -25,6 +25,8 @@ class View {
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
 
+
+        this.chart.append('rect').classed('hover-rect', true);
         
 
         var self = this;
@@ -56,6 +58,40 @@ class View {
         } else {
             EventBus.trigger(events.HIGHLIGHT, this.rawValues(d));
         }
+    }
+
+    hover(d, visual){
+        var b = visual.getBBox();
+        this.chart.selectAll('.hover-rect').datum(visual)
+            .attr({x:b.x - 3, y:b.y - 3, width: b.width + 6, height: b.height + 6})
+            .style({display:'inline', opacity:1});
+        d3.selectAll([...d.visuals]).classed('highlighted', true);
+    }
+
+    unhover(d, visual){
+        d3.selectAll([...d.visuals]).classed('highlighted', false);
+        this.chart.select('.hover-rect')
+            .style({display:'none', opacity:0});
+    }
+
+    addHover(selection){
+        var t;
+        var self = this;
+        selection
+            .on('mouseenter', function(d){
+                var visual = this;
+                t = setTimeout(function(){
+                    self.hover(d, visual);
+                }, 250);
+            })
+            .on('mouseleave', function(d){
+                clearTimeout(t);
+                self.unhover(d, this);
+            })
+            .on('click', self.highlight.bind(self))
+            .each(function(d){
+                d.registerVisual(this, self);
+            });
     }
 
     /**

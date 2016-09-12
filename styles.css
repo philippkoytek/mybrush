@@ -39,6 +39,11 @@ html, body, svg#main {
     fill: #ddd !important;
 }
 
+.hover-rect {
+    stroke:grey;
+    fill:none;
+
+}
 
 /* parallel coords */
 
