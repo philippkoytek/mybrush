@@ -41,7 +41,7 @@ function Metabrush (d3brush, multibrush) {
                             {styles:{stroke:'black', 'stroke-width':'1px'}}]
                     },
                     {
-                        icon:'icons/svg/number-one-bull-eye.svg',
+                        icon:'icons/svg/target.svg',
                         class:'target-constraint',
                         //todo: only make the OTHER views available (not own view as target)
                         actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg'},
@@ -80,6 +80,25 @@ function Metabrush (d3brush, multibrush) {
             .classed('brush ready', true)
             .call(brush);
 
+        var closeButton = brush.brushArea.select('.resize.ne').append('g')
+            .on('mousedown', function(){
+                // prevent resize behaviour on close button
+                d3.event.stopPropagation();
+            })
+            .classed('close-button', true);
+        
+        closeButton.append('rect')
+            .classed('close-button-bg', true)
+            .attr({x:0, y:10, width:20, height:20})
+            .style({'shape-rendering':'crispEdges', stroke:'black', fill:'#efefef'})
+            .on('click', function(){
+                brush.clear();
+                brush.origin.onBrush(brush);
+                brush.brushArea.remove();
+            });
+        closeButton.append('image').classed('close-button-label', true)
+            .attr({x:3, y:13, width:15, height:15, 'xlink:href':'icons/svg/waste-disposal.svg'})
+            .style({'pointer-events':'none'});
 
         var brushMenuWrap = brush.brushArea.append('g').classed('brush-menus', true);
 

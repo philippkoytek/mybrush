@@ -83,6 +83,21 @@ html, body, svg#main {
 }
 
 
+.brush.ready .close-button {
+    display:none;
+}
+
+.brush.active .close-button {
+     display:inline;
+    opacity: 0.2;
+    cursor: default;
+ }
+
+.brush.active .close-button:hover {
+    opacity:0.8;
+}
+
+
 /* brush menus */
 
 .brush.ready .brush-menus {

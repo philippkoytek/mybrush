@@ -103,10 +103,7 @@ class View {
         var targetBrush = brush;
         var readyBrush = this.multiBrushes[targetBrush.dim].readyBrush();
         if(readyBrush === targetBrush){
-            if(readyBrush.empty()){
-                this.multiBrushes[targetBrush.dim].reset();
-            }
-            else {
+            if(!readyBrush.empty()){
                 targetBrush.brushArea
                     .classed('ready', false)
                     .classed('active', true);
