@@ -103,8 +103,21 @@ function Metabrush (d3brush, multibrush) {
                     .iconSize(20)
                     .appendTo(menuG)
                     .onClick(function(action){
+                        if(action.hasOwnProperty('target')){
+                            brush.targetViews.add(VIEWS[action.target]);
+                        }
+                        if(action.hasOwnProperty('connect')){
+                            brush.connect = action.connect;
+                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
+                            d3.select(menuG).select('.trigger-icon').select('path.link').attr('d',action.d);
+                        }
+                        if(action.hasOwnProperty('animate')){
+                            brush.animate = action.animate;
+                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
+                        }
                         if(action.hasOwnProperty('styles')){
-                            // overwrite brush.styles with selected styles (if selected style is explicitly undefined it will overwrite the brush style to mark it undefined)
+                            // overwrite brush.styles with selected styles 
+                            // (if selected style is explicitly undefined it will overwrite the brush style to mark it undefined)
                             _.assign(brush.styles[d.id], action.styles);
                             d3.select(this).style(action.styles);
                             d3.select(menuG).select('.trigger-icon').style(brush.styles[d.id]);
@@ -119,18 +132,6 @@ function Metabrush (d3brush, multibrush) {
                                 brush.targetSourceCoupled = false;
                                 d3.select(menuG.parentNode).selectAll('.target-coupling-icon').attr('xlink:href', 'icons/svg/link-decoupled.svg');
                             }
-                        }
-                        if(action.hasOwnProperty('target')){
-                            brush.targetViews.add(VIEWS[action.target]);
-                        }
-                        if(action.hasOwnProperty('connect')){
-                            brush.connect = action.connect;
-                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
-                            d3.select(menuG).select('.trigger-icon').select('path.link').attr('d',action.d);
-                        }
-                        if(action.hasOwnProperty('animate')){
-                            brush.animate = action.animate;
-                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
                         }
                         EventBus.trigger(events.UPDATE);
                     })
