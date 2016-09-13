@@ -124,7 +124,7 @@ function Metabrush (d3brush, multibrush) {
                             if(d.id == 'source' && brush.targetSourceCoupled){
                                 _.assign(brush.styles['target'], action.styles);
                                 var targetMenuG = d3.select(menuG.parentNode).selectAll('.target-menu');
-                                var menuSegmentContainerClass = _.replace(d3.select(this.parentNode).attr('class'), ' ', '.');
+                                var menuSegmentContainerClass = _.replace(d3.select(this.parentNode).attr('class'), new RegExp(' ','g'), '.');
                                 targetMenuG.selectAll('.' + menuSegmentContainerClass).selectAll('.menu-segment').style(action.styles);
                                 targetMenuG.select('.trigger-icon').style(brush.styles['target']);
                             }
