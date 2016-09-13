@@ -12,6 +12,19 @@ class BarChart extends View {
             return d.values;  
         };
 
+        this.rawIdValue = function(d){
+            return d.fifaPid;
+        };
+
+        this.idValue = function(bar){
+            return _.replace(bar.key, new RegExp(' ','g'), '_');
+        };
+
+        var color = d3.scale.category20();
+        this.fillValue = function(d){
+            return color(d.key);
+        };
+
         var self = this;
         this.xValue = function(d){
             return self.xRange(d.key) + self.xRange.rangeBand()/2;
@@ -72,7 +85,9 @@ class BarChart extends View {
             .attr('width', self.xRange.rangeBand())
             .attr('y', function(d){ return self.yRange(self.rawValues(d).length); })
             .attr('height', function(d){ return self.chartHeight - self.yRange(self.rawValues(d).length); })
-            .on('click', self.highlight.bind(self));
+            .style('fill', self.fillValue)
+            .style('stroke', self.fillValue)
+            .call(self.addInteractivity.bind(self));
 
         return self;
     };
@@ -82,10 +97,16 @@ class BarChart extends View {
      */
 
     createBrush () {
-        return d3.svg.brush()
-            .x(this.xRange)
-            .on('brush', this.onBrush.bind(this))
-            .on('brushend', this.onBrushEnd.bind(this));
+        var self = this;
+        var brush = d3.svg.brush()
+            .x(this.xRange);
+        brush.on('brush', function(){
+                self.onBrush(brush);
+            })
+            .on('brushend', function(){
+                self.onBrushEnd(brush);
+            });
+        return brush;
     }
 
     adjustBrushArea (brushArea) {

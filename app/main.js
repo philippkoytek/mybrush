@@ -19,13 +19,7 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
         return d.value;
     };
 
-    var plot = new ScatterPlot('weight', 'height', 700, 400, {x: 20, y: 440});
-    plot.xValue = function(d){
-        return d.weight;
-    };
-    plot.yValue = function(d){
-        return d.height;
-    };
+    var plot = new BarChart('number of players', 700, 400, {x: 20, y: 440});
 
     VIEWS.push(new ScatterPlot('likes', 'dislikes', 700, 400, {x: 20, y: 20}).data(data));
     VIEWS.push(plot.data(data));
