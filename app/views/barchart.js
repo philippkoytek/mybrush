@@ -1,7 +1,3 @@
-/**
- * Created by Philipp Koytek on 6/8/2016.
- */
-
 class BarChart extends View {
     constructor(yLabel, width, height, position, padding){
 
@@ -111,7 +107,7 @@ class BarChart extends View {
 
     adjustBrushArea (brushArea) {
         brushArea.attr('transform', 'translate(0,-5)')
-            .selectAll('rect.background, rect.extent')
+            .selectAll('rect')
             .attr('y', 0)
             .attr('height', this.chartHeight + 5);
     }
