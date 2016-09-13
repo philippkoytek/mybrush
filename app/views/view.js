@@ -45,9 +45,6 @@ class View {
         });
     }
 
-    updateView(){
-        //TODO
-    }
 
     /**
      * event handlers
@@ -74,24 +71,31 @@ class View {
             .style({display:'none', opacity:0});
     }
 
-    addHover(selection){
+    addInteractivity(selection){
         var t;
         var self = this;
         selection
+            .each(function(d){
+                self.rawValues(d).forEach(function(v){
+                    v.registerVisual(this, self);
+                }, this);
+            })
             .on('mouseenter', function(d){
                 var visual = this;
                 t = setTimeout(function(){
-                    self.hover(d, visual);
+                    self.rawValues(d).forEach(function(v){
+                        self.hover(v, visual);
+                    });
                 }, 250);
             })
             .on('mouseleave', function(d){
+                var visual = this;
                 clearTimeout(t);
-                self.unhover(d, this);
+                self.rawValues(d).forEach(function(v){
+                    self.unhover(v, visual);
+                });
             })
-            .on('click', self.highlight.bind(self))
-            .each(function(d){
-                d.registerVisual(this, self);
-            });
+            .on('click', self.highlight.bind(self));
     }
 
     /**
@@ -120,12 +124,16 @@ class View {
                 brushed = extent[0] <= self.yValue(d, brush.dim) && self.yValue(d, brush.dim) <= extent[1];
             }
 
-            //TODO: probably missing rawValues
             if(brushed){
-                d.registerBrush(brush);
+                self.rawValues(d).forEach(function(v){
+                    v.registerBrush(brush);
+                });
+
             }
             else {
-                d.unregisterBrush(brush);
+                self.rawValues(d).forEach(function(v){
+                    v.unregisterBrush(brush);
+                });
             }
         });
 
@@ -193,6 +201,14 @@ class View {
         throw Error('need to overwrite accessor method yValue for object: ' + this);
     };
 
+    idValue (){
+        throw Error('need to overwrite accessor method idValue for object: ' + this);
+    }
+
+    rawIdValue () {
+        throw Error('need to overwrite accessor method rawIdValue for object: ' + this);
+    }
+
     /**
      * function to overwrite in order to get the underlying values of an aggregation.
      * Default: If d is not an aggregation of values it will just return a single-element array containing d.
@@ -201,6 +217,107 @@ class View {
      */
     rawValues (d) {
         return [].concat(d);
+    }
+
+    updateView(){
+        var thisView = this;
+        this.chart.selectAll('.data-item')
+            .each(function(aggregateD){
+
+                //default styles and reset connections
+                var myStyles = {
+                    point:{'fill': thisView.fillValue(aggregateD), 'stroke':thisView.fillValue(aggregateD), 'stroke-width':2},
+                    link:{stroke:'black', fill:'none'}
+                };
+                this.connections = [];
+
+                thisView.rawValues(aggregateD).forEach(function(v){
+                    v.brushes.forEach(function(brush){
+                        if(brush.origin == thisView){
+                            // overwrites myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
+                            _.merge(myStyles.point, brush.styles.source);
+                        } else if (brush.targetViews.has(thisView)){
+                            // overwrites myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
+                            _.merge(myStyles.point, brush.styles.target);
+                        }
+                        //rebuild connections data
+                        if(brush.connect && brush.origin == thisView){
+                            _.merge(myStyles.link, brush.styles.link);
+                            v.visuals.forEach(function(visual){
+                                //only connect to visuals in target views and not to self (in origin view)
+                                if(brush.targetViews.has(visual.view)){
+                                    this.connections.push({from:this, to:visual, brush:brush, rawValue:v});
+                                }
+                            }, this);
+                        }
+                    }, this);
+                }, this);
+
+
+                d3.select(this).style(myStyles.point);
+
+
+                var aggregateId = thisView.idValue(aggregateD);
+                var links = d3.select('.canvas > .links').selectAll('path.data' + aggregateId + '.from-view-' + thisView.viewId)
+                    .data(this.connections, function(d){
+                        return thisView.rawIdValue(d.rawValue) + '-within' + aggregateId + '-from' + thisView.viewId + '-to' + d.to.view.viewId
+                    });
+
+                // update lines (including line interpolation etc)
+                links.style(myStyles.link).transition().attr('d', function(d){
+                    return Lines.makeLine(getCenter(d.from), getCenter(d.to), d.brush.connect, this);
+                });
+
+                // add new lines
+                links.enter().append('path')
+                    .classed('data'+aggregateId, true)
+                    .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
+                    .style(myStyles.link)
+                    .style('opacity', function(d){
+                        return d.brush.animate == 'fade' ? 0 : 1;
+                    })
+                    .attr('d', function(d){
+                        var to = d.to;
+                        if(d.brush.animate == 'draw'){
+                            to = d.from;
+                        }
+                        return Lines.makeLine(getCenter(d.from), getCenter(to), d.brush.connect, this);
+                    })
+                    .transition()
+                    .duration(function(d){
+                        return d.brush.animate && d.brush.animate != 'none'? 350 : 0;
+                    })
+                    .style('opacity', 1)
+                    .attr('d', function(d){
+                        return Lines.makeLine(getCenter(d.from), getCenter(d.to), d.brush.connect, this);
+                    });
+
+
+                // remove lines that dropped out
+                links.exit()
+                    .transition()
+                    .duration(function(d){
+                        return d.brush.animate && d.brush.animate != 'none'? 350 : 0;
+                    })
+                    .style('opacity', function(d){
+                        return d.brush.animate == 'fade' ? 0 : 1;
+                    })
+                    .attr('d', function(d){
+                        if(d.brush.animate == 'draw'){
+                            return Lines.makeLine(getCenter(d.from), getCenter(d.from), d.brush.connect, this);
+                        }
+                        return Lines.drawCurve(this._curve);
+                    })
+                    .remove();
+            });
+
+
+        function getCenter(visual){
+            return {
+                x:visual.getBoundingClientRect().left + visual.getBoundingClientRect().width/2,
+                y:visual.getBoundingClientRect().top + visual.getBoundingClientRect().height/2
+            };
+        }
     }
 }
 
