@@ -12,7 +12,8 @@ function Metabrush (d3brush, multibrush) {
         };
         brush.targetViews = new Set();
         brush.menu = {};
-        brush.menuItems = [{
+        brush.menuItems = [
+            {
                 id:'source',
                 items:[
                     {
@@ -80,29 +81,15 @@ function Metabrush (d3brush, multibrush) {
             .classed('brush ready', true)
             .call(brush);
 
-        var closeButton = brush.brushArea.append('g')
-            .classed('close-button', true)
-            .on('mousedown', function(){
-                // prevent resize behaviour on close button
-                d3.event.stopPropagation();
-            });
-        
-        closeButton.append('rect')
-            .classed('close-button-bg', true)
-            .attr({x:0, y:10, width:20, height:20})
-            .style({'shape-rendering':'crispEdges', stroke:'black', fill:'#efefef'})
-            .on('click', function(){
-                brush.clear();
-                brush.origin.onBrush(brush);
-                brush.brushArea.remove();
-            });
-        closeButton.append('image').classed('close-button-label', true)
-            .attr({x:3, y:13, width:15, height:15, 'xlink:href':'icons/svg/waste-disposal.svg'})
-            .style({'pointer-events':'none'});
 
-        var brushMenuWrap = brush.brushArea.append('g').classed('brush-menus', true);
 
-        var brushMenu = brushMenuWrap.selectAll('g.menu').data(brush.menuItems);
+
+        brush.menuWrap = d3.select('.canvas > .all-brush-menus').append('g')
+            .classed('brush-menus-wrap view-' + brush.origin.viewId, true);
+        brush.menuArea = brush.menuWrap.append('g')
+            .classed('brush-menus ready', true);
+
+        var brushMenu = brush.menuArea.selectAll('g.menu').data(brush.menuItems);
         brushMenu.enter().append('g')
             .attr('class', function(d){return d.id + '-menu menu';})
             .attr('transform', function(d, i){
@@ -165,21 +152,6 @@ function Metabrush (d3brush, multibrush) {
 
             });
 
-        function updateConnectionLine(line, t, i){
-            var menusT = d3.transform(brushMenuWrap.attr('transform'));
-            var rect = brush.brushArea.select('.extent');
-            var rectTopCenter = [rect.attr('x') - (t.translate[0] + menusT.translate[0])  + rect.attr('width')/2, rect.attr('y') - (t.translate[1] + menusT.translate[1])];
-
-            //if this is not an active brush or if only 10px away from rectangle top border ==> don't draw the line
-            if(brush.brushArea.classed('ready') || (Math.abs(rectTopCenter[0]) <= rect.attr('width')/2 && Math.abs(rectTopCenter[1]) <= 10)){
-                line.attr('d', null);
-            } else {
-                var lineOrigin = [rectTopCenter[0]  + (i-1)*3, rectTopCenter[1]];
-                line.datum([[0,0], lineOrigin])
-                    .attr('d', d3.svg.line());
-            }
-        }
-
         brushMenu.insert('path', ':first-child')
             .classed('menu-line', true)
             .style('stroke','black');
@@ -227,7 +199,30 @@ function Metabrush (d3brush, multibrush) {
                 }
             });
 
-        brush.updatePositions = updatePositions.bind(brush);
+        var closeButton = brush.brushArea.append('g')
+            .classed('close-button', true)
+            .on('mousedown', function(){
+                // prevent resize behaviour on close button
+                d3.event.stopPropagation();
+            });
+
+        closeButton.append('rect')
+            .classed('close-button-bg', true)
+            .attr({x:0, y:10, width:20, height:20})
+            .style({'shape-rendering':'crispEdges', stroke:'black', fill:'#efefef'})
+            .on('click', function(){
+                brush.clear();
+                brush.origin.onBrush(brush);
+                brush.brushArea.remove();
+                brush.menuWrap.remove();
+            });
+        closeButton.append('image').classed('close-button-label', true)
+            .attr({x:3, y:13, width:15, height:15, 'xlink:href':'icons/svg/waste-disposal.svg'})
+            .style({'pointer-events':'none'});
+
+
+        brush.updatePositions = brush_updatePositions.bind(brush);
+        brush.activate = brush_activate.bind(brush);
 
 
         function stopPropagation(){
@@ -247,13 +242,51 @@ function Metabrush (d3brush, multibrush) {
             }
         }
 
-        function updatePositions(){
+        function updateConnectionLine(line, menuT, i){
+            var menusAreaT = d3.transform(brush.menuArea.attr('transform'));
+            var rect = brush.brushArea.select('.extent');
+            var rectTopCenter = [rect.attr('x') - (menuT.translate[0] + menusAreaT.translate[0])  + rect.attr('width')/2, rect.attr('y') - (menuT.translate[1] + menusAreaT.translate[1])];
+
+            //if this is not an active brush or if only 10px away from rectangle top border ==> don't draw the line
+            if(brush.brushArea.classed('ready') || (Math.abs(rectTopCenter[0]) <= rect.attr('width')/2 && Math.abs(rectTopCenter[1]) <= 10)){
+                line.attr('d', null);
+            } else {
+                var lineOrigin = [rectTopCenter[0]  + (i-1)*3, rectTopCenter[1]];
+                line.datum([[0,0], lineOrigin])
+                    .attr('d', d3.svg.line());
+            }
+        }
+
+        /**
+         * update positions of brush menus and close button etc.
+         * 'this' refers to the brush
+         */
+        function brush_updatePositions(){
             var r = this.brushArea.selectAll('rect.extent');
             closeButton.attr('transform', 'translate(' + (+r.attr('x') + +r.attr('width')) + ',' + r.attr('y') + ')');
 
             // reposition menu
-            brushMenuWrap.attr('transform','translate('+ (+r.attr('x') + (+r.attr('width')/2)) + ','
+            this.menuArea.attr('transform','translate('+ (+r.attr('x') + (+r.attr('width')/2)) + ','
                 + r.attr('y') + ')');
+        }
+
+        /**
+         * activates the ready brush after a new brush rectangle was drawn
+         */
+        function brush_activate(){
+            this.brushArea
+                .classed('ready', false)
+                .classed('active', true);
+            this.menuArea
+                .classed('ready', false)
+                .classed('active', true);
+
+            var brushPos = this.brushArea.node().getBoundingClientRect();
+            var svgPos = d3.select('svg').node().getBoundingClientRect();
+
+            this.menuWrap.attr('transform',
+                'translate(' + (+brushPos.left - +svgPos.left) + ',' + (+brushPos.top - +svgPos.top) + ')')
+
         }
     }
 

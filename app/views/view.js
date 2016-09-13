@@ -144,9 +144,7 @@ class View {
         var readyBrush = this.multiBrushes[targetBrush.dim].readyBrush();
         if(readyBrush === targetBrush){
             if(!readyBrush.empty()){
-                targetBrush.brushArea
-                    .classed('ready', false)
-                    .classed('active', true);
+                targetBrush.activate();
                 this.insertNewBrush(targetBrush.dim);
             }
         }

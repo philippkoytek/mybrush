@@ -105,11 +105,11 @@ html, body, svg#main {
 
 /* brush menus */
 
-.brush.ready .brush-menus {
+.brush-menus.ready {
     display:none;
 }
 
-.brush.active .brush-menus {
+.brush-menus.active {
     display:inline;
     pointer-events: all;
 }
