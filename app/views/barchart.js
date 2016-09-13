@@ -110,7 +110,7 @@ class BarChart extends View {
     }
 
     adjustBrushArea (brushArea) {
-        brushArea.selectAll('rect')
+        brushArea.selectAll('rect.background, rect.extent')
             .attr('y', -5)
             .attr('height', this.chartHeight + 5);
     }

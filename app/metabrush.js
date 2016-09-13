@@ -80,12 +80,12 @@ function Metabrush (d3brush, multibrush) {
             .classed('brush ready', true)
             .call(brush);
 
-        var closeButton = brush.brushArea.select('.resize.ne').append('g')
+        var closeButton = brush.brushArea.append('g')
+            .classed('close-button', true)
             .on('mousedown', function(){
                 // prevent resize behaviour on close button
                 d3.event.stopPropagation();
-            })
-            .classed('close-button', true);
+            });
         
         closeButton.append('rect')
             .classed('close-button-bg', true)
@@ -227,6 +227,7 @@ function Metabrush (d3brush, multibrush) {
                 }
             });
 
+        brush.updatePositions = updatePositions.bind(brush);
 
 
         function stopPropagation(){
@@ -244,6 +245,15 @@ function Metabrush (d3brush, multibrush) {
             else {
                 menu.hide();
             }
+        }
+
+        function updatePositions(){
+            var r = this.brushArea.selectAll('rect.extent');
+            closeButton.attr('transform', 'translate(' + (+r.attr('x') + +r.attr('width')) + ',' + r.attr('y') + ')');
+
+            // reposition menu
+            brushMenuWrap.attr('transform','translate('+ (+r.attr('x') + (+r.attr('width')/2)) + ','
+                + r.attr('y') + ')');
         }
     }
 

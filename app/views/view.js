@@ -103,11 +103,7 @@ class View {
      */
     onBrush (brush){
 
-        // reposition menu
-        var extentRect = brush.brushArea.select('.extent');
-        var brushMenu = brush.brushArea.selectAll('.brush-menus');
-        brushMenu.attr('transform','translate('+ (+extentRect.attr('x') + (+extentRect.attr('width')/2)) + ','
-            + extentRect.attr('y') + ')');
+        brush.updatePositions();
         
         // (un)register brush with (un)brushed items
         var self = this;
