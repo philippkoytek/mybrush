@@ -241,7 +241,7 @@ class View {
                 var aggregateId = thisView.idValue(aggregateD);
                 var links = d3.select('.canvas > .links').selectAll('path.data' + aggregateId + '.from-view-' + thisView.viewId)
                     .data(this.connections, function(d){
-                        return thisView.rawIdValue(d.rawValue) + '-within' + aggregateId + '-from' + thisView.viewId + '-to' + d.to.view.viewId
+                        return thisView.idValue(d.rawValue) + '-within' + aggregateId + '-from' + thisView.viewId + '-to' + d.to.view.viewId
                     });
 
                 // update lines (including line interpolation etc)

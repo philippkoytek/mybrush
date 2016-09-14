@@ -5,29 +5,25 @@ class BarChart extends View {
         super('barchart', width, height, position, padding);
         
         this.rawValues = function(d){
-            return d.values;  
+            return d.values || [d];
         };
 
-        this.rawIdValue = function(d){
-            return d.fifaPid;
-        };
-
-        this.idValue = function(bar){
-            return _.replace(bar.key, new RegExp(' ','g'), '_');
+        this.idValue = function(d){
+            return d.key ? _.replace(bar.key, new RegExp(' ','g'), '_') : d.fifaPid;
         };
 
         var color = d3.scale.category20();
         this.fillValue = function(d){
-            return color(d.key);
+            return color(d.key || d.club);
         };
 
         var self = this;
         this.xValue = function(d){
-            return self.xRange(d.key) + self.xRange.rangeBand()/2;
+            return self.xRange(d.key || d.club) + self.xRange.rangeBand()/2;
         };
 
         this.yValue = function(d){
-            return self.rawValues(d).length;
+            return self.rawValues(d).length || 1;
         };
 
         this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.chartWidth], 0.1);
@@ -78,7 +74,31 @@ class BarChart extends View {
         self.insertNewBrush();
 
         var content = self.chart.append('g').classed('content', true);
-        var bars = content.selectAll('.bar').data(barsData);
+
+        var barGroups = content.selectAll('.bar').data(barsData);
+        barGroups.enter().append('g')
+            .classed('bar', true)
+            .append('rect').classed('bar-bg', true)
+            .attr({width:self.xRange.rangeBand()})
+            .attr('x', function(d){return self.xValue(d) - self.xRange.rangeBand()/2; })
+            .attr('y', function(d){return self.yRange(self.yValue(d));})
+            .attr('height', function(d){ return self.chartHeight - self.yRange(self.yValue(d)); })
+            .style('fill', self.fillValue)
+            .style('stroke', self.fillValue);
+
+        var barParts = barGroups.selectAll('.bar-part').data(function(d){ return self.rawValues(d); });
+        barParts.enter().append('rect')
+            .classed('bar-part data-item', true)
+            .attr({width:self.xRange.rangeBand(), height:self.chartHeight - self.yRange(1)})
+            .attr('x', function(d){return self.xValue(d) - self.xRange.rangeBand()/2; })
+            .attr('y', function(d, i){ return self.yRange(i+1); })
+            .style('fill', self.fillValue)
+            .style('stroke', self.fillValue)
+            .call(self.addInteractivity.bind(self));
+
+
+
+       /* var bars = content.selectAll('.bar').data(barsData);
         bars.enter().append('rect')
             .classed('bar data-item', true)
             .attr('x', function(d){ return self.xValue(d) - self.xRange.rangeBand()/2; })
@@ -87,7 +107,7 @@ class BarChart extends View {
             .attr('height', function(d){ return self.chartHeight - self.yRange(self.yValue(d)); })
             .style('fill', self.fillValue)
             .style('stroke', self.fillValue)
-            .call(self.addInteractivity.bind(self));
+            .call(self.addInteractivity.bind(self));*/
 
         return self;
     };

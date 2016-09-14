@@ -21,7 +21,7 @@ class ScatterPlot extends View {
             return color(d.club); 
         };
         
-        this.rawIdValue = this.idValue = function(d){ 
+        this.idValue = function(d){ 
             return d.fifaPid; 
         };
         
