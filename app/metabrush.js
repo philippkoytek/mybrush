@@ -5,12 +5,23 @@ function Metabrush (d3brush, multibrush) {
 
     function init(){
 
+        brush.dim = multibrush.dim;
+        brush.origin = multibrush.view;
+
+        // brush instance methods
+        brush.updatePositions = brush_updatePositions.bind(brush);
+        brush.activate = brush_activate.bind(brush);
+
+        // default brush settings
         brush.styles = {
             source:{},
             link:{},
             target:{}
         };
         brush.targetViews = new Set();
+        brush.connect = false;
+        brush.animate = 'none';
+
         brush.menu = {};
         brush.menuItems = [
             {
@@ -45,9 +56,9 @@ function Metabrush (d3brush, multibrush) {
                         icon:'icons/svg/target.svg',
                         class:'target-constraint',
                         //todo: only make the OTHER views available (not own view as target)
-                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg'},
-                            {target:0, icon:'icons/svg/pk-scatterplot.svg'},
-                            {target:1, icon:'icons/svg/pk-barchart.svg'}]
+                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg', active:false},
+                            {target:1, icon:'icons/svg/pk-scatterplot.svg', active:false},
+                            {target:3, icon:'icons/svg/pk-barchart.svg'}]
                     },
                     {
                         icon:'icons/svg/pk-nolink.svg',
@@ -68,22 +79,20 @@ function Metabrush (d3brush, multibrush) {
                 ]
             }];
 
-        //duplicate source menu for target
+        // duplicate source menu for target
         var targetItems = {id:'target'};
         targetItems.items = _.cloneDeep(brush.menuItems[0].items);
         brush.menuItems.push(targetItems);
-
         brush.targetSourceCoupled = true;
-        brush.dim = multibrush.dim;
-        brush.origin = multibrush.view;
 
+        // initialize the brush svg element
         brush.brushArea = multibrush.containerNode.insert('g', '.brush')
             .classed('brush ready', true)
             .call(brush);
 
-
-
-
+        /*
+         * create the radial menus of the brush
+         */
         brush.menuWrap = d3.select('.canvas > .all-brush-menus').append('g')
             .classed('brush-menus-wrap view-' + brush.origin.viewId, true);
         brush.menuArea = brush.menuWrap.append('g')
@@ -138,34 +147,28 @@ function Metabrush (d3brush, multibrush) {
                     .setup(d.items);
             });
 
+        // add path for connection line of radial menu to brush
+        brushMenu.insert('path', ':first-child')
+            .classed('menu-line', true)
+            .style('stroke','black');
+
+        // add trigger button of radial menu
         var dragBehave = d3.behavior.drag()
-            //.origin(function(d){return d;})  add x and y data to every circle object to remember original position
-            .on('dragstart', function(){})
             .on('dragend', function(){ d3.event.sourceEvent.preventDefault(); })
             .on('drag', function(d, i){
-                //move menu
                 var menu = d3.select(this.parentNode);
                 var t = d3.transform(menu.attr('transform'));
                 t.translate[0] += d3.event.x;
                 t.translate[1] += d3.event.y;
                 menu.attr('transform', t.toString());
                 menu.select('.menu-line').call(updateConnectionLine, t, i);
-
             });
-
-        brushMenu.insert('path', ':first-child')
-            .classed('menu-line', true)
-            .style('stroke','black');
-
-        brushMenu.append('circle')
-            .classed('trigger', true)
+        brushMenu.append('circle').classed('trigger', true)
             .attr('r', 15)
             .on('mousedown', stopPropagation).on('touchstart', stopPropagation)
             .on('click', toggleMenu)
             .call(dragBehave);
-
-        brushMenu.append('g')
-            .classed('trigger-icon', true)
+        brushMenu.append('g').classed('trigger-icon', true)
             .each(function(d){
                 var icon = d3.select(this);
                 if(d.id == 'link'){
@@ -200,13 +203,13 @@ function Metabrush (d3brush, multibrush) {
                 }
             });
 
+        // add close button
         var closeButton = brush.menuArea.append('g')
             .classed('close-button', true)
             .on('mousedown', function(){
                 // prevent resize behaviour on close button
                 d3.event.stopPropagation();
             });
-
         closeButton.append('rect')
             .classed('close-button-bg', true)
             .attr({x:0, y:10, width:20, height:20})
@@ -222,10 +225,9 @@ function Metabrush (d3brush, multibrush) {
             .style({'pointer-events':'none'});
 
 
-        brush.updatePositions = brush_updatePositions.bind(brush);
-        brush.activate = brush_activate.bind(brush);
-
-
+        /*
+         * helper functions and instance methods
+         */
         function stopPropagation(){
             // prevent brush background to react on click as otherwise this will remove the brush
             d3.event.stopPropagation();
