@@ -299,7 +299,7 @@ d3.radialMenu = function() {
                 d3.select(this).style(d.data.styles);
             })
             .on('click', function(d){
-                onClick.call(d3.select(this.parentNode.parentNode).select('.menu-segment').node(), d.data);
+                onClick.call(this, d.data);
             });
         
         subSegments.append("image")

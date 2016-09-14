@@ -56,9 +56,9 @@ function Metabrush (d3brush, multibrush) {
                         icon:'icons/svg/target.svg',
                         class:'target-constraint',
                         //todo: only make the OTHER views available (not own view as target)
-                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg', active:false},
-                            {target:1, icon:'icons/svg/pk-scatterplot.svg', active:false},
-                            {target:3, icon:'icons/svg/pk-barchart.svg'}]
+                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg', active:brush.targetViews.has(VIEWS[2])},
+                            {target:1, icon:'icons/svg/pk-scatterplot.svg', active:brush.targetViews.has(VIEWS[1])},
+                            {target:3, icon:'icons/svg/pk-barchart.svg', active:brush.targetViews.has(VIEWS[3])}]
                     },
                     {
                         icon:'icons/svg/pk-nolink.svg',
@@ -112,28 +112,36 @@ function Metabrush (d3brush, multibrush) {
                     .iconSize(20)
                     .appendTo(menuG)
                     .onClick(function(action){
+                        var segmentContainer = d3.select(this.parentNode.parentNode);
                         if(action.hasOwnProperty('target')){
-                            brush.targetViews.add(VIEWS[action.target]);
+                            if(brush.targetViews.has(VIEWS[action.target])){
+                                brush.targetViews.delete(VIEWS[action.target]);
+                                d3.select(this).classed('toggle-active', false);
+                            }
+                            else{
+                                brush.targetViews.add(VIEWS[action.target]);
+                                d3.select(this).classed('toggle-active', true);
+                            }
                         }
                         if(action.hasOwnProperty('connect')){
                             brush.connect = action.connect;
-                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
+                            segmentContainer.select('.menu-icon').attr('xlink:href', action.icon);
                             d3.select(menuG).select('.trigger-icon').select('path.link').attr('d',action.d);
                         }
                         if(action.hasOwnProperty('animate')){
                             brush.animate = action.animate;
-                            d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', action.icon);
+                            segmentContainer.select('.menu-icon').attr('xlink:href', action.icon);
                         }
                         if(action.hasOwnProperty('styles')){
                             // overwrite brush.styles with selected styles 
                             // (if selected style is explicitly undefined it will overwrite the brush style to mark it undefined)
                             _.assign(brush.styles[d.id], action.styles);
-                            d3.select(this).style(action.styles);
+                            segmentContainer.select('.menu-segment').style(action.styles);
                             d3.select(menuG).select('.trigger-icon').style(brush.styles[d.id]);
                             if(d.id == 'source' && brush.targetSourceCoupled){
                                 _.assign(brush.styles['target'], action.styles);
                                 var targetMenuG = d3.select(menuG.parentNode).selectAll('.target-menu');
-                                var menuSegmentContainerClass = _.replace(d3.select(this.parentNode).attr('class'), new RegExp(' ','g'), '.');
+                                var menuSegmentContainerClass = _.replace(segmentContainer.attr('class'), new RegExp(' ','g'), '.');
                                 targetMenuG.selectAll('.' + menuSegmentContainerClass).selectAll('.menu-segment').style(action.styles);
                                 targetMenuG.select('.trigger-icon').style(brush.styles['target']);
                             }

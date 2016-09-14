@@ -142,6 +142,10 @@ html, body, svg#main {
     stroke: none;
 }
 
+.menu-segment-container .menu-subsegment.toggle-active {
+    fill:lightgrey;
+}
+
 .fill.menu-segment-container .menu-subsegment {
     fill: url(#noContentPattern);
 }
