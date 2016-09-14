@@ -33,42 +33,27 @@ class View {
         EventBus.on(events.UPDATE, function(){
             self.updateView.apply(self, arguments);
         });
-
-        EventBus.on(events.HIGHLIGHT, function(selectedData){
-            selectedData = [].concat(selectedData);
-            // mark highlighted items
-            self.chart.selectAll('.data-item')
-                .classed('highlighted',false)
-                .filter( d => self.rawValues(d).some(v => selectedData.indexOf(v) !== -1))
-                .classed('highlighted', true)
-                .moveToFront();
-        });
     }
 
 
     /**
      * event handlers
      */
-    highlight (d){
-        if(constants.brushOnClick){
-            this.brushDataPoint(d);
-        } else {
-            EventBus.trigger(events.HIGHLIGHT, this.rawValues(d));
-        }
-    }
-
     hover(d, visual){
-        var b = visual.getBBox();
-        this.chart.selectAll('.hover-rect').datum(visual)
-            .attr({x:b.x - 3, y:b.y - 3, width: b.width + 6, height: b.height + 6})
-            .style({display:'inline', opacity:1});
-        d3.selectAll([...d.visuals]).classed('highlighted', true);
+        this.rawValues(d).forEach(function(v){
+            this.chart.selectAll('.hover-rect').datum(visual)
+                .attr(this.getMinimumBrushBox(d, visual))
+                .style({display:'inline', opacity:1});
+            d3.selectAll([...v.visuals]).classed('highlighted', true);
+        }, this);
     }
 
     unhover(d, visual){
-        d3.selectAll([...d.visuals]).classed('highlighted', false);
-        this.chart.select('.hover-rect')
-            .style({display:'none', opacity:0});
+        this.rawValues(d).forEach(function(v){
+            d3.selectAll([...v.visuals]).classed('highlighted', false);
+            this.chart.select('.hover-rect')
+                .style({display:'none', opacity:0});
+        }, this);
     }
 
     addInteractivity(selection){
@@ -83,19 +68,16 @@ class View {
             .on('mouseenter', function(d){
                 var visual = this;
                 t = setTimeout(function(){
-                    self.rawValues(d).forEach(function(v){
-                        self.hover(v, visual);
-                    });
+                    self.hover(d, visual);
                 }, 250);
             })
             .on('mouseleave', function(d){
-                var visual = this;
                 clearTimeout(t);
-                self.rawValues(d).forEach(function(v){
-                    self.unhover(v, visual);
-                });
+                self.unhover(d, this);
             })
-            .on('click', self.highlight.bind(self));
+            .on('click', function(d){
+                self.brushDataPoint(d, this);
+            });
     }
 
     /**
@@ -213,6 +195,11 @@ class View {
         return [].concat(d);
     }
 
+    getMinimumBrushBox (d, visual) {
+        var b = visual.getBBox();
+        return {x:b.x - 3, y:b.y - 3, width: b.width + 6, height: b.height + 6};
+    }
+
     updateView(){
         var thisView = this;
         this.chart.selectAll('.data-item')
@@ -259,7 +246,7 @@ class View {
 
                 // update lines (including line interpolation etc)
                 links.style(myStyles.link).transition().attr('d', function(d){
-                    return Lines.makeLine(getCenter(d.from), getCenter(d.to), d.brush.connect, this);
+                    return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(d.to), d.brush.connect, this);
                 });
 
                 // add new lines
@@ -275,7 +262,7 @@ class View {
                         if(d.brush.animate == 'draw'){
                             to = d.from;
                         }
-                        return Lines.makeLine(getCenter(d.from), getCenter(to), d.brush.connect, this);
+                        return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(to), d.brush.connect, this);
                     })
                     .transition()
                     .duration(function(d){
@@ -283,7 +270,7 @@ class View {
                     })
                     .style('opacity', 1)
                     .attr('d', function(d){
-                        return Lines.makeLine(getCenter(d.from), getCenter(d.to), d.brush.connect, this);
+                        return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(d.to), d.brush.connect, this);
                     });
 
 
@@ -298,7 +285,7 @@ class View {
                     })
                     .attr('d', function(d){
                         if(d.brush.animate == 'draw'){
-                            return Lines.makeLine(getCenter(d.from), getCenter(d.from), d.brush.connect, this);
+                            return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(d.from), d.brush.connect, this);
                         }
                         return Lines.drawCurve(this._curve);
                     })
@@ -306,7 +293,7 @@ class View {
             });
 
 
-        function getCenter(visual){
+        function getGlobalCenter(visual){
             return {
                 x:visual.getBoundingClientRect().left + visual.getBoundingClientRect().width/2,
                 y:visual.getBoundingClientRect().top + visual.getBoundingClientRect().height/2

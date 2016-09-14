@@ -8,7 +8,6 @@
 var EventBus = _.extend({}, Backbone.Events);
 
 var events = {
-    HIGHLIGHT:'highlight',
     UPDATE:'update'
 };
 
