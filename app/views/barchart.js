@@ -116,4 +116,9 @@ class BarChart extends View {
             .attr('height', this.chartHeight + 5);
     }
 
+    getMinimumBrushBox (visual) {
+        var b = visual.getBBox();
+        return {x:b.x - 2, y:-5, width: b.width + 4, height: this.chartHeight + 5};
+    }
+
 }

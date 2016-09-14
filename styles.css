@@ -40,9 +40,9 @@ html, body, svg#main {
 }
 
 .hover-rect {
-    stroke:grey;
+    stroke: lightgrey;
     fill:none;
-
+    shape-rendering: crispEdges;
 }
 
 /* parallel coords */

@@ -42,7 +42,7 @@ class View {
     hover(d, visual){
         this.rawValues(d).forEach(function(v){
             this.chart.selectAll('.hover-rect').datum(visual)
-                .attr(this.getMinimumBrushBox(d, visual))
+                .attr(this.getMinimumBrushBox(visual))
                 .style({display:'inline', opacity:1});
             d3.selectAll([...v.visuals]).classed('highlighted', true);
         }, this);
@@ -143,9 +143,9 @@ class View {
         this.multiBrushes[dim].addBrush(this.createBrush(dim));
     }
 
-    brushDataPoint(d){
-        _.each(this.multiBrushes, function(brush){
-            brush.setExtentOnData(d);
+    brushDataPoint(d, visual){
+        _.forEach(this.multiBrushes, function(multibrush){
+            multibrush.setExtentOnData(d, visual);
         });
     }
 
@@ -195,7 +195,7 @@ class View {
         return [].concat(d);
     }
 
-    getMinimumBrushBox (d, visual) {
+    getMinimumBrushBox (visual) {
         var b = visual.getBBox();
         return {x:b.x - 3, y:b.y - 3, width: b.width + 6, height: b.height + 6};
     }
