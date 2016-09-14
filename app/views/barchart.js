@@ -26,6 +26,10 @@ class BarChart extends View {
             return self.xRange(d.key) + self.xRange.rangeBand()/2;
         };
 
+        this.yValue = function(d){
+            return self.rawValues(d).length;
+        };
+
         this.xRange = d3.scale.ordinal().rangeRoundBands([0, this.chartWidth], 0.1);
         this.yRange = d3.scale.linear().range([this.chartHeight, 0]);
 
@@ -77,10 +81,10 @@ class BarChart extends View {
         var bars = content.selectAll('.bar').data(barsData);
         bars.enter().append('rect')
             .classed('bar data-item', true)
-            .attr('x', function(d){ return self.xRange(d.key); })
+            .attr('x', function(d){ return self.xValue(d) - self.xRange.rangeBand()/2; })
             .attr('width', self.xRange.rangeBand())
-            .attr('y', function(d){ return self.yRange(self.rawValues(d).length); })
-            .attr('height', function(d){ return self.chartHeight - self.yRange(self.rawValues(d).length); })
+            .attr('y', function(d){ return self.yRange(self.yValue(d)); })
+            .attr('height', function(d){ return self.chartHeight - self.yRange(self.yValue(d)); })
             .style('fill', self.fillValue)
             .style('stroke', self.fillValue)
             .call(self.addInteractivity.bind(self));
