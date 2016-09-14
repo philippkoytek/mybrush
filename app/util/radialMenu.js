@@ -377,10 +377,7 @@ d3.radialMenu = function() {
         dataJoin.selectAll('.menu-subsegment-container')
             .transition()
             .duration(animationDuration)
-            .style({opacity:0, display:'none'})
-            .each('end', function(){
-               // d3.select(this).style('display:none');
-            });
+            .style({opacity:0, display:'none'});
 
         // Select all the segments and animate them back into the centre
         dataJoin.select("path.menu-segment")

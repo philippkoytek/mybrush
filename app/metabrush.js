@@ -107,7 +107,7 @@ function Metabrush (d3brush, multibrush) {
             .each(function(d){
                 var menuG = this;
                 brush.menu[d.id] = new d3.radialMenu()
-                    .thickness(35)
+                    .thickness(30)
                     .radius(20)
                     .iconSize(20)
                     .appendTo(menuG)
