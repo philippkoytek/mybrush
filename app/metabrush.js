@@ -138,16 +138,12 @@ function Metabrush (d3brush, multibrush) {
                             _.assign(brush.styles[d.id], action.styles);
                             segmentContainer.select('.menu-segment').style(action.styles);
                             d3.select(menuG).select('.trigger-icon').style(brush.styles[d.id]);
+
                             if(d.id == 'source' && brush.targetSourceCoupled){
-                                _.assign(brush.styles['target'], action.styles);
-                                var targetMenuG = d3.select(menuG.parentNode).selectAll('.target-menu');
-                                var menuSegmentContainerClass = _.replace(segmentContainer.attr('class'), new RegExp(' ','g'), '.');
-                                targetMenuG.selectAll('.' + menuSegmentContainerClass).selectAll('.menu-segment').style(action.styles);
-                                targetMenuG.select('.trigger-icon').style(brush.styles['target']);
+                                coupleTargetToSource();
                             }
-                            if(d.id == 'target'){
-                                brush.targetSourceCoupled = false;
-                                d3.select(menuG.parentNode).selectAll('.target-coupling-icon').attr('xlink:href', 'icons/svg/link-decoupled.svg');
+                            if(d.id == 'target' && brush.targetSourceCoupled){
+                                decoupleTargetFromSource();
                             }
                         }
                         EventBus.trigger(events.UPDATE);
@@ -164,19 +160,20 @@ function Metabrush (d3brush, multibrush) {
         var dragBehave = d3.behavior.drag()
             .on('dragend', function(){ d3.event.sourceEvent.preventDefault(); })
             .on('drag', function(d, i){
-                var menu = d3.select(this.parentNode);
+                var menu = d3.select(this.parentNode.parentNode);
                 var t = d3.transform(menu.attr('transform'));
                 t.translate[0] += d3.event.x;
                 t.translate[1] += d3.event.y;
                 menu.attr('transform', t.toString());
                 menu.select('.menu-line').call(updateConnectionLine, t, i);
             });
-        brushMenu.append('circle').classed('trigger', true)
+        var menuTrigger = brushMenu.append('g').classed('menu-trigger', true);
+        menuTrigger.append('circle').classed('trigger', true)
             .attr('r', 15)
             .on('mousedown', stopPropagation).on('touchstart', stopPropagation)
             .on('click', toggleMenu)
             .call(dragBehave);
-        brushMenu.append('g').classed('trigger-icon', true)
+        menuTrigger.append('g').classed('trigger-icon', true)
             .each(function(d){
                 var icon = d3.select(this);
                 if(d.id == 'link'){
@@ -200,12 +197,22 @@ function Metabrush (d3brush, multibrush) {
                         })
                         .style({'stroke': 'grey', 'stroke-dasharray':0, fill:'grey', 'stroke-width':1});
                     if(d.id == 'target'){
-                        var tcouple = icon.append('g').classed('target-coupling', true);
+                        var tcouple = d3.select(this.parentNode).append('g').classed('target-coupling', true);
                         tcouple.append('circle').classed('target-coupling-bg', true)
                             .attr({r:7, cx:11, cy:-11})
-                            .style({fill:'#efefef', stroke:'lightgrey', 'stroke-width':1, 'stroke-dasharray':0});
+                            .style({fill:'#efefef', stroke:'lightgrey', 'stroke-width':1, 'stroke-dasharray':0})
+                            .on('click', function(){
+                                stopPropagation();
+                                if(brush.targetSourceCoupled){
+                                    decoupleTargetFromSource();
+                                } else {
+                                    coupleTargetToSource();
+                                }
+                                EventBus.trigger(events.UPDATE);
+                            });
                         tcouple.append('image').classed('target-coupling-icon', true)
                             .attr('xlink:href', 'icons/svg/link-coupled.svg')
+                            .style('pointer-events', 'none')
                             .attr({ x:7, y:-16, width:9, height:9 });
                     }
                 }
@@ -266,6 +273,25 @@ function Metabrush (d3brush, multibrush) {
                 line.datum([[0,0], lineOrigin])
                     .attr('d', d3.svg.line());
             }
+        }
+
+        function coupleTargetToSource (){
+            _.assign(brush.styles['target'], brush.styles['source']);
+            var targetMenuG = brush.menuArea.selectAll('g.target-menu');
+            var sourceMenuG = brush.menuArea.selectAll('g.source-menu');
+            targetMenuG.selectAll('.menu-segment').each(function(d){
+                var myContainerClasses = '.' + _.replace(d3.select(this.parentNode).attr('class'), new RegExp(' ','g'), '.');
+                var sourceStyle = sourceMenuG.selectAll(myContainerClasses).selectAll('.menu-segment').attr('style');
+                d3.select(this).attr('style', sourceStyle);
+            });
+            targetMenuG.select('.trigger-icon').style(brush.styles['target']);
+            brush.targetSourceCoupled = true;
+            brush.menuArea.selectAll('.target-coupling-icon').attr('xlink:href', 'icons/svg/link-coupled.svg');
+        }
+
+        function decoupleTargetFromSource () {
+            brush.targetSourceCoupled = false;
+            brush.menuArea.selectAll('.target-coupling-icon').attr('xlink:href', 'icons/svg/link-decoupled.svg');
         }
 
         /**
