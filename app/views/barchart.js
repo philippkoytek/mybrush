@@ -13,7 +13,7 @@ class BarChart extends View {
         };
 
         var color = d3.scale.category20();
-        this.fillValue = function(d){
+        this.strokeValue = this.fillValue = function(d){
             return d.key ? color(d.key) : 'transparent';
         };
 
