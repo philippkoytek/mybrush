@@ -78,17 +78,18 @@ class BarChart extends View {
         var barGroups = content.selectAll('.bar').data(barsData);
         barGroups.enter().append('g')
             .classed('bar', true)
-            .append('rect').classed('bar-bg', true)
+            .append('rect').classed('bar-bg data-item aggregate', true)
             .attr({width:self.xRange.rangeBand()})
             .attr('x', function(d){return self.xValue(d) - self.xRange.rangeBand()/2; })
             .attr('y', function(d){return self.yRange(self.yValue(d));})
             .attr('height', function(d){ return self.chartHeight - self.yRange(self.yValue(d)); })
             .style('fill', self.fillValue)
-            .style('stroke', self.fillValue);
+            .style('stroke', self.fillValue)
+            .call(self.addInteractivity.bind(self));
 
         var barParts = barGroups.selectAll('.bar-part').data(function(d){ return self.rawValues(d); });
         barParts.enter().append('rect')
-            .classed('bar-part data-item', true)
+            .classed('bar-part data-item individual', true)
             .attr({width:self.xRange.rangeBand(), height:self.chartHeight - self.yRange(1)})
             .attr('x', function(d){return self.xValue(d) - self.xRange.rangeBand()/2; })
             .attr('y', function(d, i){ return self.yRange(i+1); })

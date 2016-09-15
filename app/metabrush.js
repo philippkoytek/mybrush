@@ -21,6 +21,10 @@ function Metabrush (d3brush, multibrush) {
         brush.targetViews = new Set();
         brush.connect = false;
         brush.animate = 'none';
+        brush.granularity = {
+            source:'aggregate',
+            target:'aggregate'
+        };
 
         brush.menu = {};
         brush.menuItems = [
@@ -30,7 +34,8 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/paint.svg',
                         class:'fill',
-                        actions:[{styles:{fill:'green'}},{styles:{fill:'blue'}},{styles:{fill:'red'}},{styles:{fill:undefined}}]
+                        actions:[{styles:{fill:'green'}},{styles:{fill:'blue'}},{styles:{fill:'red'}},{styles:{fill:undefined}}],
+                        //toggles:[{granularity:'aggregate'}, {granularity:'individual'}]
                     },
                     {
                         icon:'icons/svg/brush-stroke.svg',
@@ -39,6 +44,11 @@ function Metabrush (d3brush, multibrush) {
                             {styles:{stroke:'blue', 'stroke-width':'2px', 'stroke-dasharray':0}},
                             {styles:{stroke:'red', 'stroke-width':'2px', 'stroke-dasharray':0}},
                             {styles:{stroke:undefined, 'stroke-width':undefined, 'stroke-dasharray':undefined}}]
+                    },
+                    {
+                        icon:'icons/svg/number-one-bull-eye.svg',
+                        class:'granularity',
+                        actions:[{granularity:'aggregate'}, {granularity:'individual'}]
                     }
                 ]},
             {
@@ -56,9 +66,9 @@ function Metabrush (d3brush, multibrush) {
                         icon:'icons/svg/target.svg',
                         class:'target-constraint',
                         //todo: only make the OTHER views available (not own view as target)
-                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg', active:brush.targetViews.has(VIEWS[2])},
-                            {target:1, icon:'icons/svg/pk-scatterplot.svg', active:brush.targetViews.has(VIEWS[1])},
-                            {target:3, icon:'icons/svg/pk-barchart.svg', active:brush.targetViews.has(VIEWS[3])}]
+                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg'},
+                            {target:1, icon:'icons/svg/pk-scatterplot.svg'},
+                            {target:3, icon:'icons/svg/pk-barchart.svg'}]
                     },
                     {
                         icon:'icons/svg/pk-nolink.svg',
@@ -132,19 +142,23 @@ function Metabrush (d3brush, multibrush) {
                             brush.animate = action.animate;
                             segmentContainer.select('.menu-icon').attr('xlink:href', action.icon);
                         }
+                        if(action.hasOwnProperty('granularity')){
+                                brush.granularity[d.id] = action.granularity;
+                        }
                         if(action.hasOwnProperty('styles')){
                             // overwrite brush.styles with selected styles 
                             // (if selected style is explicitly undefined it will overwrite the brush style to mark it undefined)
                             _.assign(brush.styles[d.id], action.styles);
                             segmentContainer.select('.menu-segment').style(action.styles);
                             d3.select(menuG).select('.trigger-icon').style(brush.styles[d.id]);
+                        }
 
-                            if(d.id == 'source' && brush.targetSourceCoupled){
-                                coupleTargetToSource();
-                            }
-                            if(d.id == 'target' && brush.targetSourceCoupled){
-                                decoupleTargetFromSource();
-                            }
+                        // update target/source coupling
+                        if(d.id == 'source' && brush.targetSourceCoupled){
+                            syncTargetWithSource();
+                        }
+                        if(d.id == 'target' && brush.targetSourceCoupled){
+                            decoupleTargetFromSource();
                         }
                         EventBus.trigger(events.UPDATE);
                     })
@@ -206,7 +220,7 @@ function Metabrush (d3brush, multibrush) {
                                 if(brush.targetSourceCoupled){
                                     decoupleTargetFromSource();
                                 } else {
-                                    coupleTargetToSource();
+                                    syncTargetWithSource();
                                 }
                                 EventBus.trigger(events.UPDATE);
                             });
@@ -275,8 +289,9 @@ function Metabrush (d3brush, multibrush) {
             }
         }
 
-        function coupleTargetToSource (){
+        function syncTargetWithSource (){
             _.assign(brush.styles['target'], brush.styles['source']);
+            brush.granularity.target = brush.granularity.source;
             var targetMenuG = brush.menuArea.selectAll('g.target-menu');
             var sourceMenuG = brush.menuArea.selectAll('g.source-menu');
             targetMenuG.selectAll('.menu-segment').each(function(d){

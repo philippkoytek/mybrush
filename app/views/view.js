@@ -211,24 +211,25 @@ class View {
                     link:{stroke:'black', fill:'none'}
                 };
                 this.connections = [];
+                var d3This = d3.select(this);
 
+                // calculate data item's style and connections
                 thisView.rawValues(aggregateD).forEach(function(v){
                     v.brushes.forEach(function(brush){
-                        if(brush.origin == thisView){
-                            // overwrites myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
+                        // overwrite myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
+                        if(brush.origin == thisView && d3This.classed(brush.granularity.source)){
                             _.merge(myStyles.point, brush.styles.source);
-                        } else if (brush.targetViews.has(thisView)){
-                            // overwrites myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
+                        } else if (brush.targetViews.has(thisView) && d3This.classed(brush.granularity.target)){
                             _.merge(myStyles.point, brush.styles.target);
                         }
                         //rebuild connections data
-                        if(brush.connect && brush.origin == thisView){
+                        if(brush.connect && brush.origin == thisView && d3This.classed(brush.granularity.source)){
                             //todo fixme: link styles from different brushes that apply to the same connections are not merged but overwritten
                             // (possible fix: don't add the connection twice to this.connections but find the existing one and merge the styles in it)
                             var linkStyle = _.merge({}, myStyles.link, brush.styles.link);
                             v.visuals.forEach(function(visual){
                                 //only connect to visuals in target views and not to self (in origin view)
-                                if(brush.targetViews.has(visual.view)){
+                                if(brush.targetViews.has(visual.view) && d3.select(visual).classed(brush.granularity.target)){
                                     this.connections.push({from:this, to:visual, brush:brush, rawValue:v, style:linkStyle});
                                 }
                             }, this);
@@ -236,14 +237,15 @@ class View {
                     }, this);
                 }, this);
 
+                // style the data item
+                d3This.style(myStyles.point);
 
-                d3.select(this).style(myStyles.point);
-
-
+                // draw the lines
                 var aggregateId = thisView.idValue(aggregateD);
                 var links = d3.select('.canvas > .links').selectAll('path.data' + aggregateId + '.from-view-' + thisView.viewId)
                     .data(this.connections, function(d){
-                        return thisView.idValue(d.rawValue) + '-within' + aggregateId + '-from' + thisView.viewId + '-to' + d.to.view.viewId
+                        // identifier example: dataItemID WITHIN dataGroupID FROM group/individual IN view2 TO group/individual IN view3
+                        return thisView.idValue(d.rawValue) + '-within' + aggregateId + '-from-' + d.brush.granularity.source + '-in' + thisView.viewId + '-to-' + d.brush.granularity.target + '-in' + d.to.view.viewId
                     });
 
                 // update lines (including line interpolation etc)
