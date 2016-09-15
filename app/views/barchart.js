@@ -9,12 +9,12 @@ class BarChart extends View {
         };
 
         this.idValue = function(d){
-            return d.key ? _.replace(bar.key, new RegExp(' ','g'), '_') : d.fifaPid;
+            return d.key ? _.replace(d.key, new RegExp(' ','g'), '_') : d.fifaPid;
         };
 
         var color = d3.scale.category20();
         this.fillValue = function(d){
-            return color(d.key || d.club);
+            return d.key ? color(d.key) : 'transparent';
         };
 
         var self = this;
