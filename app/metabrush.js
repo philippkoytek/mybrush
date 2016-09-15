@@ -46,9 +46,10 @@ function Metabrush (d3brush, multibrush) {
                             {styles:{stroke:undefined, 'stroke-width':undefined, 'stroke-dasharray':undefined}}]
                     },
                     {
-                        icon:'icons/svg/number-one-bull-eye.svg',
+                        icon:'icons/svg/aggregated.svg',
                         class:'granularity',
-                        actions:[{granularity:'aggregate'}, {granularity:'individual'}]
+                        actions:[{granularity:'aggregate', icon:'icons/svg/aggregated.svg'},
+                            {granularity:'individual', icon:'icons/svg/individuals.svg'}]
                     }
                 ]},
             {
@@ -144,6 +145,7 @@ function Metabrush (d3brush, multibrush) {
                         }
                         if(action.hasOwnProperty('granularity')){
                                 brush.granularity[d.id] = action.granularity;
+                                segmentContainer.select('.menu-icon').attr('xlink:href', action.icon);
                         }
                         if(action.hasOwnProperty('styles')){
                             // overwrite brush.styles with selected styles 
@@ -298,6 +300,8 @@ function Metabrush (d3brush, multibrush) {
                 var myContainerClasses = '.' + _.replace(d3.select(this.parentNode).attr('class'), new RegExp(' ','g'), '.');
                 var sourceStyle = sourceMenuG.selectAll(myContainerClasses).selectAll('.menu-segment').attr('style');
                 d3.select(this).attr('style', sourceStyle);
+                var segmentIcon = sourceMenuG.selectAll(myContainerClasses).selectAll('.menu-segment + .menu-icon').attr('xlink:href');
+                d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', segmentIcon);
             });
             targetMenuG.select('.trigger-icon').style(brush.styles['target']);
             brush.targetSourceCoupled = true;
