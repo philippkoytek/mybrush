@@ -223,11 +223,13 @@ class View {
                         }
                         //rebuild connections data
                         if(brush.connect && brush.origin == thisView){
-                            _.merge(myStyles.link, brush.styles.link);
+                            //todo fixme: link styles from different brushes that apply to the same connections are not merged but overwritten
+                            // (possible fix: don't add the connection twice to this.connections but find the existing one and merge the styles in it)
+                            var linkStyle = _.merge({}, myStyles.link, brush.styles.link);
                             v.visuals.forEach(function(visual){
                                 //only connect to visuals in target views and not to self (in origin view)
                                 if(brush.targetViews.has(visual.view)){
-                                    this.connections.push({from:this, to:visual, brush:brush, rawValue:v});
+                                    this.connections.push({from:this, to:visual, brush:brush, rawValue:v, style:linkStyle});
                                 }
                             }, this);
                         }
@@ -245,7 +247,11 @@ class View {
                     });
 
                 // update lines (including line interpolation etc)
-                links.style(myStyles.link).transition().attr('d', function(d){
+                links.each(function(d){
+                        d3.select(this).style(d.style);
+                    })
+                    .transition()
+                    .attr('d', function(d){
                     return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(d.to), d.brush.connect, this);
                 });
 
@@ -253,7 +259,9 @@ class View {
                 links.enter().append('path')
                     .classed('data'+aggregateId, true)
                     .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
-                    .style(myStyles.link)
+                    .each(function(d){
+                        d3.select(this).style(d.style);
+                    })
                     .style('opacity', function(d){
                         return d.brush.animate == 'fade' ? 0 : 1;
                     })
