@@ -10,15 +10,28 @@ class ParallelCoords extends View {
             return d.skillProperties.find(p => p.title === dim).sumValue;
         };
 
+        var color = d3.scale.category20();
+        this.strokeValue = function(d){
+            return color(d.club);
+        };
+
+        this.fillValue = function(){
+            return 'none';
+        };
+
+        this.idValue = function(d){
+            return d.fifaPid;
+        };
+
         this.xRange = d3.scale.ordinal().rangePoints([0, this.chartWidth], 1);
         this.yRange = {};
 
         this.axis = d3.svg.axis().orient('left');
+        this.dimensions = ['Attacking', 'Movement', 'Defending', 'Goalkeeping'];
     }
 
     data(data) {
         var self = this;
-        var dimensions = data[0].skillProperties.map(p => p.title);
 
         function drawPath(d){
             return d3.svg.line()(dimensions.map(function(dim) {
@@ -26,8 +39,8 @@ class ParallelCoords extends View {
             }));
         }
 
-        self.xRange.domain(dimensions);
-        dimensions.forEach(function(dim){
+        self.xRange.domain(self.dimensions);
+        self.dimensions.forEach(function(dim){
             self.yRange[dim] = d3.scale.linear()
                 .domain([0, d3.max(data, function(d){
                     return self.yValue(d, dim);
@@ -35,17 +48,8 @@ class ParallelCoords extends View {
                 .range([self.chartHeight, 0]).nice();
         });
 
-        var foreground = self.chart.append('g')
-            .classed('foreground', true)
-            .selectAll('path').data(data)
-            .enter().append('path')
-            .classed('line data-item', true)
-            .attr('d', drawPath)
-            .on('click', self.highlight.bind(self));
-
-
         var dimensionGroups = self.chart.selectAll('.dimension')
-            .data(dimensions)
+            .data(self.dimensions)
             .enter().append('g')
             .classed('dimension', true)
             .attr('transform', function(d){
@@ -63,20 +67,45 @@ class ParallelCoords extends View {
         dimensionGroups.each(function(dim){
             self.insertNewBrush(dim, d3.select(this));
         });
-            
+
+        var content = self.chart.append('g').classed('content', true);
+
+        var strokeLines = content.selectAll('path').data(data);
+        strokeLines.enter().append('path')
+            .classed('line data-item aggregate individual', true)
+            .style('stroke', self.strokeValue)
+            .style('fill', self.fillValue)
+            .style('stroke-width', 2)
+            .attr('d', drawPath)
+            .call(self.addInteractivity.bind(self));
+
+        return self;
     }
     
     
     createBrush(dim){
-        return d3.svg.brush()
-            .y(this.yRange[dim])
-            .on('brush', this.onBrush.bind(this))
-            .on('brushend', this.onBrushEnd.bind(this));
+        var self = this;
+        var brush = d3.svg.brush()
+            .y(this.yRange[dim]);
+        brush.on('brush', function(){
+                self.onBrush(brush);
+            })
+            .on('brushend', function(){
+                self.onBrushEnd(brush);
+            });
+        return brush;
     }
     
     adjustBrushArea(brushArea) {
-        brushArea.selectAll('rect')
-            .attr('x', -8)
+        brushArea.attr('transform', 'translate(-8,0)')
+            .selectAll('rect')
+            .attr('x', 0)
             .attr('width', 16);
+    }
+
+    getMinimumBrushBox (visual, d, dim) {
+        var y = this.yRange[dim](this.yValue(d, dim));
+        var b = visual.getBBox();
+        return {x:-8, y:y - 6, width: 16, height: 12};
     }
 }

@@ -24,9 +24,6 @@ class View {
         this.chart = this.svg.append('g')
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
-
-
-        this.chart.append('rect').classed('hover-rect', true);
         
 
         var self = this;
@@ -40,9 +37,12 @@ class View {
      * event handlers
      */
     hover(d, visual){
+        var self = this;
         this.rawValues(d).forEach(function(v){
-            this.chart.selectAll('.hover-rect').datum(visual)
-                .attr(this.getMinimumBrushBox(visual))
+            this.chart.selectAll('.hover-rect')
+                .each(function(dim){
+                    d3.select(this).attr(self.getMinimumBrushBox(visual, d, dim));
+                })
                 .style({display:'inline', opacity:1});
             d3.selectAll([...v.visuals]).classed('highlighted', true);
         }, this);
@@ -51,7 +51,7 @@ class View {
     unhover(d, visual){
         this.rawValues(d).forEach(function(v){
             d3.selectAll([...v.visuals]).classed('highlighted', false);
-            this.chart.select('.hover-rect')
+            this.chart.selectAll('.hover-rect')
                 .style({display:'none', opacity:0});
         }, this);
     }

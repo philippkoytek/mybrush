@@ -44,35 +44,11 @@ html, body, svg#main {
     stroke-width: 2px;
 }
 
-.ghost {
-    fill: #ddd !important;
-}
-
 .hover-rect {
     stroke: lightgrey;
     fill:none;
     shape-rendering: crispEdges;
 }
-
-/* parallel coords */
-
-.background path {
-    fill: none;
-    stroke: #ddd;
-    shape-rendering: crispEdges;
-}
-
-.data-item.line {
-    fill: none;
-    stroke: steelblue;
-}
-
-.data-item.line.ghost {
-    fill: none !important;
-    stroke: #ddd !important;
-    shape-rendering: crispEdges;
-}
-
 
 /* brushes */
 

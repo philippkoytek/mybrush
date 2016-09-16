@@ -7,6 +7,10 @@ class Multibrush {
         this.containerNode = containerNode || this.view.chart;
         this.xRange = (typeof this.view.xRange == 'function') ? this.view.xRange : this.view.xRange[this.dim];
         this.yRange = (typeof this.view.yRange == 'function') ? this.view.yRange : this.view.yRange[this.dim];
+        
+        this.containerNode.append('rect')
+            .classed('hover-rect ' + dim, true)
+            .datum(dim);
     }
     
     addBrush(brush) {
@@ -41,7 +45,7 @@ class Multibrush {
      */
     setExtentOnData(d, visual){
         var domainExtent;
-        var minBrushBox = this.view.getMinimumBrushBox(visual);
+        var minBrushBox = this.view.getMinimumBrushBox(visual, d, this.dim);
         if(this.hasX() && this.hasY()){
             var xCoord = this.xRange(this.xValue(d));
             var yCoord = this.yRange(this.yValue(d));
