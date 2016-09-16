@@ -111,8 +111,6 @@ class ScatterPlot extends View {
         return brush;
     }
 
-    
-
 }
 
 

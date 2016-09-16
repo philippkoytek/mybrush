@@ -31,13 +31,14 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     var barchart = new BarChart('number of players', viewWidth, viewHeight, {x: margin, y: viewHeight + 2*margin});
 
 
-    // var listview = new ListView(700, 400, {x: 740, y: 440});
-    DEBUG = new DebugView(viewWidth, viewHeight, {x:viewWidth + 2*margin, y:viewHeight + 2*margin});
+    var listview = new ListView(viewWidth, viewHeight, {x:viewWidth + 2*margin, y:viewHeight + 2*margin});
+    //DEBUG = new DebugView(viewWidth, viewHeight, {x:viewWidth + 2*margin, y:viewHeight + 2*margin});
 
     // add charts to global views object and fill with data
     VIEWS[scatterplot.viewId] = scatterplot.data(data);
     VIEWS[parallelcoords.viewId] = parallelcoords.data(data);
     VIEWS[barchart.viewId] = barchart.data(data);
+    VIEWS[listview.viewId] = listview.data(data);
 
     // links and brush menus are above all other elements
     d3.select('.canvas').append('g').classed('links', true);

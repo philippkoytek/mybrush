@@ -50,6 +50,16 @@ html, body, svg#main {
     shape-rendering: crispEdges;
 }
 
+/* list view */
+
+text {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
 /* brushes */
 
 .brush .extent {

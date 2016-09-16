@@ -43,7 +43,7 @@ class BarChart extends View {
             .append('text')
             .classed('label', true)
             .attr('transform', 'rotate(-90)')
-            .attr('y', 6)
+            .attr('y', -30)
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text(yLabel || '');

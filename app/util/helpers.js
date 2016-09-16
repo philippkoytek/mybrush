@@ -28,6 +28,14 @@ function makeAbsoluteContext(element, svgDocument) {
     };
 }
 
+function arrayOfNumbers (from, to) {
+    var arr = [];
+    for(var i = from; i <= to; i++){
+        arr.push(i);
+    }
+    return arr;
+}
+
 //TODO: remove this from here eventually
 var positions = {
     offensive:['LW', 'ST', 'RW', 'CF', 'LF', 'RF'],
