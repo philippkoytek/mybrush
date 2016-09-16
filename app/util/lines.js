@@ -31,7 +31,8 @@ class Lines {
             type = 'catmull-rom';
         }
 
-        var newCurve = new SDCurve({
+        var cacheKey = JSON.stringify(points) + res + type;
+        var newCurve = Lines.cache[cacheKey] || new SDCurve({
             points: points,
             degree: 2,
             resolution:res,
@@ -39,6 +40,7 @@ class Lines {
         }).curve().map(function(d){
             return d.point;
         });
+        Lines.cache[cacheKey] = newCurve;
 
         if(pathNode._curve && curveStyle){
             if(pathNode._curve.length > newCurve.length){
@@ -52,7 +54,6 @@ class Lines {
             }
         }
 
-        //todo: performance improvement possible here by caching the curves for different line styles in a property of pathNode
         pathNode._curve = newCurve;
         return Lines.drawCurve(pathNode._curve);
     }
@@ -105,3 +106,5 @@ class Lines {
         return points;
     }
 }
+
+Lines.cache = {};
