@@ -27,11 +27,13 @@ class ParallelCoords extends View {
         this.yRange = {};
 
         this.axis = d3.svg.axis().orient('left');
-        this.dimensions = ['Attacking', 'Movement', 'Defending', 'Goalkeeping'];
+
     }
 
     data(data) {
         var self = this;
+        //this.dimensions = ['Attacking', 'Movement', 'Defending', 'Goalkeeping'];
+        this.dimensions = data[0].skillProperties.map(p => p.title);
 
         function drawPath(d){
             return d3.svg.line().interpolate('cardinal').tension(0.9)(self.dimensions.map(function(dim) {
