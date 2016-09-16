@@ -23,7 +23,7 @@ class ParallelCoords extends View {
             return d.fifaPid;
         };
 
-        this.xRange = d3.scale.ordinal().rangePoints([0, this.chartWidth], 1);
+        this.xRange = d3.scale.ordinal().rangePoints([0, this.chartWidth], 0.15);
         this.yRange = {};
 
         this.axis = d3.svg.axis().orient('left');
@@ -45,7 +45,7 @@ class ParallelCoords extends View {
                 .domain([0, d3.max(data, function(d){
                     return self.yValue(d, dim);
                 }) + 10])
-                .range([self.chartHeight, 0]).nice();
+                .range([self.chartHeight, 10]).nice();
         });
 
         var dimensionGroups = self.chart.selectAll('.dimension')
@@ -63,7 +63,7 @@ class ParallelCoords extends View {
             .each(function(d) {d3.select(this).call(self.axis.scale(self.yRange[d]));})
             .append('text')
             .style('text-anchor', 'middle')
-            .attr('y', -9)
+            .attr('y', 0)
             .text(function(d){return d;});
 
         dimensionGroups.each(function(dim){
