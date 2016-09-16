@@ -34,7 +34,7 @@ class ParallelCoords extends View {
         var self = this;
 
         function drawPath(d){
-            return d3.svg.line()(dimensions.map(function(dim) {
+            return d3.svg.line().interpolate('cardinal').tension(0.9)(self.dimensions.map(function(dim) {
                 return [self.xRange(dim), self.yRange[dim](self.yValue(d, dim))];
             }));
         }
