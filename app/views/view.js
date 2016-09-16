@@ -25,6 +25,7 @@ class View {
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
         
+        this.fromChartToAbsoluteCtx = makeAbsoluteContext(this.chart.node(), d3.select('svg').node());        
 
         var self = this;
         EventBus.on(events.UPDATE, function(){
@@ -200,6 +201,11 @@ class View {
         return {x:b.x - 3, y:b.y - 3, width: b.width + 6, height: b.height + 6};
     }
 
+    lineAnchorPoint (visual, d, brush) {
+        var b = visual.getBBox();
+        return this.fromChartToAbsoluteCtx(b.x + b.width/2, b.y + b.height/2);
+    }
+
     updateView(){
         var thisView = this;
         this.chart.selectAll('.data-item')
@@ -245,7 +251,9 @@ class View {
                 var links = d3.select('.canvas > .links').selectAll('path.data' + aggregateId + '.from-view-' + thisView.viewId)
                     .data(this.connections, function(d){
                         // identifier example: dataItemID WITHIN dataGroupID FROM group/individual IN view2 TO group/individual IN view3
-                        return thisView.idValue(d.rawValue) + '-within' + aggregateId + '-from-' + d.brush.granularity.source + '-in' + thisView.viewId + '-to-' + d.brush.granularity.target + '-in' + d.to.view.viewId
+                        return thisView.idValue(d.rawValue) + '-within' + aggregateId + 
+                            '-from-' + d.brush.granularity.source + '-in' + thisView.viewId + 
+                            '-to-' + d.brush.granularity.target + '-in' + d.to.view.viewId;
                     });
 
                 // update lines (including line interpolation etc)
@@ -254,7 +262,8 @@ class View {
                     })
                     .transition()
                     .attr('d', function(d){
-                    return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(d.to), d.brush.connect, this);
+                    return Lines.makeLine(d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), 
+                        d.to.view.lineAnchorPoint(d.to, d.rawValue, d.brush), d.brush.connect, this);
                 });
 
                 // add new lines
@@ -272,7 +281,8 @@ class View {
                         if(d.brush.animate == 'draw'){
                             to = d.from;
                         }
-                        return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(to), d.brush.connect, this);
+                        return Lines.makeLine(d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), 
+                            to.view.lineAnchorPoint(to, d.rawValue, d.brush), d.brush.connect, this);
                     })
                     .transition()
                     .duration(function(d){
@@ -280,7 +290,8 @@ class View {
                     })
                     .style('opacity', 1)
                     .attr('d', function(d){
-                        return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(d.to), d.brush.connect, this);
+                        return Lines.makeLine(d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), 
+                            d.to.view.lineAnchorPoint(d.to, d.rawValue, d.brush), d.brush.connect, this);
                     });
 
 
@@ -295,20 +306,13 @@ class View {
                     })
                     .attr('d', function(d){
                         if(d.brush.animate == 'draw'){
-                            return Lines.makeLine(getGlobalCenter(d.from), getGlobalCenter(d.from), d.brush.connect, this);
+                            return Lines.makeLine(d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), 
+                                d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), d.brush.connect, this);
                         }
                         return Lines.drawCurve(this._curve);
                     })
                     .remove();
             });
-
-
-        function getGlobalCenter(visual){
-            return {
-                x:visual.getBoundingClientRect().left + visual.getBoundingClientRect().width/2,
-                y:visual.getBoundingClientRect().top + visual.getBoundingClientRect().height/2
-            };
-        }
     }
 }
 

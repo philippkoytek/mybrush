@@ -51,7 +51,9 @@ class ParallelCoords extends View {
         var dimensionGroups = self.chart.selectAll('.dimension')
             .data(self.dimensions)
             .enter().append('g')
-            .classed('dimension', true)
+            .attr('class', function(dim){
+                return 'dimension ' + dim;
+            })
             .attr('transform', function(d){
                 return 'translate(' + self.xRange(d) + ')';
             });
@@ -105,7 +107,11 @@ class ParallelCoords extends View {
 
     getMinimumBrushBox (visual, d, dim) {
         var y = this.yRange[dim](this.yValue(d, dim));
-        var b = visual.getBBox();
         return {x:-8, y:y - 6, width: 16, height: 12};
+    }
+
+    lineAnchorPoint (visual, d, brush) {
+        var dim = (brush.origin == this) ? brush.dim : this.dimensions[0];
+        return this.fromChartToAbsoluteCtx(this.xRange(dim), this.yRange[dim](this.yValue(d, dim)));
     }
 }
