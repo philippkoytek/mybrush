@@ -13,11 +13,11 @@ class ListView extends View {
         this.rows = 10;
 
         this.xValue = function (d, i){
-            return Math.floor(i/this.rows);
+            return this.xRange(Math.floor(i/this.rows));
         };
 
         this.yValue = function (d, i) {
-            return (i % this.rows) + 1;
+            return this.yRange((i % this.rows) + 1);
         };
         
         this.strokeValue = function(d){
@@ -46,14 +46,19 @@ class ListView extends View {
 
         var content = self.chart.append('g').classed('content', true);
         var cards = content.selectAll('.card').data(data, self.idValue);
-        cards.enter().append('text')
-            .classed('card data-item aggregate individual', true)
-            .attr('x', function(d, i){
-                return self.xRange(self.xValue(d, i));
-            })
-            .attr('y', function(d, i){ return self.yRange(self.yValue(d, i)); })
+        cards.enter().append('g')
+            .classed('card', true);
+        cards.append('text')
+            .classed('data-item aggregate individual', true)
+            .attr('x', function(d, i){ return self.xValue(d, i) + 3;})
+            .attr('y', self.yValue.bind(self))
             .text(function(d){return d.name;})
             .call(self.addInteractivity.bind(self));
+        cards.append('circle')
+            .classed('anchor-point', true)
+            .attr('cx', self.xValue.bind(self))
+            .attr('cy', self.yValue.bind(self))
+            .attr('r', 1.5);
 
         return self;
     }
@@ -73,5 +78,16 @@ class ListView extends View {
                 self.onBrushEnd(brush);
             });
         return brush;
+    }
+
+    getMinimumBrushBox (visual) {
+        var b = visual.getBBox();
+        return {x:b.x - 6, y:b.y - 3, width: Math.max(this.xRange.rangeBand(), b.width) + 9, height: b.height + 6};
+    }
+
+    lineAnchorPoint (visual, d, brush) {
+        var x = d3.select(visual.nextSibling).attr('cx');
+        var y = d3.select(visual.nextSibling).attr('cy');
+        return this.fromChartToAbsoluteCtx(x, y);
     }
 }

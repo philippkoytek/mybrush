@@ -76,8 +76,8 @@ class View {
                 clearTimeout(t);
                 self.unhover(d, this);
             })
-            .on('click', function(d){
-                self.brushDataPoint(d, this);
+            .on('click', function(d, i){
+                self.brushDataPoint(d, i, this);
             });
     }
 
@@ -90,17 +90,17 @@ class View {
         
         // (un)register brush with (un)brushed items
         var self = this;
-        this.chart.selectAll('.data-item').each(function(d){
+        this.chart.selectAll('.data-item').each(function(d, i){
             var extent = brush.extent();
             var brushed = false;
             
             if(brush.x() !== null && brush.y() !== null){
-                brushed = extent[0][0] <= self.xValue(d, brush.dim) && self.xValue(d, brush.dim) <= extent[1][0]
-                    && extent[0][1] <= self.yValue(d, brush.dim) && self.yValue(d, brush.dim) <= extent[1][1];
+                brushed = extent[0][0] <= self.xValue(d, i, brush.dim) && self.xValue(d, i, brush.dim) <= extent[1][0]
+                    && extent[0][1] <= self.yValue(d, i, brush.dim) && self.yValue(d, i, brush.dim) <= extent[1][1];
             } else if(brush.x() !== null){
-                brushed = extent[0] <= self.xValue(d, brush.dim) && self.xValue(d, brush.dim) <= extent[1];
+                brushed = extent[0] <= self.xValue(d, i, brush.dim) && self.xValue(d, i, brush.dim) <= extent[1];
             } else if(brush.y() !== null){
-                brushed = extent[0] <= self.yValue(d, brush.dim) && self.yValue(d, brush.dim) <= extent[1];
+                brushed = extent[0] <= self.yValue(d, i, brush.dim) && self.yValue(d, i, brush.dim) <= extent[1];
             }
 
             if(brushed){
@@ -144,9 +144,9 @@ class View {
         this.multiBrushes[dim].addBrush(this.createBrush(dim));
     }
 
-    brushDataPoint(d, visual){
+    brushDataPoint(d, i, visual){
         _.forEach(this.multiBrushes, function(multibrush){
-            multibrush.setExtentOnData(d, visual);
+            multibrush.setExtentOnData(d, i, visual);
         });
     }
 

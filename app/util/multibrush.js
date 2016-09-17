@@ -41,29 +41,39 @@ class Multibrush {
     /**
      * programmatically calculates a minimum extent around d and activates the ready brush with it
      * @param d
+     * @param i
      * @param visual
      */
-    setExtentOnData(d, visual){
+    setExtentOnData(d, i, visual){
         var domainExtent;
         var minBrushBox = this.view.getMinimumBrushBox(visual, d, this.dim);
         if(this.hasX() && this.hasY()){
-            var xCoord = this.xRange(this.xValue(d));
-            var yCoord = this.yRange(this.yValue(d));
-            domainExtent = [
-                [this.xRange.invert(xCoord - minBrushBox.width/2), this.yRange.invert(yCoord + minBrushBox.height/2)],
-                [this.xRange.invert(xCoord + minBrushBox.width/2), this.yRange.invert(yCoord - minBrushBox.height/2)]
-            ];
+            if(this.xRange.invert){
+                var xCoord = this.xRange(this.xValue(d, i));
+                var yCoord = this.yRange(this.yValue(d, i));
+                domainExtent = [
+                    [this.xRange.invert(xCoord - minBrushBox.width/2), this.yRange.invert(yCoord + minBrushBox.height/2)],
+                    [this.xRange.invert(xCoord + minBrushBox.width/2), this.yRange.invert(yCoord - minBrushBox.height/2)]
+                ];
+            } else {
+                // list view
+                domainExtent = [
+                    [minBrushBox.x, minBrushBox.y],
+                    [minBrushBox.x + minBrushBox.width, minBrushBox.y + minBrushBox.height]
+                ];
+            }
+
         }
         else {
             var xyCoord;
             if(this.hasX()){
                 // barchart: the xValue accessor already returns coordinates
                 // (therefore no range and domain conversion needed)
-                xyCoord = this.xValue(d);
+                xyCoord = this.xValue(d, i);
                 domainExtent = [xyCoord - minBrushBox.width/2, xyCoord + minBrushBox.width/2];
             } else {
                 // todo: check if it is the same case in parallelcoords as in barchart
-                xyCoord = this.yRange(this.yValue(d));
+                xyCoord = this.yRange(this.yValue(d, i));
                 domainExtent = [this.yRange.invert(xyCoord - minBrushBox.height/2),
                     this.yRange.invert(xyCoord + minBrushBox.height/2)];
             }
@@ -85,12 +95,12 @@ class Multibrush {
     }
     
     //Helper functions
-    xValue(d){
-        return this.view.xValue(d, this.dim);
+    xValue(d, i){
+        return this.view.xValue(d, i, this.dim);
     }
 
-    yValue(d){
-        return this.view.yValue(d, this.dim);
+    yValue(d, i){
+        return this.view.yValue(d, i, this.dim);
     }
     
     hasX(){

@@ -6,7 +6,7 @@ class ParallelCoords extends View {
     constructor (width, height, position, padding) {
         super('parallelcoords', width, height, position, padding);
 
-        this.yValue = function (d, dim){
+        this.yValue = function (d, i, dim){
             return d.skillProperties.find(p => p.title === dim).sumValue;
         };
 
@@ -35,17 +35,17 @@ class ParallelCoords extends View {
         //this.dimensions = ['Attacking', 'Movement', 'Defending', 'Goalkeeping'];
         this.dimensions = data[0].skillProperties.map(p => p.title);
 
-        function drawPath(d){
+        function drawPath(d, i){
             return d3.svg.line().interpolate('cardinal').tension(0.9)(self.dimensions.map(function(dim) {
-                return [self.xRange(dim), self.yRange[dim](self.yValue(d, dim))];
+                return [self.xRange(dim), self.yRange[dim](self.yValue(d, i, dim))];
             }));
         }
 
         self.xRange.domain(self.dimensions);
         self.dimensions.forEach(function(dim){
             self.yRange[dim] = d3.scale.linear()
-                .domain([0, d3.max(data, function(d){
-                    return self.yValue(d, dim);
+                .domain([0, d3.max(data, function(d, i){
+                    return self.yValue(d, i, dim);
                 }) + 10])
                 .range([self.chartHeight, 10]).nice();
         });
@@ -108,12 +108,12 @@ class ParallelCoords extends View {
     }
 
     getMinimumBrushBox (visual, d, dim) {
-        var y = this.yRange[dim](this.yValue(d, dim));
+        var y = this.yRange[dim](this.yValue(d, undefined, dim));
         return {x:-8, y:y - 6, width: 16, height: 12};
     }
 
     lineAnchorPoint (visual, d, brush) {
         var dim = (brush.origin == this) ? brush.dim : this.dimensions[0];
-        return this.fromChartToAbsoluteCtx(this.xRange(dim), this.yRange[dim](this.yValue(d, dim)));
+        return this.fromChartToAbsoluteCtx(this.xRange(dim), this.yRange[dim](this.yValue(d, undefined, dim)));
     }
 }
