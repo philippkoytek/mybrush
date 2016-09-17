@@ -66,10 +66,15 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/target.svg',
                         class:'target-constraint',
-                        //todo: only make the OTHER views available (not own view as target)
-                        actions:[{target:2, icon:'icons/svg/pk-parallelcoords.svg'},
-                            {target:1, icon:'icons/svg/pk-scatterplot.svg'},
-                            {target:3, icon:'icons/svg/pk-barchart.svg'}]
+                        actions:_.filter([
+                                {target:1, icon:'icons/svg/pk-scatterplot.svg'},
+                                {target:2, icon:'icons/svg/pk-parallelcoords.svg'},
+                                {target:3, icon:'icons/svg/pk-barchart.svg'},
+                                {target:4, icon:'icons/svg/pk-listview.svg'}
+                            ],
+                            function(d){
+                                return d.target !== brush.origin.viewId;
+                            })
                     },
                     {
                         icon:'icons/svg/pk-nolink.svg',
