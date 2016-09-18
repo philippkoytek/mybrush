@@ -4,7 +4,7 @@
 
 class ParallelCoords extends View {
     constructor (width, height, position, padding) {
-        super('parallelcoords', width, height, position, padding);
+        super('parallelcoords', width, height, position, padding || {top:30, right:20, bottom:30, left:40});
 
         this.yValue = function (d, i, dim){
             return d.skillProperties.find(p => p.title === dim).sumValue;
@@ -47,7 +47,7 @@ class ParallelCoords extends View {
                 .domain([0, d3.max(data, function(d, i){
                     return self.yValue(d, i, dim);
                 }) + 10])
-                .range([self.chartHeight, 10]).nice();
+                .range([self.chartHeight, 0]).nice();
         });
 
         var content = self.chart.append('g').classed('content', true);
@@ -76,7 +76,7 @@ class ParallelCoords extends View {
             .each(function(d) {d3.select(this).call(self.axis.scale(self.yRange[d]));})
             .append('text')
             .style('text-anchor', 'middle')
-            .attr('y', 0)
+            .attr('y', -10)
             .text(function(d){return d;});
 
         dimensionGroups.each(function(dim){
