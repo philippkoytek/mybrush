@@ -18,7 +18,7 @@ function Metabrush (d3brush, multibrush) {
             link:{},
             target:{}
         };
-        brush.targetViews = new Set();
+        brush.targetViews = new Set(/*_.values(VIEWS)*/);
         brush.connect = false;
         brush.animate = 'none';
         brush.granularity = {
