@@ -6,10 +6,11 @@ var DEBUG;
 var DATA;
 var VIEWS = {};
 
-Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data, key) {
+Data.request('data/fifaplayers_0-999.json', 'fifaplayers', function(error, data, key) {
 
     //TODO: positioning of views, make them draggable?
-    DATA = data;// = [data[0], data[1]];
+    var groupsOf50 = _.chunk(data, 50);
+    DATA = groupsOf50[0];// = [data[0], data[1]];
 
     //add group where all brushes will go
     var allBrushMenus = d3.select('.canvas').append('g').classed('all-brush-menus', true);
@@ -35,10 +36,15 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     //DEBUG = new DebugView(viewWidth, viewHeight, {x:viewWidth + 2*margin, y:viewHeight + 2*margin});
 
     // add charts to global views object and fill with data
-    VIEWS[scatterplot.viewId] = scatterplot.data(data);
-    VIEWS[parallelcoords.viewId] = parallelcoords.data(data);
-    VIEWS[barchart.viewId] = barchart.data(data);
-    VIEWS[listview.viewId] = listview.data(data);
+    VIEWS[scatterplot.viewId] = scatterplot;
+    VIEWS[parallelcoords.viewId] = parallelcoords;
+    VIEWS[barchart.viewId] = barchart;
+    VIEWS[listview.viewId] = listview;
+
+    scatterplot.data(DATA);
+    parallelcoords.data(DATA);
+    barchart.data(DATA);
+    listview.data(DATA);
 
     // links and brush menus are above all other elements
     d3.select('.canvas').append('g').classed('links', true);
