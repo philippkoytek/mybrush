@@ -328,7 +328,7 @@ function Metabrush (d3brush, multibrush) {
             // reposition menu
             this.menuArea.attr('transform','translate('+ (+r.attr('x') + (+r.attr('width')/2)) + ','
                 + r.attr('y') + ')');
-            // keep close button on the top right corner
+            // keep close button on the top right corner (translation is added to menuArea translation)
             closeButton.attr('transform', 'translate(' + (+r.attr('width')/2) + ',0)');
         }
 
@@ -343,7 +343,7 @@ function Metabrush (d3brush, multibrush) {
                 .classed('ready', false)
                 .classed('active', true);
 
-            var brushPos = this.brushArea.node().getBoundingClientRect();
+            var brushPos = this.brushArea.select('rect.background').node().getBoundingClientRect();
             var svgPos = d3.select('svg').node().getBoundingClientRect();
 
             this.menuWrap.attr('transform',
