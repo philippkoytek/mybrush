@@ -50,6 +50,17 @@ class ParallelCoords extends View {
                 .range([self.chartHeight, 10]).nice();
         });
 
+        var content = self.chart.append('g').classed('content', true);
+
+        var strokeLines = content.selectAll('path').data(data);
+        strokeLines.enter().append('path')
+            .classed('line data-item aggregate individual', true)
+            .style('stroke', self.strokeValue)
+            .style('fill', self.fillValue)
+            .style('stroke-width', 2)
+            .attr('d', drawPath)
+            .call(self.addInteractivity.bind(self));
+
         var dimensionGroups = self.chart.selectAll('.dimension')
             .data(self.dimensions)
             .enter().append('g')
@@ -71,17 +82,6 @@ class ParallelCoords extends View {
         dimensionGroups.each(function(dim){
             self.insertNewBrush(dim, d3.select(this));
         });
-
-        var content = self.chart.append('g').classed('content', true);
-
-        var strokeLines = content.selectAll('path').data(data);
-        strokeLines.enter().append('path')
-            .classed('line data-item aggregate individual', true)
-            .style('stroke', self.strokeValue)
-            .style('fill', self.fillValue)
-            .style('stroke-width', 2)
-            .attr('d', drawPath)
-            .call(self.addInteractivity.bind(self));
 
         return self;
     }
