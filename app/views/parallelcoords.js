@@ -10,7 +10,7 @@ class ParallelCoords extends View {
             return d.skillProperties.find(p => p.title === dim).sumValue;
         };
 
-        var color = d3.scale.category20();
+        var color = constants.stdColorScale;
         this.strokeValue = function(d){
             return color(d.club);
         };
