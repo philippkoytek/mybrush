@@ -16,8 +16,10 @@ class ListView extends View {
             return this.xRange(Math.floor(i/this.rows));
         };
 
+        this.fontSize = 16;
+
         this.yValue = function (d, i) {
-            return this.yRange((i % this.rows) + 1);
+            return this.yRange((i % this.rows) + 1) + this.fontSize;
         };
         
         this.strokeValue = function(d){
@@ -35,12 +37,12 @@ class ListView extends View {
         var self = this;
 
         this.xRange = d3.scale.ordinal()
-            .rangeRoundBands([0, this.chartWidth], 0.2)
+            .rangeRoundBands([0, this.chartWidth], 0.1)
             .domain(arrayOfNumbers(0, Math.ceil(data.length/this.rows) - 1));
 
         this.yRange = d3.scale.ordinal()
-            .rangeRoundBands([0, this.chartHeight], 0.0, 0.1)
-            .domain(arrayOfNumbers(0, this.rows));
+            .rangeRoundBands([0, this.chartHeight], 0.2)
+            .domain(arrayOfNumbers(1, this.rows));
 
         self.insertNewBrush();
 
@@ -53,6 +55,7 @@ class ListView extends View {
             .attr('x', function(d, i){ return self.xValue(d, i) + 3;})
             .attr('y', self.yValue.bind(self))
             .text(function(d){return d.name;})
+            .style('font-size', self.fontSize + 'px')
             .call(self.addInteractivity.bind(self));
         cards.append('circle')
             .classed('anchor-point', true)
