@@ -12,6 +12,8 @@ class BarChart extends View {
             return d.key ? _.replace(d.key, new RegExp(' ','g'), '_') : d.fifaPid;
         };
 
+        this.keyValue = function(d){ return d.jerseyNumberClub; };
+
         var color = constants.stdColorScale;
         this.strokeValue = this.fillValue = function(d){
             return d.key ? color(d.key) : 'transparent';
@@ -19,7 +21,7 @@ class BarChart extends View {
 
         var self = this;
         this.xValue = function(d){
-            return self.xRange(d.key || d.club) + self.xRange.rangeBand()/2;
+            return self.xRange(d.key || self.keyValue(d)) + self.xRange.rangeBand()/2;
         };
 
         this.yValue = function(d){
@@ -53,7 +55,7 @@ class BarChart extends View {
     data(data){
         var self = this;
 
-        var barsData = d3.nest().key(function(d){ return d.club; }).entries(data);
+        var barsData = d3.nest().key(self.keyValue).entries(data);
 
         self.xRange.domain(barsData.map(function(bar){ return bar.key; }));
         self.yRange.domain([0, d3.max(barsData, function(bar){ return self.rawValues(bar).length; })]);
