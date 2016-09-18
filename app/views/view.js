@@ -45,7 +45,7 @@ class View {
                     d3.select(this).attr(self.getMinimumBrushBox(visual, d, dim));
                 })
                 .style({display:'inline', opacity:1});
-            d3.selectAll([...v.visuals]).classed('highlighted', true);
+            d3.selectAll([...v.visuals]).classed('highlighted', true).moveToFront();
         }, this);
     }
 
@@ -106,12 +106,14 @@ class View {
             if(brushed){
                 self.rawValues(d).forEach(function(v){
                     v.registerBrush(brush);
+                    d3.selectAll([...v.visuals]).filter('.individual').classed('up', true);
                 });
 
             }
             else {
                 self.rawValues(d).forEach(function(v){
                     v.unregisterBrush(brush);
+                    d3.selectAll([...v.visuals]).filter('.individual').classed('up', v.brushes.size > 0);
                 });
             }
         });
@@ -131,6 +133,7 @@ class View {
                 this.insertNewBrush(targetBrush.dim);
             }
         }
+        d3.selectAll('.data-item.up').moveToFront();
     }
     
     /*
