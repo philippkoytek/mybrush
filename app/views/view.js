@@ -215,7 +215,7 @@ class View {
 
                 //default styles and reset connections
                 var myStyles = {
-                    point:{'fill': thisView.fillValue(aggregateD), 'stroke':thisView.strokeValue(aggregateD), 'stroke-width':2},
+                    point:{'fill': thisView.fillValue(aggregateD), 'stroke':thisView.strokeValue(aggregateD), 'stroke-width':constants.strokeWidth},
                     link:{stroke:'black', fill:'none'}
                 };
                 this.connections = [];

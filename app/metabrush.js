@@ -41,16 +41,16 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/paint.svg',
                         class:'fill',
-                        actions:[{styles:{fill:'green'}},{styles:{fill:'blue'}},{styles:{fill:'red'}},{styles:{fill:undefined}}],
-                        //toggles:[{granularity:'aggregate'}, {granularity:'individual'}]
+                        actions:_.map(constants.brushColors, function(c){
+                            return {styles:{fill:c}};
+                        }).concat({styles:{fill:undefined}})
                     },
                     {
                         icon:'icons/svg/brush-stroke.svg',
                         class:'stroke',
-                        actions:[{styles:{stroke:'green', 'stroke-width':'2px', 'stroke-dasharray':0}},
-                            {styles:{stroke:'blue', 'stroke-width':'2px', 'stroke-dasharray':0}},
-                            {styles:{stroke:'red', 'stroke-width':'2px', 'stroke-dasharray':0}},
-                            {styles:{stroke:undefined, 'stroke-width':undefined, 'stroke-dasharray':undefined}}]
+                        actions:_.map(constants.brushColors, function(c){
+                            return {styles:{stroke:c, 'stroke-width':constants.strokeWidth, 'stroke-dasharray':0}}
+                        }).concat({styles:{stroke:undefined, 'stroke-width':undefined, 'stroke-dasharray':undefined}})
                     },
                     {
                         icon:'icons/svg/aggregated.svg',
@@ -65,10 +65,9 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/brush-stroke.svg',
                         class:'stroke',
-                        actions:[{styles:{stroke:'green', 'stroke-width':'1px'}},
-                            {styles:{stroke:'blue', 'stroke-width':'1px'}},
-                            {styles:{stroke:'red', 'stroke-width':'1px'}},
-                            {styles:{stroke:'black', 'stroke-width':'1px'}}]
+                        actions:_.map(constants.brushColors , function(c){
+                            return {styles:{stroke:c, 'stroke-width':'1px'}};
+                        }).concat({styles:{stroke:'#000000', 'stroke-width':'1px'}})
                     },
                     {
                         icon:'icons/svg/target.svg',

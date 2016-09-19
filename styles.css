@@ -148,6 +148,6 @@ text {
 .source-menu .stroke.menu-segment-container .menu-subsegment,
 .target-menu .stroke.menu-segment-container .menu-subsegment {
     stroke:lightgrey;
-    stroke-width: 2;
+    stroke-width: 1.5;
     stroke-dasharray:1;
 }

@@ -87,7 +87,7 @@ class ScatterPlot extends View {
             .attr('cy', function(d){ return self.yRange(self.yValue(d)); })
             .style('fill', self.fillValue)
             .style('stroke', self.fillValue)
-            .style('stroke-width', 2)
+            .style('stroke-width', constants.strokeWidth)
             .call(self.addInteractivity.bind(self));
         
         return self;

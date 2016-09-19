@@ -61,7 +61,7 @@ class ParallelCoords extends View {
             .classed('line data-item aggregate individual', true)
             .style('stroke', self.strokeValue)
             .style('fill', self.fillValue)
-            .style('stroke-width', 2)
+            .style('stroke-width', constants.strokeWidth)
             .attr('d', drawPath)
             .call(self.addInteractivity.bind(self));
 
