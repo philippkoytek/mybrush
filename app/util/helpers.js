@@ -43,3 +43,12 @@ var positions = {
     defensive:['LWB', 'RWB', 'LB', 'RB', 'CB'],
     goalkeeper:['GK']
 };
+
+var morePositions = {
+    goalkeeper:['GK'],
+    centerDefense:['CB'],
+    wingDefense:['LWB', 'RWB', 'LB', 'RB'],
+    centerMidfield:['CAM', 'CM', 'CDM'],
+    wingMidfield:['LM', 'RM', 'LW', 'RW'],
+    forward:[]
+}

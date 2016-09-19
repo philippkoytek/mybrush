@@ -45,16 +45,14 @@ class View {
                     d3.select(this).attr(self.getMinimumBrushBox(visual, d, dim));
                 })
                 .style({display:'inline', opacity:1});
-            d3.selectAll([...v.visuals]).classed('highlighted', true).moveToFront();
+            d3.selectAll([...v.visuals]).classed('highlighted', true).filter('.individual').moveToFront();
         }, this);
     }
 
     unhover(d, visual){
-        this.rawValues(d).forEach(function(v){
-            d3.selectAll([...v.visuals]).classed('highlighted', false);
-            this.chart.selectAll('.hover-rect')
-                .style({display:'none', opacity:0});
-        }, this);
+        d3.selectAll('.data-item').classed('highlighted', false);
+        this.chart.selectAll('.hover-rect')
+            .style({display:'none', opacity:0});
     }
 
     addInteractivity(selection){

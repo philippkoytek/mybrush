@@ -12,7 +12,7 @@ class BarChart extends View {
             return d.key ? _.replace(d.key, new RegExp(' ','g'), '_') : d.fifaPid;
         };
 
-        this.keyValue = function(d){ return d.jerseyNumberClub; };
+        this.keyValue = function(d){ return d.club; };
 
         var color = constants.stdColorScale;
         this.strokeValue = this.fillValue = function(d){
