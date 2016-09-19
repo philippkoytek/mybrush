@@ -50,6 +50,11 @@ class ListView extends View {
         var cards = content.selectAll('.card').data(data, self.idValue);
         cards.enter().append('g')
             .classed('card', true);
+        cards.append('circle')
+            .classed('anchor-point', true)
+            .attr('cx', self.xValue.bind(self))
+            .attr('cy', self.yValue.bind(self))
+            .attr('r', 1.5);
         cards.append('text')
             .classed('data-item aggregate individual', true)
             .attr('x', function(d, i){ return self.xValue(d, i) + 3;})
@@ -57,11 +62,7 @@ class ListView extends View {
             .text(function(d){return d.name;})
             .style('font-size', self.fontSize + 'px')
             .call(self.addInteractivity.bind(self));
-        cards.append('circle')
-            .classed('anchor-point', true)
-            .attr('cx', self.xValue.bind(self))
-            .attr('cy', self.yValue.bind(self))
-            .attr('r', 1.5);
+
 
         return self;
     }
@@ -89,8 +90,8 @@ class ListView extends View {
     }
 
     lineAnchorPoint (visual, d, brush) {
-        var x = d3.select(visual.nextSibling).attr('cx');
-        var y = d3.select(visual.nextSibling).attr('cy');
+        var x = d3.select(visual.previousSibling).attr('cx');
+        var y = d3.select(visual.previousSibling).attr('cy');
         return this.fromChartToAbsoluteCtx(x, y);
     }
 }
