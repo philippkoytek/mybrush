@@ -10,6 +10,11 @@ class ParallelCoords extends View {
             return d.skillProperties.find(p => p.title === dim).sumValue;
         };
 
+        this.calcDimensions = function(d){
+            //return ['Attacking', 'Movement', 'Defending', 'Goalkeeping']; // reduce dimensions
+            return d.skillProperties.map(p => p.title);
+        };
+
         var color = constants.stdColorScale;
         this.strokeValue = function(d){
             return color(d.club);
@@ -32,8 +37,7 @@ class ParallelCoords extends View {
 
     data(data) {
         var self = this;
-        //this.dimensions = ['Attacking', 'Movement', 'Defending', 'Goalkeeping'];
-        this.dimensions = data[0].skillProperties.map(p => p.title);
+        this.dimensions = this.calcDimensions(data[0]);
 
         function drawPath(d, i){
             return d3.svg.line().interpolate('cardinal').tension(0.9)(self.dimensions.map(function(dim) {
