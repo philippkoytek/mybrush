@@ -54,6 +54,10 @@ text.highlighted {
     shape-rendering: crispEdges;
 }
 
+.data-item {
+    opacity:0.6;
+}
+
 /* list view */
 
 text {
