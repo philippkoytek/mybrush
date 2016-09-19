@@ -26,6 +26,13 @@ function Metabrush (d3brush, multibrush) {
             target:'aggregate'
         };
 
+        var targetConstraints = [];
+        _.forEach(VIEWS, function(view, id){
+            if(brush.origin != view){
+                targetConstraints.push({target:id, icon:'icons/svg/pk-'+view.type+'.svg'});
+            }
+        });
+
         brush.menu = {};
         brush.menuItems = [
             {
@@ -66,15 +73,7 @@ function Metabrush (d3brush, multibrush) {
                     {
                         icon:'icons/svg/target.svg',
                         class:'target-constraint',
-                        actions:_.filter([
-                                {target:1, icon:'icons/svg/pk-scatterplot.svg'},
-                                {target:2, icon:'icons/svg/pk-parallelcoords.svg'},
-                                {target:3, icon:'icons/svg/pk-barchart.svg'},
-                                {target:4, icon:'icons/svg/pk-listview.svg'}
-                            ],
-                            function(d){
-                                return d.target !== brush.origin.viewId;
-                            })
+                        actions:targetConstraints
                     },
                     {
                         icon:'icons/svg/pk-nolink.svg',

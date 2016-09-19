@@ -8,6 +8,7 @@ class View {
         this.position = position || {x:0, y:0};
         this.viewId = View.counter;
         this.multiBrushes = {};
+        this.type = type;
 
         this.svg = d3.select('.canvas').append('g')
             .classed('view', true)

@@ -4,7 +4,7 @@
 
 class ListView extends View {
     constructor (width, height, position, padding){
-        super('list',width, height, position, padding);
+        super('listview',width, height, position, padding);
 
         this.idValue = function(d){
             return d.fifaPid;
