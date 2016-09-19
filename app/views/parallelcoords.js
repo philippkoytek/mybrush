@@ -17,7 +17,7 @@ class ParallelCoords extends View {
 
         var color = constants.stdColorScale;
         this.strokeValue = function(d){
-            return color(d.club);
+            return 'steelblue';
         };
 
         this.fillValue = function(){
@@ -48,9 +48,9 @@ class ParallelCoords extends View {
         self.xRange.domain(self.dimensions);
         self.dimensions.forEach(function(dim){
             self.yRange[dim] = d3.scale.linear()
-                .domain([0, d3.max(data, function(d, i){
+                .domain(d3.extent(data, function(d, i){
                     return self.yValue(d, i, dim);
-                }) + 10])
+                }))
                 .range([self.chartHeight, 0]).nice();
         });
 
