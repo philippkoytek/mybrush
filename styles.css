@@ -40,8 +40,12 @@ html, body, svg#main {
 }
 
 .highlighted {
-    stroke:red !important;
+    stroke:#1eff06 !important;
     stroke-width: 2px;
+}
+
+text.highlighted {
+    stroke-width: 1px;
 }
 
 .hover-rect {

@@ -61,6 +61,7 @@ class ListView extends View {
             .attr('y', self.yValue.bind(self))
             .text(function(d){return d.name;})
             .style('font-size', self.fontSize + 'px')
+            .style('font-weight', 'bold')
             .call(self.addInteractivity.bind(self));
 
 

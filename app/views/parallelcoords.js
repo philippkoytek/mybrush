@@ -17,7 +17,7 @@ class ParallelCoords extends View {
 
         var color = constants.stdColorScale;
         this.strokeValue = function(d){
-            return 'steelblue';
+            return color(d.club);
         };
 
         this.fillValue = function(){
