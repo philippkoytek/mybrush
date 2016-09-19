@@ -22,6 +22,12 @@ class View {
             .attr('width', this.frameWidth)
             .attr('height', this.frameHeight);
 
+        this.svg.append('text')
+            .classed('view-number', true)
+            .style({'font-size':80, 'font-weight':'bold', fill:'#eeeeee'})
+            .attr({x:this.frameWidth - 60, y:70})
+            .text(this.viewId);
+
         this.chart = this.svg.append('g')
             .classed('chart', true)
             .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
