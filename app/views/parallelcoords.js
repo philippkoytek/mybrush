@@ -20,8 +20,8 @@ class ParallelCoords extends View {
             return color(d.club);
         };
 
-        this.fillValue = function(){
-            return 'none';
+        this.fillValue = function(d){
+            return color(d.club);
         };
 
         this.idValue = function(d){
@@ -40,9 +40,14 @@ class ParallelCoords extends View {
         this.dimensions = this.calcDimensions(data[0]);
 
         function drawPath(d, i){
-            return d3.svg.line().interpolate('cardinal').tension(0.9)(self.dimensions.map(function(dim) {
+            var pts = self.dimensions.map(function(dim) {
                 return [self.xRange(dim), self.yRange[dim](self.yValue(d, i, dim))];
-            }));
+            });
+            var reverse = [];
+            for(var pi = pts.length - 1; pi >= 0; pi--){
+                reverse.push([pts[pi][0], pts[pi][1] + 2.5]);
+            }
+            return d3.svg.line().interpolate('linear')(pts.concat(reverse));
         }
 
         self.xRange.domain(self.dimensions);
@@ -61,7 +66,7 @@ class ParallelCoords extends View {
             .classed('line data-item aggregate individual', true)
             .style('stroke', self.strokeValue)
             .style('fill', self.fillValue)
-            .style('stroke-width', constants.strokeWidth)
+            .style('stroke-width', 0.8)
             .attr('d', drawPath)
             .call(self.addInteractivity.bind(self));
 
