@@ -118,11 +118,14 @@ function Metabrush (d3brush, multibrush) {
             .attr('transform', function(d, i){
                 return 'translate('+ (i-1)*60 +',-8)';
             })
+            .on('click', function(){
+                d3.select(this).moveToFront();
+            })
             .each(function(d){
                 var menuG = this;
                 brush.menu[d.id] = new d3.radialMenu()
                     .thickness(35)
-                    .radius(20)
+                    .radius(25)
                     .iconSize(20)
                     .appendTo(menuG)
                     .onClick(function(action){
@@ -179,7 +182,7 @@ function Metabrush (d3brush, multibrush) {
         var dragBehave = d3.behavior.drag()
             .on('dragend', function(){ d3.event.sourceEvent.preventDefault(); })
             .on('drag', function(d, i){
-                var menu = d3.select(this.parentNode.parentNode);
+                var menu = d3.select(this.parentNode.parentNode).moveToFront();
                 var t = d3.transform(menu.attr('transform'));
                 t.translate[0] += d3.event.x;
                 t.translate[1] += d3.event.y;
@@ -188,7 +191,7 @@ function Metabrush (d3brush, multibrush) {
             });
         var menuTrigger = brushMenu.append('g').classed('menu-trigger', true);
         menuTrigger.append('circle').classed('trigger', true)
-            .attr('r', 15)
+            .attr('r', 22)
             .on('mousedown', stopPropagation).on('touchstart', stopPropagation)
             .on('click', toggleMenu)
             .call(dragBehave);
@@ -201,16 +204,16 @@ function Metabrush (d3brush, multibrush) {
                         .attr('d', 'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5');
                         //.attr('d', 'M -8 5 L 8 -5'); straight line
                     icon.append('circle').classed('point start', true)
-                        .attr({r:2, cx:-10, cy:5});
+                        .attr({r:3, cx:-13, cy:7});
                     icon.append('circle').classed('point end', true)
-                        .attr({r:2, cx:10, cy:-5});
+                        .attr({r:3, cx:13, cy:-7});
                 }
                 else {
                     icon.classed('point-menu-icon ' + d.id, true)
                         .append('circle').classed('point', true)
-                        .attr('r', 8);
+                        .attr('r', 10);
                     icon.append('path')
-                        .attr('d', "M 0 0 L 10 0 L 10 -3 L 13 0 L 10 3 L 10 0")
+                        .attr('d', "M 0 0 L 12 0 L 12 -3 L 15 0 L 12 3 L 12 0")
                         .attr('transform', function(d){
                             return d.id == 'target' ? 'translate(-13, 0)' : null;
                         })
@@ -218,7 +221,7 @@ function Metabrush (d3brush, multibrush) {
                     if(d.id == 'target'){
                         var tcouple = d3.select(this.parentNode).append('g').classed('target-coupling', true);
                         tcouple.append('circle').classed('target-coupling-bg', true)
-                            .attr({r:7, cx:11, cy:-11})
+                            .attr({r:10, cx:14, cy:-14})
                             .style({fill:'#efefef', stroke:'lightgrey', 'stroke-width':1, 'stroke-dasharray':0})
                             .on('click', function(){
                                 stopPropagation();
@@ -232,7 +235,7 @@ function Metabrush (d3brush, multibrush) {
                         tcouple.append('image').classed('target-coupling-icon', true)
                             .attr('xlink:href', 'icons/svg/link-coupled.svg')
                             .style('pointer-events', 'none')
-                            .attr({ x:7, y:-16, width:9, height:9 });
+                            .attr({ x:10, y:-19, width:9, height:9 });
                     }
                 }
             });
@@ -246,7 +249,7 @@ function Metabrush (d3brush, multibrush) {
             });
         closeButton.append('rect')
             .classed('close-button-bg', true)
-            .attr({x:0, y:10, width:20, height:20})
+            .attr({x:0, y:15, width:28, height:28})
             .style({'shape-rendering':'crispEdges', stroke:'black', fill:'#efefef'})
             .on('click', function(){
                 brush.clear();
@@ -255,7 +258,7 @@ function Metabrush (d3brush, multibrush) {
                 brush.menuWrap.remove();
             });
         closeButton.append('image').classed('close-button-label', true)
-            .attr({x:3, y:13, width:15, height:15, 'xlink:href':'icons/svg/waste-disposal.svg'})
+            .attr({x:4, y:19, width:20, height:20, 'xlink:href':'icons/svg/waste-disposal.svg'})
             .style({'pointer-events':'none'});
 
 
@@ -272,6 +275,7 @@ function Metabrush (d3brush, multibrush) {
             }
             var menu = brush.menu[d.id];
             if(menu.isCollapsed()){
+                brush.menuArea.selectAll('.' + d.id + '-menu').moveToFront();
                 menu.show();
             }
             else {

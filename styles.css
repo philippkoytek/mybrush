@@ -108,7 +108,7 @@ text {
 
 .brush-menus.active .close-button {
     display:inline;
-    opacity: 0.2;
+    opacity: 0.5;
     cursor: default;
 }
 
