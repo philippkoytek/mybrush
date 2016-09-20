@@ -22,7 +22,7 @@ var blues2 = ["#628bfd", "#0e98e3", "#3a96e1", "#309acc", "#5e91f5", "#4696eb", 
 
 var constants = {
     touchInteraction:false,
-    stdColorScale:d3.scale.ordinal().range(blues2),
+    stdColorScale:d3.scale.ordinal().range(["#628bfd"]),
     brushColors:highlightColors2,
     strokeWidth:1.5
 };
