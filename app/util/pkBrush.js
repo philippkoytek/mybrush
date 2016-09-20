@@ -65,10 +65,12 @@ function d3_behavior_dragTouchId() {
 //no-operation function
 function noop() {}
 
+//modification of d3 brush to enable multitouch
 d3.svg.pkbrush = function() {
   var event = d3_eventDispatch(brush, "brushstart", "brush", "brushend"),
       x = null, // x-scale, optional
       y = null, // y-scale, optional
+      handleSize = 6,
       xExtent = [0, 0], // [x0, x1] in integer pixels
       yExtent = [0, 0], // [y0, y1] in integer pixels
       xExtentDomain, // x-extent in data space
@@ -76,6 +78,8 @@ d3.svg.pkbrush = function() {
       xClamp = true, // whether to clamp the x-extent to the range
       yClamp = true, // whether to clamp the y-extent to the range
       resizes = d3_svg_brushResizes[0];
+      mousedown = brushstart(noop, d3.mouse, d3_window, "mousemove", "mouseup");
+      touchstart = brushstart(d3_behavior_dragTouchId, d3.touch, d3_identity, "touchmove", "touchend");
 
   function brush(g) {
     g.each(function() {
@@ -84,8 +88,8 @@ d3.svg.pkbrush = function() {
       var g = d3.select(this)
           .style("pointer-events", "all")
           .style("-webkit-tap-highlight-color", "rgba(0,0,0,0)")
-          .on("mousedown.brush", brushstart)
-          .on("touchstart.brush", brushstart);
+          .on("mousedown.brush", mousedown)
+          .on("touchstart.brush", touchstart);
 
       // An invisible, mouseable area for starting a new brush.
       var background = g.selectAll(".background")
@@ -114,10 +118,10 @@ d3.svg.pkbrush = function() {
           .attr("class", function(d) { return "resize " + d; })
           .style("cursor", function(d) { return d3_svg_brushCursor[d]; })
         .append("rect")
-          .attr("x", function(d) { return /[ew]$/.test(d) ? -3 : null; })
-          .attr("y", function(d) { return /^[ns]/.test(d) ? -3 : null; })
-          .attr("width", 6)
-          .attr("height", 6)
+          .attr("x", function(d) { return /[ew]$/.test(d) ? -handleSize/2 : null; })
+          .attr("y", function(d) { return /^[ns]/.test(d) ? -handleSize/2 : null; })
+          .attr("width", handleSize)
+          .attr("height", handleSize)
           .style("visibility", "hidden");
 
       // Show or hide the resizers.
@@ -199,7 +203,8 @@ d3.svg.pkbrush = function() {
     g.selectAll(".extent,.e>rect,.w>rect").attr("height", yExtent[1] - yExtent[0]);
   }
 
-  function brushstart() {
+  function brushstart(id, position, subject, move, end){
+    return function () {
     var target = this,
         eventTarget = d3.select(d3.event.target),
         event_ = event.of(target, arguments),
@@ -210,18 +215,17 @@ d3.svg.pkbrush = function() {
         dragging = eventTarget.classed("extent"),
         dragRestore = d3_event_dragSuppress(target),
         center,
-        origin = d3.mouse(target),
+        touchId = id(),
+        brushName = ".brush" + (touchId == null ? "" : "-" + touchId),
+        origin = position(target, touchId),
         offset;
 
-    var w = d3.select(d3_window(target))
-        .on("keydown.brush", keydown)
-        .on("keyup.brush", keyup);
 
-    if (d3.event.changedTouches) {
-      w.on("touchmove.brush", brushmove).on("touchend.brush", brushend);
-    } else {
-      w.on("mousemove.brush", brushmove).on("mouseup.brush", brushend);
-    }
+    var w = d3.select(subject(target))
+        .on("keydown" + brushName, keydown)
+        .on("keyup" + brushName, keyup)
+        .on(move + brushName, brushmove)
+        .on(end + brushName, brushend);
 
     // Interrupt the transition, if any.
     g.interrupt().selectAll("*").interrupt();
@@ -276,8 +280,10 @@ d3.svg.pkbrush = function() {
     }
 
     function brushmove() {
-      var point = d3.mouse(target),
+      var point = position(target, touchId),
           moved = false;
+
+      if(!point){return;}// this touch didn’t move
 
       // Preserve the offset for thick resizers.
       if (offset) {
@@ -370,16 +376,15 @@ d3.svg.pkbrush = function() {
       g.style("pointer-events", "all").selectAll(".resize").style("display", brush.empty() ? "none" : null);
       d3.select("body").style("cursor", null);
 
-      w .on("mousemove.brush", null)
-        .on("mouseup.brush", null)
-        .on("touchmove.brush", null)
-        .on("touchend.brush", null)
-        .on("keydown.brush", null)
-        .on("keyup.brush", null);
+      w .on(move + brushName, null)
+        .on(end + brushName, null)
+        .on("keydown" + brushName, null)
+        .on("keyup" + brushName, null);
 
       dragRestore();
       event_({type: "brushend"});
     }
+  };
   }
 
   brush.x = function(z) {
@@ -393,6 +398,12 @@ d3.svg.pkbrush = function() {
     if (!arguments.length) return y;
     y = z;
     resizes = d3_svg_brushResizes[!x << 1 | !y]; // fore!
+    return brush;
+  };
+
+  brush.handleSize = function(z) {
+    if (!arguments.length) return handleSize;
+    handleSize = z;
     return brush;
   };
 

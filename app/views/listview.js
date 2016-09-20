@@ -73,9 +73,10 @@ class ListView extends View {
      */
     createBrush () {
         var self = this;
-        var brush = d3.svg.brush()
+        var brush = d3.svg.pkbrush()
             .y(this.yRange)
-            .x(this.xRange);
+            .x(this.xRange)
+            .handleSize(14);
         brush.on('brush', function(){
             self.onBrush(brush);
         })
