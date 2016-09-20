@@ -1,14 +1,71 @@
-import "../core/identity";
-import "../core/document";
-import "../core/rebind";
-import "../event/drag";
-import "../event/event";
-import "../event/mouse";
-import "../scale/scale";
-import "../selection/selection";
-import "svg";
+//import "../core/identity";
+function d3_identity(d) {
+ return d;
+ }
+//import "../core/document";
+function d3_documentElement(node) {
+ return node
+ && (node.ownerDocument // node is a Node
+ || node.document // node is a Window
+ || node).documentElement; // node is a Document
+ }
+function d3_window(node) {
+ return node
+ && ((node.ownerDocument && node.ownerDocument.defaultView) // node is a Node
+ || (node.document && node) // node is a Window
+ || node.defaultView); // node is a Document
+ }
+//import "../event/drag";
+var d3_event_dragSelect, d3_event_dragId = 0;
+function d3_event_dragSuppress(node) {
+  var name = ".dragsuppress-" + ++d3_event_dragId,
+      click = "click" + name,
+      w = d3.select(d3_window(node))
+          .on("touchmove" + name, d3_eventPreventDefault)
+          .on("dragstart" + name, d3_eventPreventDefault)
+          .on("selectstart" + name, d3_eventPreventDefault);
 
-d3.svg.brush = function() {
+  if (d3_event_dragSelect == null) {
+    d3_event_dragSelect = "onselectstart" in node ? false
+        : d3_vendorSymbol(node.style, "userSelect");
+  }
+
+  if (d3_event_dragSelect) {
+    var style = d3_documentElement(node).style,
+        select = style[d3_event_dragSelect];
+    style[d3_event_dragSelect] = "none";
+  }
+
+  return function(suppressClick) {
+    w.on(name, null);
+    if (d3_event_dragSelect) style[d3_event_dragSelect] = select;
+    if (suppressClick) { // suppress the next click, but only if it’s immediate
+      var off = function() { w.on(click, null); };
+      w.on(click, function() { d3_eventPreventDefault(); off(); }, true);
+      setTimeout(off, 0);
+    }
+  };
+}
+//import "../event/event";
+function d3_eventPreventDefault() {
+  d3.event.preventDefault();
+}
+//import "../scale/scale";
+function d3_scaleExtent(domain) {
+   var start = domain[0], stop = domain[domain.length - 1];
+   return start < stop ? [start, stop] : [stop, start];
+ }
+function d3_scaleRange(scale) {
+   return scale.rangeExtent ? scale.rangeExtent() : d3_scaleExtent(scale.range());
+ }
+//import "behavior/drag.js"
+function d3_behavior_dragTouchId() {
+  return d3.event.changedTouches[0].identifier;
+}
+//no-operation function
+function noop() {}
+
+d3.svg.pkbrush = function() {
   var event = d3_eventDispatch(brush, "brushstart", "brush", "brushend"),
       x = null, // x-scale, optional
       y = null, // y-scale, optional
@@ -103,8 +160,8 @@ d3.svg.brush = function() {
               event_({type: "brushstart"});
             })
             .tween("brush:brush", function() {
-              var xi = d3_interpolateArray(xExtent, extent1.x),
-                  yi = d3_interpolateArray(yExtent, extent1.y);
+              var xi = d3.interpolateArray(xExtent, extent1.x),
+                  yi = d3.interpolateArray(yExtent, extent1.y);
               xExtentDomain = yExtentDomain = null; // transition state
               return function(t) {
                 xExtent = extent1.x = xi(t);
