@@ -15,14 +15,14 @@ var lightColors2 = ["#5eb6f4", "#fce49a", "#f491a3", "#4bc0a7", "#dca26b", "#e3b
 
 // No unsaturated colours (distance > 30 from a=0,b=0)
 var highlightColors = ["#fe5d43", "#0e02fb", "#02ff5e", "#8e39e9", "#fd0128" , "#f701ff"];
-var highlightColors2 = ["#0a22ff", "#06ad1a", /*"#1eff06",*/ "#ff6401", "#ff1902", "#fe07a6", "#7202ae"];
+var highlightColors2 = ["#0a22ff", "#06ad1a", "#1eff06", "#ff6401", /*"#ff1902",*/ "#fe07a6", "#7202ae"];
 
 var blues = ["#2395ca", "#4c90e4", "#3798d5", "#5696ce", "#2a9bf6", "#3d9de0", "#629bc9", "#31a1f6", "#50a4ce", "#41aaca", "#27aece", "#49aed6", "#04bde9", "#4ec2d5", "#4fcacc", "#47cfe6", "#63d2c9", "#59daef", "#57deec"];
 var blues2 = ["#628bfd", "#0e98e3", "#3a96e1", "#309acc", "#5e91f5", "#4696eb", "#4899dd", "#4c9ad4", "#2799ff", "#5697ee", "#619ce1", "#02a4d6", "#53a0d4", "#5a9bff", "#0da5e9", "#639ff5", "#52a3ff", "#37a8f6", "#61a3f5"];
 
 var constants = {
     touchInteraction:false,
-    stdColorScale:d3.scale.ordinal().range(["#628bfd"]),
+    stdColorScale:d3.scale.ordinal().range(["#324bfd"]),
     brushColors:highlightColors2,
     strokeWidth:1.5
 };

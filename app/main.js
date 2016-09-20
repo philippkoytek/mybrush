@@ -25,10 +25,14 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
 
     var fullSize = d3.select('body').node().getBoundingClientRect();
     var margin = 30;
-    var viewWidth = (fullSize.width - margin*(4+1))/4; // one margin more than view columns
-    var viewHeight = (fullSize.height - margin*(2+1))/2; // one margin more than view rows
+    var cols = 3;
+    var rows = 2;
+    var viewWidth = (fullSize.width - margin*(cols+1))/cols; // one margin more than view columns
+    var viewHeight = (fullSize.height - margin*(rows+1))/rows; // one margin more than view rows
 
-    function viewPosition (xi, yi) {
+    function viewPosition (i) {
+        var xi = i % cols;
+        var yi = Math.floor(i *1.0/ cols);
         return {
             x: xi * viewWidth + (xi+1) * margin,
             y: yi * viewHeight + (yi + 1) * margin
@@ -38,7 +42,7 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
 
 
     // create charts
-    var scatterplot = new ScatterPlot('Attacking', 'Defending', viewWidth, viewHeight, viewPosition(0,0));
+    var scatterplot = new ScatterPlot('Attacking', 'Defending', viewWidth, viewHeight, viewPosition(0));
     scatterplot.xValue = function(d){
         return d.skillProperties[0].sumValue; //Attacking
         //return d.skillProperties[2].subProperties[1].value; // sprintspeed
@@ -46,24 +50,24 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     scatterplot.yValue = function(d){
         return d.skillProperties[5].sumValue; //Defending
     };
-    var parallelcoords = new ParallelCoords(viewWidth, viewHeight, viewPosition(1,0));
+    var parallelcoords = new ParallelCoords(viewWidth, viewHeight, viewPosition(1));
 
-    var barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(0,1), {top:20, right:20, bottom:30, left:40});
-    barchart.keyValue = function(d){ return d.positions[0]; };
-
-    var listview = new ListView(viewWidth, viewHeight, viewPosition(1,1));
-
-    var barchart2 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(2,0));
-
-    var scatterplot2 = new ScatterPlot('age', 'acceleration', viewWidth, viewHeight, viewPosition(3,0));
+    var scatterplot2 = new ScatterPlot('age', 'acceleration', viewWidth, viewHeight, viewPosition(2));
     scatterplot2.xValue = function(d){
         return new Date(Date.now() - new Date(d.birthdate.$date)).getTime() / (1000*3600*24*365); // age
     };
     scatterplot2.yValue = function(d){
-        return d.skillProperties[2].subProperties[0].value; // acceleration
+        return d.skillProperties[2].subProperties[1].value; // acceleration
     };
 
-    var parallelcoords2 = new ParallelCoords(viewWidth, viewHeight, viewPosition(2,1));
+    var barchart2 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(3));
+
+    var listview = new ListView(viewWidth, viewHeight, viewPosition(4));
+
+    var barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(5), {top:20, right:20, bottom:30, left:40});
+    barchart.keyValue = function(d){ return d.positions[0]; };
+
+    /*var parallelcoords2 = new ParallelCoords(viewWidth, viewHeight, viewPosition(2,1));
     parallelcoords2.calcDimensions = function(d){
         //return ['dislikes', 'likes', 'height', 'weight', 'overallRating', 'value', 'wage'];
         return d.skillProperties[0].subProperties.map(s => s.title);
@@ -74,7 +78,7 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     };
 
     var barchart3 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(3,1));
-    barchart3.keyValue = function(d){ return d.nationality; };
+    barchart3.keyValue = function(d){ return d.nationality; };*/
 
     // add charts to global views object and fill with data
     VIEWS[scatterplot.viewId] = scatterplot;
@@ -83,8 +87,8 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     VIEWS[listview.viewId] = listview;
     VIEWS[barchart2.viewId] = barchart2;
     VIEWS[scatterplot2.viewId] = scatterplot2;
-    VIEWS[parallelcoords2.viewId] = parallelcoords2;
-    VIEWS[barchart3.viewId] = barchart3;
+   // VIEWS[parallelcoords2.viewId] = parallelcoords2;
+   // VIEWS[barchart3.viewId] = barchart3;
 
     _.forEach(VIEWS, function(view){
         view.data(DATA);
