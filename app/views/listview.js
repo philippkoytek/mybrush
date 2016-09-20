@@ -76,7 +76,7 @@ class ListView extends View {
         var brush = d3.svg.pkbrush()
             .y(this.yRange)
             .x(this.xRange)
-            .handleSize(14);
+            .handleSize(constants.handleSize);
         brush.on('brush', function(){
             self.onBrush(brush);
         })

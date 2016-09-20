@@ -100,7 +100,7 @@ class ParallelCoords extends View {
         var self = this;
         var brush = d3.svg.pkbrush()
             .y(this.yRange[dim])
-            .handleSize(14);
+            .handleSize(constants.handleSize);
         brush.on('brush', function(){
                 self.onBrush(brush);
             })
@@ -111,10 +111,10 @@ class ParallelCoords extends View {
     }
     
     adjustBrushArea(brushArea) {
-        brushArea.attr('transform', 'translate(-8,0)')
+        brushArea.attr('transform', 'translate(-20,0)')
             .selectAll('rect')
             .attr('x', 0)
-            .attr('width', 16);
+            .attr('width', 40);
     }
 
     getMinimumBrushBox (visual, d, dim) {

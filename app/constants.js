@@ -24,7 +24,8 @@ var constants = {
     touchInteraction:false,
     stdColorScale:d3.scale.ordinal().range(["#324bfd"]),
     brushColors:highlightColors2,
-    strokeWidth:1.5
+    strokeWidth:1.5,
+    handleSize:20
 };
 
 
