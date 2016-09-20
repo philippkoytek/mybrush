@@ -140,6 +140,10 @@ text {
     stroke-dasharray: 1;
 }
 
+.brush-menus .menu-icon-label {
+    pointer-events: none;
+}
+
 .menu-segment-container .menu-subsegment {
     fill: #efefef;
     stroke: none;

@@ -16,7 +16,7 @@ d3.radialMenu = function() {
 
     // The following variables have getter/setter functions exposed so are configurable
     var data = [{}];
-    var padding = 5;
+    var padding = 2.5;
     var radius = 50;
     var thickness = 20;
     var iconSize = 16;
@@ -27,7 +27,6 @@ d3.radialMenu = function() {
     var offsetAngleDeg = -180 / data.length;    // Initial rotation angle designed to put centre the first segment at the top
     var control = {};                           // The control that will be augmented and returned
     var pie;                                    // The pie layout
-    var outerPie;
     var arc;                                    // The arc generator
     var smallOuterArc;
     var bigOuterArc;
@@ -76,6 +75,7 @@ d3.radialMenu = function() {
     control.padding = function (_) {
         if (!arguments.length) return padding;
         padding = _;
+        makeArcs();
         return control;
     };
 
@@ -98,14 +98,7 @@ d3.radialMenu = function() {
     control.radius = function (_) {
         if (!arguments.length) return radius;
         radius = _;
-        arc.innerRadius(radius);
-        arc.outerRadius(radius + thickness);
-        smallOuterArc
-            .innerRadius(radius + thickness + padding)
-            .outerRadius(radius + thickness + padding + 10);
-        bigOuterArc
-            .innerRadius(radius + thickness + padding)
-            .outerRadius(radius + thickness + padding + thickness);
+        makeArcs();
         return control;
     };
 
@@ -117,13 +110,7 @@ d3.radialMenu = function() {
     control.thickness = function (_) {
         if (!arguments.length) return thickness;
         thickness = _;
-        arc.outerRadius(radius + thickness);
-        smallOuterArc
-            .innerRadius(radius + thickness + padding)
-            .outerRadius(radius + thickness + padding + 10);
-        bigOuterArc
-            .innerRadius(radius + thickness + padding)
-            .outerRadius(radius + thickness + padding + thickness);
+        makeArcs();
         return control;
     };
 
@@ -146,6 +133,20 @@ d3.radialMenu = function() {
         };
     }
 
+    function makeArcs () {
+        arc = d3.svg.arc()
+            .innerRadius(radius)
+            .outerRadius(radius + thickness);
+
+        smallOuterArc = d3.svg.arc()
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + 20);
+
+        bigOuterArc = d3.svg.arc()
+            .innerRadius(radius + thickness + padding)
+            .outerRadius(radius + thickness + padding + thickness);
+    }
+
     /**
      * Initializes the control
      */
@@ -156,21 +157,8 @@ d3.radialMenu = function() {
             .value(function(d) { return data.length; })
             .padAngle(padding * Math.PI / 180);
 
-        outerPie = d3.layout.pie()
-            .padAngle(2 * Math.PI / 180);
-
         // Create the arc function
-        arc = d3.svg.arc()
-            .innerRadius(radius)
-            .outerRadius(radius + thickness);
-
-        smallOuterArc = d3.svg.arc()
-            .innerRadius(radius + thickness + padding)
-            .outerRadius(radius + thickness + padding + 10);
-        
-        bigOuterArc = d3.svg.arc()
-            .innerRadius(radius + thickness + padding)
-            .outerRadius(radius + thickness + padding + thickness);
+        makeArcs();
     }
 
     /**
@@ -279,7 +267,7 @@ d3.radialMenu = function() {
             .data(function(d){
                 return d3.layout.pie()
                     .value(function(){return (d.data.actions || []).length;})
-                    .padAngle(2 * Math.PI / 180)
+                    .padAngle(0.5 * Math.PI / 180)
                     .startAngle(d.startAngle)
                     .endAngle(d.endAngle)(d.data.actions || []);
             })
@@ -297,24 +285,41 @@ d3.radialMenu = function() {
             })
             .each(function(d){
                 d3.select(this).style(d.data.styles);
+                //todo: mark active ones active
             })
             .on('click', function(d){
                 onClick.call(this, d.data);
             });
-        
-        subSegments.append("image")
-            .attr("class", "menu-icon")
-            .attr("xlink:href", function(d) { return d.data.icon; })
-            .attr("width", iconSize)
-            .attr("height", iconSize)
-            .attr("x", function(d) { return calcMidPoint(d, true).x - iconSize / 2; })
-            .attr("y", function(d) { return calcMidPoint(d, true).y - iconSize / 2; })
-            .attr("transform", function(d) {
-                // We need to rotate the images backwards to compensate for the rotation of the menu as a whole
-                var mp = calcMidPoint(d, true);
-                var angle = -offsetAngleDeg;
-                return "rotate(" + angle + "," + mp.x + "," + mp.y + ")";
-            });
+
+        subSegments.each(function(d){
+            if(d.data.icon && !d.data.label){
+                d3.select(this).append("image")
+                    .attr("class", "menu-icon")
+                    .attr("xlink:href", d.data.icon)
+                    .attr("width", iconSize)
+                    .attr("height", iconSize)
+                    .attr("x", calcMidPoint(d, true).x - iconSize / 2)
+                    .attr("y", calcMidPoint(d, true).y - iconSize / 2)
+                    .attr("transform", function(d) {
+                        // We need to rotate the images backwards to compensate for the rotation of the menu as a whole
+                        var mp = calcMidPoint(d, true);
+                        var angle = -offsetAngleDeg;
+                        return "rotate(" + angle + "," + mp.x + "," + mp.y + ")";
+                    });
+            }
+            if(d.data.label){
+                d3.select(this).append('text')
+                    .classed('menu-icon-label', true)
+                    .text(d.data.label)
+                    .attr(calcMidPoint(d, true))
+                    .attr("transform", function(d) {
+                        // We need to rotate the images backwards to compensate for the rotation of the menu as a whole
+                        var mp = calcMidPoint(d, true);
+                        var angle = -offsetAngleDeg;
+                        return "rotate(" + angle + "," + mp.x + "," + mp.y + ")";
+                    });
+            }
+        });
         
         // Remove old groups
         dataJoin.exit().remove();

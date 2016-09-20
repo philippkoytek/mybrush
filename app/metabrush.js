@@ -29,7 +29,7 @@ function Metabrush (d3brush, multibrush) {
         var targetConstraints = [];
         _.forEach(VIEWS, function(view, id){
             if(brush.origin != view){
-                targetConstraints.push({target:id, icon:'icons/svg/pk-'+view.type+'.svg'});
+                targetConstraints.push({target:id, icon:'icons/svg/pk-'+view.type+'.svg', label:view.viewId});
             }
         });
 
@@ -81,7 +81,7 @@ function Metabrush (d3brush, multibrush) {
                             {connect:'step', icon:'icons/svg/pk-step.svg', d:'M -10 5 L 0 5 L 0 -5 L 10 -5', styles:{'stroke-dasharray':0}},
                             {connect:'basis', icon:'icons/svg/pk-curve.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5', styles:{'stroke-dasharray':0}},
                             {connect:'cardinal', icon:'icons/svg/pk-curve2.svg', d:'M -10 5 Q -7 -6 0 0 Q 7 6 10 -5', styles:{'stroke-dasharray':0}},
-                            {connect:false, icon:'icons/svg/pk-nolink.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5', styles:{'stroke-dasharray':1}}] //todo: missing stroke dasharray
+                            {connect:false, icon:'icons/svg/pk-nolink.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5', styles:{'stroke-dasharray':1}}]
                     },
                     {
                         icon:'icons/svg/pk-animate-none.svg',
@@ -121,7 +121,7 @@ function Metabrush (d3brush, multibrush) {
             .each(function(d){
                 var menuG = this;
                 brush.menu[d.id] = new d3.radialMenu()
-                    .thickness(30)
+                    .thickness(35)
                     .radius(20)
                     .iconSize(20)
                     .appendTo(menuG)
