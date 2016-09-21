@@ -81,9 +81,21 @@ class View {
                 clearTimeout(t);
                 self.unhover(d, this);
             })
-            .on('click', function(d, i){
-                self.brushDataPoint(d, i, this);
-            });
+            .call(mtouch_events()
+                .on('tap', function(d, i){
+                    if(d3.event.sourceEvent.type === "mouseup"){
+                        return self.brushDataPoint(d, i, this);
+                    }
+                    var wasHighlighted = d3.select(this).classed('highlighted');
+                    self.unhover();
+                    if(!wasHighlighted){
+                        self.hover(d, this);
+                    }
+                })
+                .on('hold', function(d, i){
+                    self.brushDataPoint(d, i, this);
+                })
+            );
     }
 
     /**
