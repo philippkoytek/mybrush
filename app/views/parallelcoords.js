@@ -52,10 +52,11 @@ class ParallelCoords extends View {
 
         self.xRange.domain(self.dimensions);
         self.dimensions.forEach(function(dim){
+            var e = d3.extent(data, function(d, i){
+                return self.yValue(d, i, dim);
+            });
             self.yRange[dim] = d3.scale.linear()
-                .domain(d3.extent(data, function(d, i){
-                    return self.yValue(d, i, dim);
-                }))
+                .domain([Math.max(0,e[0]-5),e[1]+5])
                 .range([self.chartHeight, 0]).nice();
         });
 
