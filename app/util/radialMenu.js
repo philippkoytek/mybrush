@@ -235,7 +235,7 @@ d3.radialMenu = function() {
         menuSegments.append("path")
             .attr("class", "menu-segment")
             .each(function(d) { this._current = d; })                   // store the initial data value for later
-            .on("click", function(d) {
+            .call(mtouch_events().on('tap', function(d) {
                 d3.select(this.parentNode).selectAll('.menu-subsegment-container')
                     .style('display', null)
                     .transition()
@@ -243,7 +243,7 @@ d3.radialMenu = function() {
                     .style("opacity", function(){
                         return (+d3.select(this).style('opacity') + 1) % 2;
                     });
-            })
+            }))
             .attr('d', arc.innerRadius(0).outerRadius(0)); //do not display the menu yet. Only with show method
 
         // Add the icons
@@ -287,9 +287,9 @@ d3.radialMenu = function() {
                 d3.select(this).style(d.data.styles);
                 //todo: mark active ones active
             })
-            .on('click', function(d){
+            .call(mtouch_events().on('tap', function(d){
                 onClick.call(this, d.data);
-            });
+            }));
 
         subSegments.each(function(d){
             if(d.data.icon && !d.data.label){

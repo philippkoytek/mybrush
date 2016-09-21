@@ -118,9 +118,9 @@ function Metabrush (d3brush, multibrush) {
             .attr('transform', function(d, i){
                 return 'translate('+ (i-1)*60 +',-8)';
             })
-            .on('click', function(){
+            .call(mtouch_events().on('tap', function(){
                 d3.select(this).moveToFront();
-            })
+            }))
             .each(function(d){
                 var menuG = this;
                 brush.menu[d.id] = new d3.radialMenu()
@@ -193,7 +193,7 @@ function Metabrush (d3brush, multibrush) {
         menuTrigger.append('circle').classed('trigger', true)
             .attr('r', 22)
             .on('mousedown', stopPropagation).on('touchstart', stopPropagation)
-            .on('click', toggleMenu)
+            .call(mtouch_events().on('tap', toggleMenu))
             .call(dragBehave);
         menuTrigger.append('g').classed('trigger-icon', true)
             .each(function(d){
@@ -223,15 +223,15 @@ function Metabrush (d3brush, multibrush) {
                         tcouple.append('circle').classed('target-coupling-bg', true)
                             .attr({r:10, cx:14, cy:-14})
                             .style({fill:'#efefef', stroke:'lightgrey', 'stroke-width':1, 'stroke-dasharray':0})
-                            .on('click', function(){
-                                stopPropagation();
+                            .call(mtouch_events().on('tap',  function(){
+                                //stopPropagation();
                                 if(brush.targetSourceCoupled){
                                     decoupleTargetFromSource();
                                 } else {
                                     syncTargetWithSource();
                                 }
                                 EventBus.trigger(events.UPDATE);
-                            });
+                            }));
                         tcouple.append('image').classed('target-coupling-icon', true)
                             .attr('xlink:href', 'icons/svg/link-coupled.svg')
                             .style('pointer-events', 'none')
@@ -251,12 +251,12 @@ function Metabrush (d3brush, multibrush) {
             .classed('close-button-bg', true)
             .attr({x:0, y:15, width:28, height:28})
             .style({'shape-rendering':'crispEdges', stroke:'black', fill:'#efefef'})
-            .on('click', function(){
+            .call(mtouch_events().on('tap', function(){
                 brush.clear();
                 brush.origin.onBrush(brush);
                 brush.brushArea.remove();
                 brush.menuWrap.remove();
-            });
+            }));
         closeButton.append('image').classed('close-button-label', true)
             .attr({x:4, y:19, width:20, height:20, 'xlink:href':'icons/svg/waste-disposal.svg'})
             .style({'pointer-events':'none'});
