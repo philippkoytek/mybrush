@@ -13,7 +13,7 @@ class ScatterPlot extends View {
         };
         
         this.rValue = function(d){
-            return 4;//(d.wage / 50000) - 1;
+            return 7;//(d.wage / 50000) - 1;
         };
 
         var color = constants.stdColorScale;
