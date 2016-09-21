@@ -154,7 +154,7 @@ d3.svg.pkbrush = function() {
           extent1 = {x: xExtent, y: yExtent, i: xExtentDomain, j: yExtentDomain},
           extent0 = this.__chart__ || extent1;
       this.__chart__ = extent1;
-      if (d3_transitionInheritId) {
+      /*if (d3_transitionInheritId) {
         d3.select(this).transition()
             .each("start.brush", function() {
               xExtentDomain = extent0.i; // pre-transition state
@@ -179,11 +179,11 @@ d3.svg.pkbrush = function() {
               event_({type: "brush", mode: "resize"});
               event_({type: "brushend"});
             });
-      } else {
+      } else {*/
         event_({type: "brushstart"});
         event_({type: "brush", mode: "resize"});
         event_({type: "brushend"});
-      }
+      //}
     });
   };
 
