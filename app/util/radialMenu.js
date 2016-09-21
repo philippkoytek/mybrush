@@ -237,6 +237,7 @@ d3.radialMenu = function() {
             .each(function(d) { this._current = d; })                   // store the initial data value for later
             .call(mtouch_events()
                 .on('tap', function(d) {
+                    onClick.call(this, 'menu-segment');
                     d3.select(this.parentNode).selectAll('.menu-subsegment-container')
                         .style('display', null)
                         .transition()

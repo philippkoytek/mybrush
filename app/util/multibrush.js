@@ -7,7 +7,7 @@ class Multibrush {
         this.containerNode = containerNode || this.view.chart;
         this.xRange = (typeof this.view.xRange == 'function') ? this.view.xRange : this.view.xRange[this.dim];
         this.yRange = (typeof this.view.yRange == 'function') ? this.view.yRange : this.view.yRange[this.dim];
-        
+        this.brushesContainerNode = this.containerNode.append('g').classed(this.dim + '-brushes', true);
         this.containerNode.append('rect')
             .classed('hover-rect ' + dim, true)
             .datum(dim);

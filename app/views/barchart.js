@@ -112,7 +112,9 @@ class BarChart extends View {
         var brush = d3.svg.pkbrush()
             .x(this.xRange)
             .handleSize(constants.handleSize);
-        brush.on('brush', function(){
+        brush.on('brushstart', function(){
+                self.onBrushStart(brush);
+            }).on('brush', function(){
                 self.onBrush(brush);
             })
             .on('brushend', function(){

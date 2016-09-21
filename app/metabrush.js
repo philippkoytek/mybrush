@@ -11,6 +11,7 @@ function Metabrush (d3brush, multibrush) {
         // brush instance methods
         brush.updatePositions = brush_updatePositions.bind(brush);
         brush.activate = brush_activate.bind(brush);
+        brush.moveToFront = brush_moveToFront.bind(brush);
 
         // default brush settings
         brush.styles = {
@@ -100,7 +101,7 @@ function Metabrush (d3brush, multibrush) {
         brush.targetSourceCoupled = true;
 
         // initialize the brush svg element
-        brush.brushArea = multibrush.containerNode.insert('g', '.brush')
+        brush.brushArea = multibrush.brushesContainerNode.insert('g', '.brush')
             .classed('brush ready', true)
             .call(brush);
 
@@ -127,6 +128,8 @@ function Metabrush (d3brush, multibrush) {
                     .appendTo(menuG)
                     .onClick(function(action){
                         var menuGroup = d3.select(menuG).moveToFront();
+                        brush.moveToFront();
+                        if(action == 'menu-segment'){return;} // when a menu segment is clicked to exapnd its options, only move brush to front
                         var segmentContainer = d3.select(this.parentNode.parentNode);
                         if(action.hasOwnProperty('target')){
                             if(brush.targetViews.has(VIEWS[action.target])){
@@ -178,9 +181,15 @@ function Metabrush (d3brush, multibrush) {
 
         // add trigger button of radial menu
         var dragBehave = d3.behavior.drag()
-            .on('dragend', function(){ d3.event.sourceEvent.preventDefault(); })
+            .on('dragstart', function(){
+                d3.select(this.parentNode.parentNode).moveToFront();
+                brush.moveToFront();
+            })
+            .on('dragend', function(){ 
+                d3.event.sourceEvent.preventDefault();
+            })
             .on('drag', function(d, i){
-                var menu = d3.select(this.parentNode.parentNode).moveToFront();
+                var menu = d3.select(this.parentNode.parentNode);
                 var t = d3.transform(menu.attr('transform'));
                 t.translate[0] += d3.event.x;
                 t.translate[1] += d3.event.y;
@@ -271,6 +280,7 @@ function Metabrush (d3brush, multibrush) {
             if(d3.event.defaultPrevented){
                 return;
             }
+            brush.moveToFront();
             var menu = brush.menu[d.id];
             if(menu.isCollapsed()){
                 brush.menuArea.selectAll('.' + d.id + '-menu').moveToFront();
@@ -348,7 +358,11 @@ function Metabrush (d3brush, multibrush) {
 
             this.menuWrap.attr('transform',
                 'translate(' + (+brushPos.left - +svgPos.left) + ',' + (+brushPos.top - +svgPos.top) + ')')
-
+        }
+        
+        function brush_moveToFront(){
+            this.brushArea.moveToFront();
+            this.menuWrap.moveToFront();
         }
     }
 

@@ -108,6 +108,10 @@ class View {
             );
     }
 
+    onBrushStart(brush){
+        brush.moveToFront();
+    }
+
     /**
      * update meta information of data on brush event
      */

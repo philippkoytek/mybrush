@@ -102,7 +102,9 @@ class ParallelCoords extends View {
         var brush = d3.svg.pkbrush()
             .y(this.yRange[dim])
             .handleSize(constants.handleSize);
-        brush.on('brush', function(){
+        brush.on('brushstart', function(){
+                self.onBrushStart(brush);
+            }).on('brush', function(){
                 self.onBrush(brush);
             })
             .on('brushend', function(){

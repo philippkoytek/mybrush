@@ -79,9 +79,11 @@ class ListView extends View {
             .y(this.yRange)
             .x(this.xRange)
             .handleSize(constants.handleSize);
-        brush.on('brush', function(){
-            self.onBrush(brush);
-        })
+        brush.on('brushstart', function(){
+                self.onBrushStart(brush);
+            }).on('brush', function(){
+                self.onBrush(brush);
+            })
             .on('brushend', function(){
                 self.onBrushEnd(brush);
             });
