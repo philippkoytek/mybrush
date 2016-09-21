@@ -118,9 +118,6 @@ function Metabrush (d3brush, multibrush) {
             .attr('transform', function(d, i){
                 return 'translate('+ (i-1)*60 +',-8)';
             })
-            .call(mtouch_events().on('tap', function(){
-                d3.select(this).moveToFront();
-            }))
             .each(function(d){
                 var menuG = this;
                 brush.menu[d.id] = new d3.radialMenu()
@@ -129,6 +126,7 @@ function Metabrush (d3brush, multibrush) {
                     .iconSize(20)
                     .appendTo(menuG)
                     .onClick(function(action){
+                        var menuGroup = d3.select(menuG).moveToFront();
                         var segmentContainer = d3.select(this.parentNode.parentNode);
                         if(action.hasOwnProperty('target')){
                             if(brush.targetViews.has(VIEWS[action.target])){
@@ -143,7 +141,7 @@ function Metabrush (d3brush, multibrush) {
                         if(action.hasOwnProperty('connect')){
                             brush.connect = action.connect;
                             segmentContainer.select('.menu-icon').attr('xlink:href', action.icon);
-                            d3.select(menuG).select('.trigger-icon').select('path.link').attr('d',action.d);
+                            menuGroup.select('.trigger-icon').select('path.link').attr('d',action.d);
                         }
                         if(action.hasOwnProperty('animate')){
                             brush.animate = action.animate;
@@ -158,7 +156,7 @@ function Metabrush (d3brush, multibrush) {
                             // (if selected style is explicitly undefined it will overwrite the brush style to mark it undefined)
                             _.assign(brush.styles[d.id], action.styles);
                             segmentContainer.select('.menu-segment').style(action.styles);
-                            d3.select(menuG).select('.trigger-icon').style(brush.styles[d.id]);
+                            menuGroup.select('.trigger-icon').style(brush.styles[d.id]);
                         }
 
                         // update target/source coupling
@@ -245,7 +243,7 @@ function Metabrush (d3brush, multibrush) {
             .classed('close-button', true)
             .on('mousedown', function(){
                 // prevent resize behaviour on close button
-                d3.event.stopPropagation();
+                stopPropagation();
             });
         closeButton.append('rect')
             .classed('close-button-bg', true)
