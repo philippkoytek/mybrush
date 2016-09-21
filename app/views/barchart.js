@@ -100,18 +100,6 @@ class BarChart extends View {
             .call(self.addInteractivity.bind(self));
 
 
-
-       /* var bars = content.selectAll('.bar').data(barsData);
-        bars.enter().append('rect')
-            .classed('bar data-item', true)
-            .attr('x', function(d){ return self.xValue(d) - self.xRange.rangeBand()/2; })
-            .attr('width', self.xRange.rangeBand())
-            .attr('y', function(d){ return self.yRange(self.yValue(d)); })
-            .attr('height', function(d){ return self.chartHeight - self.yRange(self.yValue(d)); })
-            .style('fill', self.fillValue)
-            .style('stroke', self.fillValue)
-            .call(self.addInteractivity.bind(self));*/
-
         return self;
     };
 

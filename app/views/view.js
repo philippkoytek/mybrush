@@ -294,7 +294,7 @@ class View {
                         d3.select(this).style(c.style);
                     })
                     .style('opacity', function(c){
-                        return c.brush.animate == 'fade' ? 0 : 1;
+                        return c.brush.animate == 'fade' ? 0 : 0.6;
                     })
                     .attr('d', function(c){
                         var to = c.to;
@@ -306,9 +306,9 @@ class View {
                     })
                     .transition("line-transition-enter")
                     .duration(function(c){
-                        return c.brush.animate && c.brush.animate != 'none'? 350 : 0;
+                        return c.brush.animate && c.brush.animate != 'none'? constants.linkTransitionDuration : 0;
                     })
-                    .style('opacity', 1)
+                    .style('opacity', 0.6)
                     .attr('d', function(c){
                         return Lines.makeLine(c.from.view.lineAnchorPoint(c.from, c.rawValue, c.brush),
                             c.to.view.lineAnchorPoint(c.to, c.rawValue, c.brush), c.brush.connect, this);
@@ -319,10 +319,10 @@ class View {
                 links.exit()
                     .transition("line-transition-exit")
                     .duration(function(d){
-                        return d.brush.animate && d.brush.animate != 'none'? 350 : 0;
+                        return d.brush.animate && d.brush.animate != 'none'? constants.linkTransitionDuration : 0;
                     })
                     .style('opacity', function(d){
-                        return d.brush.animate == 'fade' ? 0 : 1;
+                        return d.brush.animate == 'fade' ? 0 : 0.6;
                     })
                     .attr('d', function(d){
                         if(d.brush.animate == 'draw'){

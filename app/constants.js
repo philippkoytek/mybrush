@@ -25,7 +25,8 @@ var constants = {
     stdColorScale:d3.scale.ordinal().range(["#324bfd"]),
     brushColors:highlightColors2,
     strokeWidth:1.5,
-    handleSize:20
+    handleSize:20,
+    linkTransitionDuration:500
 };
 
 
