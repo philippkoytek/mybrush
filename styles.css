@@ -40,13 +40,24 @@ html, body, svg#main {
 }
 
 .highlighted {
-    stroke:#ff1902 !important;
-    stroke-width: 2px;
+    fill:#ff1902 !important;
 }
 
-text.highlighted {
-    stroke-width: 1px;
+path.highlighted {
+    stroke-width: 2px !important;
+    stroke:#ff1902 !important;
+    fill:initial !important;
 }
+
+path.highlighted.secondary-highlight {
+    stroke:#ff6474 !important;
+}
+
+.highlighted.secondary-highlight {
+    fill:#ff6474 !important;
+    /*#00FFFA*/
+}
+
 
 .hover-rect {
     stroke: lightgrey;

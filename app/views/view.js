@@ -52,12 +52,22 @@ class View {
                     d3.select(this).attr(self.getMinimumBrushBox(visual, d, dim));
                 })
                 .style({display:'inline', opacity:1});
-            d3.selectAll([...v.visuals]).classed('highlighted', true).filter('.individual').moveToFront();
+            d3.selectAll([...v.visuals]).filter('.individual').classed('highlighted', true).moveToFront();
+            if(this.hoverSecondary){
+                this.hoverSecondary(d, visual);
+            }
+            // highlight links that are connected to the individual (!) data item
+            d3.select('.canvas > .links')
+                .selectAll(
+                    'path.from-data' + this.idValue(d) + '.from-view-' + this.viewId +', '+
+                    'path.to-data' + this.idValue(d) + '.to-view-' + this.viewId
+                ).classed('highlighted', true);
         }, this);
     }
 
     unhover(d, visual){
-        d3.selectAll('.data-item').classed('highlighted', false);
+        d3.selectAll('.data-item').classed('highlighted secondary-highlight', false);
+        d3.select('.canvas > .links').selectAll('path').classed('highlighted', false);
         this.chart.selectAll('.hover-rect')
             .style({display:'none', opacity:0});
     }
@@ -268,7 +278,7 @@ class View {
 
                 // draw the lines
                 var id = thisView.idValue(d);
-                var links = d3.select('.canvas > .links').selectAll('path.data' + id + '.from-view-' + thisView.viewId)
+                var links = d3.select('.canvas > .links').selectAll('path.from-data' + id + '.from-view-' + thisView.viewId)
                     .data(this.connections, function(c){
                         // identifier example: dataItemID WITHIN dataGroupID FROM group/individual IN view2 TO group/individual IN view3
                         return thisView.idValue(c.rawValue) + '-within' + id +
@@ -288,10 +298,13 @@ class View {
 
                 // add new lines
                 links.enter().append('path')
-                    .classed('data'+id, true)
+                    .classed('from-data'+id, true)
                     .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
                     .each(function(c){
-                        d3.select(this).style(c.style);
+                        var toId = c.to.view.idValue(d3.select(c.to).datum());
+                        d3.select(this)
+                            .style(c.style)
+                            .classed('to-view-'+c.to.view.viewId + ' to-data'+toId, true);
                     })
                     .style('opacity', function(c){
                         return c.brush.animate == 'fade' ? 0 : 0.6;

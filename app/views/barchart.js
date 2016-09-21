@@ -133,4 +133,18 @@ class BarChart extends View {
         return {x:b.x - 2, y:-5, width: b.width + 4, height: this.chartHeight + 5};
     }
 
+    /**
+     * highlights the aggregate data item and related items with a secondary highlight color
+     * @param d
+     * @param visual
+     */
+    hoverSecondary(d, visual) {
+        d3.select(visual.parentNode).selectAll('.aggregate').classed('highlighted secondary-highlight', true);
+        d3.select(visual.parentNode).selectAll('.individual').each(function(d, i){
+            if(this != visual) { //only go through secondary items (ie. not the one where the actual hover occured)
+                d3.selectAll([...d.visuals]).filter('.individual').classed('highlighted secondary-highlight', true);    //highlight all items associated to the bar
+                d3.select(this).classed('highlighted secondary-highlight', false);  // don't highlight the individual bar-parts (as the bar is highlighted as a whole)
+            }
+        });
+    }
 }
