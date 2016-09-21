@@ -19,7 +19,7 @@ class ListView extends View {
         this.fontSize = 16;
 
         this.yValue = function (d, i) {
-            return this.yRange((i % this.rows) + 1) + this.fontSize;
+            return this.yRange((i % this.rows) + 1) + (this.fontSize*3/4);
         };
         
         this.strokeValue = function(d){
@@ -53,12 +53,14 @@ class ListView extends View {
         cards.append('circle')
             .classed('anchor-point', true)
             .attr('cx', self.xValue.bind(self))
-            .attr('cy', self.yValue.bind(self))
+            .attr('cy', function(d,i){
+                return self.yValue(d,i);// + self.fontSize/2;
+            })
             .attr('r', 1.5);
         cards.append('text')
             .classed('data-item aggregate individual', true)
-            .attr('x', function(d, i){ return self.xValue(d, i) + 3;})
-            .attr('y', self.yValue.bind(self))
+            .attr('x', function(d, i){ return self.xValue(d, i) + 6;})
+            .attr('y', function(d,i){ return self.yValue(d,i) + self.fontSize/4;})
             .text(function(d){return d.name;})
             .style('font-size', self.fontSize + 'px')
             .style('font-weight', 'bold')
@@ -88,7 +90,7 @@ class ListView extends View {
 
     getMinimumBrushBox (visual) {
         var b = visual.getBBox();
-        return {x:b.x - 6, y:b.y - 3, width: Math.max(this.xRange.rangeBand(), b.width) + 9, height: b.height + 6};
+        return {x:b.x - 10, y:b.y - 3, width: Math.max(this.xRange.rangeBand(), b.width) + 13, height: b.height + 6};
     }
 
     lineAnchorPoint (visual, d, brush) {
