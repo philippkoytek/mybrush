@@ -129,7 +129,9 @@ function Metabrush (d3brush, multibrush) {
                     .onClick(function(action){
                         var menuGroup = d3.select(menuG).moveToFront();
                         brush.moveToFront();
-                        if(action == 'menu-segment'){return;} // when a menu segment is clicked to exapnd its options, only move brush to front
+                        if(action == 'menu-segment') {
+                            return; // when a menu segment is clicked to toggle its options, only move brush to front and done
+                        }
                         var segmentContainer = d3.select(this.parentNode.parentNode);
                         if(action.hasOwnProperty('target')){
                             if(brush.targetViews.has(VIEWS[action.target])){
@@ -140,6 +142,8 @@ function Metabrush (d3brush, multibrush) {
                                 brush.targetViews.add(VIEWS[action.target]);
                                 d3.select(this).classed('toggle-active', true);
                             }
+                            menuGroup.select('.trigger-icon').select('image.target-state-icon')
+                                .style('display', brush.targetViews.size > 0 ? null : 'none');
                         }
                         if(action.hasOwnProperty('connect')){
                             brush.connect = action.connect;
@@ -214,6 +218,10 @@ function Metabrush (d3brush, multibrush) {
                         .attr({r:3, cx:-13, cy:7});
                     icon.append('circle').classed('point end', true)
                         .attr({r:3, cx:13, cy:-7});
+                    icon.append('image').classed('target-state-icon', true)
+                        .attr('xlink:href', 'icons/svg/target.svg')
+                        .attr({x:6, y:-2, width:12, height:12})
+                        .style('display', 'none');
                 }
                 else {
                     icon.classed('point-menu-icon ' + d.id, true)
@@ -228,7 +236,7 @@ function Metabrush (d3brush, multibrush) {
                     if(d.id == 'target'){
                         var tcouple = d3.select(this.parentNode).append('g').classed('target-coupling', true);
                         tcouple.append('circle').classed('target-coupling-bg', true)
-                            .attr({r:10, cx:14, cy:-14})
+                            .attr({r:12, cx:18, cy:-16})
                             .style({fill:'#efefef', stroke:'lightgrey', 'stroke-width':1, 'stroke-dasharray':0})
                             .call(mtouch_events().on('tap',  function(){
                                 //stopPropagation();
@@ -242,7 +250,7 @@ function Metabrush (d3brush, multibrush) {
                         tcouple.append('image').classed('target-coupling-icon', true)
                             .attr('xlink:href', 'icons/svg/link-coupled.svg')
                             .style('pointer-events', 'none')
-                            .attr({ x:10, y:-19, width:9, height:9 });
+                            .attr({ x:12, y:-22, width:12, height:12 });
                     }
                 }
             });
