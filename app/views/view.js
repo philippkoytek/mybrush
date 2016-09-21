@@ -229,18 +229,18 @@ class View {
     updateView(){
         var thisView = this;
         this.chart.selectAll('.data-item')
-            .each(function(aggregateD){
+            .each(function(d){
 
                 //default styles and reset connections
                 var myStyles = {
-                    point:{'fill': thisView.fillValue(aggregateD), 'stroke':thisView.strokeValue(aggregateD), 'stroke-width':constants.strokeWidth},
+                    point:{'fill': thisView.fillValue(d), 'stroke':thisView.strokeValue(d), 'stroke-width':constants.strokeWidth},
                     link:{stroke:'black', fill:'none'}
                 };
                 this.connections = [];
                 var d3This = d3.select(this);
 
                 // calculate data item's style and connections
-                thisView.rawValues(aggregateD).forEach(function(v){
+                thisView.rawValues(d).forEach(function(v){
                     v.brushes.forEach(function(brush){
                         // overwrite myStyles with the new brush styles (except does not overwrite when brush style is marked undefined)
                         if(brush.origin == thisView && d3This.classed(brush.granularity.source)){
@@ -267,51 +267,51 @@ class View {
                 d3This.style(myStyles.point);
 
                 // draw the lines
-                var aggregateId = thisView.idValue(aggregateD);
-                var links = d3.select('.canvas > .links').selectAll('path.data' + aggregateId + '.from-view-' + thisView.viewId)
-                    .data(this.connections, function(d){
+                var id = thisView.idValue(d);
+                var links = d3.select('.canvas > .links').selectAll('path.data' + id + '.from-view-' + thisView.viewId)
+                    .data(this.connections, function(c){
                         // identifier example: dataItemID WITHIN dataGroupID FROM group/individual IN view2 TO group/individual IN view3
-                        return thisView.idValue(d.rawValue) + '-within' + aggregateId + 
-                            '-from-' + d.brush.granularity.source + '-in' + thisView.viewId + 
-                            '-to-' + d.brush.granularity.target + '-in' + d.to.view.viewId;
+                        return thisView.idValue(c.rawValue) + '-within' + id +
+                            '-from-' + c.brush.granularity.source + '-in' + thisView.viewId +
+                            '-to-' + c.brush.granularity.target + '-in' + c.to.view.viewId;
                     });
 
                 // update lines (including line interpolation etc)
-                links.each(function(d){
-                        d3.select(this).style(d.style);
+                links.each(function(c){
+                        d3.select(this).style(c.style);
                     })
                     .transition()
-                    .attr('d', function(d){
-                    return Lines.makeLine(d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), 
-                        d.to.view.lineAnchorPoint(d.to, d.rawValue, d.brush), d.brush.connect, this);
-                });
+                    .attr('d', function(c){
+                    return Lines.makeLine(c.from.view.lineAnchorPoint(c.from, c.rawValue, c.brush),
+                        c.to.view.lineAnchorPoint(c.to, c.rawValue, c.brush), c.brush.connect, this);
+                    });
 
                 // add new lines
                 links.enter().append('path')
-                    .classed('data'+aggregateId, true)
+                    .classed('data'+id, true)
                     .classed('from-view-'+thisView.viewId, true) //todo: add a "to-view-1" class
-                    .each(function(d){
-                        d3.select(this).style(d.style);
+                    .each(function(c){
+                        d3.select(this).style(c.style);
                     })
-                    .style('opacity', function(d){
-                        return d.brush.animate == 'fade' ? 0 : 1;
+                    .style('opacity', function(c){
+                        return c.brush.animate == 'fade' ? 0 : 1;
                     })
-                    .attr('d', function(d){
-                        var to = d.to;
-                        if(d.brush.animate == 'draw'){
-                            to = d.from;
+                    .attr('d', function(c){
+                        var to = c.to;
+                        if(c.brush.animate == 'draw'){
+                            to = c.from;
                         }
-                        return Lines.makeLine(d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), 
-                            to.view.lineAnchorPoint(to, d.rawValue, d.brush), d.brush.connect, this);
+                        return Lines.makeLine(c.from.view.lineAnchorPoint(c.from, c.rawValue, c.brush),
+                            to.view.lineAnchorPoint(to, c.rawValue, c.brush), c.brush.connect, this);
                     })
                     .transition()
-                    .duration(function(d){
-                        return d.brush.animate && d.brush.animate != 'none'? 350 : 0;
+                    .duration(function(c){
+                        return c.brush.animate && c.brush.animate != 'none'? 350 : 0;
                     })
                     .style('opacity', 1)
-                    .attr('d', function(d){
-                        return Lines.makeLine(d.from.view.lineAnchorPoint(d.from, d.rawValue, d.brush), 
-                            d.to.view.lineAnchorPoint(d.to, d.rawValue, d.brush), d.brush.connect, this);
+                    .attr('d', function(c){
+                        return Lines.makeLine(c.from.view.lineAnchorPoint(c.from, c.rawValue, c.brush),
+                            c.to.view.lineAnchorPoint(c.to, c.rawValue, c.brush), c.brush.connect, this);
                     });
 
 
