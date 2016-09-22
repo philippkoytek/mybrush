@@ -122,11 +122,12 @@ d3.radialMenu = function() {
      * Calculates the mid point of an arc
      * @param {object} d - The D3 data object that represents the arc
      * @param {boolean} isOuterArc - whether to use the radius of the outerArc
+     * @param {int} addPx - move the returned point along the center line of the segment
      * @returns {object} A co-ordinate with an x, y location
      */
-    function calcMidPoint(d, isOuterArc) {
+    function calcMidPoint(d, isOuterArc, addPx = 0) {
         var angle = d.startAngle + ((d.endAngle - d.startAngle) / 2);
-        var r = (isOuterArc ? bigOuterArc.innerRadius()() : radius) + (thickness / 2);
+        var r = (isOuterArc ? bigOuterArc.innerRadius()() : radius) + (thickness/2) + addPx;
         return {
             x: r * Math.sin(angle),
             y: -r * Math.cos(angle)
@@ -295,31 +296,40 @@ d3.radialMenu = function() {
             }));
 
         subSegments.each(function(d){
-            if(d.data.icon && !d.data.label){
+            if(d.data.icon){
+                var myIconSize = iconSize;
+                var addPx = 0;
+                if(d.data.target){
+                    myIconSize = iconSize/1.8;
+                    addPx = -myIconSize/3;
+                }
                 d3.select(this).append("image")
                     .attr("class", "menu-icon")
                     .attr("xlink:href", d.data.icon)
-                    .attr("width", iconSize)
-                    .attr("height", iconSize)
-                    .attr("x", calcMidPoint(d, true).x - iconSize / 2)
-                    .attr("y", calcMidPoint(d, true).y - iconSize / 2)
+                    .attr("width", myIconSize)
+                    .attr("height", myIconSize)
+                    .attr("x", calcMidPoint(d, true, addPx).x - myIconSize / 2)
+                    .attr("y", calcMidPoint(d, true, addPx).y - myIconSize / 2)
                     .attr("transform", function(d) {
                         // We need to rotate the images backwards to compensate for the rotation of the menu as a whole
-                        var mp = calcMidPoint(d, true);
+                        var mp = calcMidPoint(d, true, addPx);
                         var angle = -offsetAngleDeg;
                         return "rotate(" + angle + "," + mp.x + "," + mp.y + ")";
                     });
             }
             if(d.data.label){
+                var addPx = 7;
+                var fontSize = 12;
                 d3.select(this).append('text')
                     .classed('menu-icon-label', true)
                     .text(d.data.label)
-                    .attr(calcMidPoint(d, true))
+                    .attr(calcMidPoint(d, true, addPx))
+                    .style('font-size', fontSize)
                     .attr("transform", function(d) {
                         // We need to rotate the images backwards to compensate for the rotation of the menu as a whole
-                        var mp = calcMidPoint(d, true);
+                        var mp = calcMidPoint(d, true, addPx);
                         var angle = -offsetAngleDeg;
-                        return "rotate(" + angle + "," + mp.x + "," + mp.y + ")";
+                        return "rotate(" + angle + "," + mp.x + "," + mp.y + ")translate(0, " + fontSize/2 + ")";
                     });
             }
         });
