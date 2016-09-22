@@ -315,10 +315,14 @@ function Metabrush (d3brush, multibrush) {
         }
 
         function syncTargetWithSource (){
-            _.assign(brush.styles['target'], brush.styles['source']);
-            brush.granularity.target = brush.granularity.source;
             var targetMenuG = brush.menuArea.selectAll('g.target-menu');
             var sourceMenuG = brush.menuArea.selectAll('g.source-menu');
+
+            // copy source styles and granularity to target
+            brush.styles['target'] = _.cloneDeep(brush.styles['source']);
+            brush.granularity.target = brush.granularity.source;
+
+            // style the target menu segments and icons the same as in the source menu
             targetMenuG.selectAll('.menu-segment').each(function(d){
                 var myContainerClasses = '.' + _.replace(d3.select(this.parentNode).attr('class'), new RegExp(' ','g'), '.');
                 var sourceStyle = sourceMenuG.selectAll(myContainerClasses).selectAll('.menu-segment').attr('style');
@@ -326,7 +330,13 @@ function Metabrush (d3brush, multibrush) {
                 var segmentIcon = sourceMenuG.selectAll(myContainerClasses).selectAll('.menu-segment + .menu-icon').attr('xlink:href');
                 d3.select(this.parentNode).select('.menu-icon').attr('xlink:href', segmentIcon);
             });
-            targetMenuG.select('.trigger-icon').style(brush.styles['target']);
+
+            // set style of menu's trigger icon
+            targetMenuG.select('.trigger-icon')
+                .attr('style', null)
+                .style(brush.styles['target']);
+
+            // set coupling flag to true
             brush.targetSourceCoupled = true;
             brush.menuArea.selectAll('.target-coupling-icon').attr('xlink:href', 'icons/svg/link-coupled.svg');
         }
