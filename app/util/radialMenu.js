@@ -239,13 +239,15 @@ d3.radialMenu = function() {
             .call(mtouch_events()
                 .on('tap', function(d) {
                     onClick.call(this, 'menu-segment');
-                    d3.select(this.parentNode).selectAll('.menu-subsegment-container')
-                        .style('display', null)
-                        .transition()
-                        .duration(animationDuration)
-                        .style("opacity", function(){
-                            return (+d3.select(this).style('opacity') + 1) % 2;
-                        });
+                    if(!isCollapsed){ // prevents opening subsegments during closing transition of menu
+                        d3.select(this.parentNode).selectAll('.menu-subsegment-container')
+                            .style('display', null)
+                            .transition()
+                            .duration(animationDuration)
+                            .style("opacity", function(){
+                                return (+d3.select(this).style('opacity') + 1) % 2;
+                            });
+                    }
                 })
             )
             .attr('d', arc.innerRadius(0).outerRadius(0)); //do not display the menu yet. Only with show method
