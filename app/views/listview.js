@@ -23,11 +23,11 @@ class ListView extends View {
         };
         
         this.strokeValue = function(d){
-            return 'none';
+            return 'transparent';
         };
         
         this.fillValue = function(d){
-            return 'black';
+            return 'transparent';
         };
 
 
@@ -58,12 +58,24 @@ class ListView extends View {
             })
             .attr('r', 1.5);
         cards.append('text')
-            .classed('data-item aggregate individual', true)
+            .classed('name', true)
             .attr('x', function(d, i){ return self.xValue(d, i) + 6;})
             .attr('y', function(d,i){ return self.yValue(d,i) + self.fontSize/4;})
             .text(function(d){return d.name;})
             .style('font-size', self.fontSize + 'px')
             .style('font-weight', 'bold')
+            .style('pointer-events', 'none');
+
+        cards.insert('g', ':first-child').classed('card-bg', true)
+            .append('rect')
+            .classed('data-item aggregate individual', true)
+            .each(function(){
+                var text = d3.select(this.parentNode.parentNode).select('text');
+                var textB = text.node().getBBox();
+                d3.select(this).attr({x:textB.x - 3, y:textB.y - 3, width: textB.width + 6, height: textB.height + 6});
+            })
+            .style('fill', self.fillValue)
+            .style('stroke', self.strokeValue)
             .call(self.addInteractivity.bind(self));
 
 
@@ -96,8 +108,8 @@ class ListView extends View {
     }
 
     lineAnchorPoint (visual, d, brush) {
-        var x = d3.select(visual.previousSibling).attr('cx');
-        var y = d3.select(visual.previousSibling).attr('cy');
+        var x = d3.select(visual.parentNode.parentNode).selectAll('.anchor-point').attr('cx');
+        var y = d3.select(visual.parentNode.parentNode).selectAll('.anchor-point').attr('cy');
         return this.fromChartToAbsoluteCtx(x, y);
     }
 }
