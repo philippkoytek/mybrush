@@ -33,6 +33,9 @@ class ParallelCoords extends View {
 
         this.axis = d3.svg.axis().orient('left');
 
+        this.strokeWidth = 0.8;
+        this.fullWidth = 3; // = fillWidth + strokeWidth*2
+
     }
 
     data(data) {
@@ -45,7 +48,7 @@ class ParallelCoords extends View {
             });
             var reverse = [];
             for(var pi = pts.length - 1; pi >= 0; pi--){
-                reverse.push([pts[pi][0], pts[pi][1] + 2.5]);
+                reverse.push([pts[pi][0], pts[pi][1] + self.fullWidth]);
             }
             return d3.svg.line().interpolate('linear')(pts.concat(reverse));
         }
@@ -67,7 +70,7 @@ class ParallelCoords extends View {
             .classed('line data-item aggregate individual', true)
             .style('stroke', self.strokeValue)
             .style('fill', self.fillValue)
-            .style('stroke-width', 0.8)
+            .style('stroke-width', self.strokeWidth)
             .attr('d', drawPath)
             .call(self.addInteractivity.bind(self));
 
