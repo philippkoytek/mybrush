@@ -27,28 +27,27 @@
     </div>
 
 
-    <!--library scripts-->
-    <!--TODO: use minified scripts in production-->
+    <!--node modules scripts-->
     <script src="node_modules/lodash/lodash.min.js"></script>
     <script src="node_modules/backbone/backbone.js"></script>
     <script src="node_modules/d3/d3.js"></script>
 
+    <!-- lib scripts -->
+    <script src="app/lib/sdcurve.js"></script>
+    <script src="app/lib/mtouch-events.js"></script>
+    <script src="app/lib/pkBrush.js"></script>
+
     <!--util scripts-->
-    <script src="app/util/pkBrush.js"></script>
     <script src="app/util/helpers.js"></script>
     <script src="app/util/eventbus.js"></script>
-    <script src="app/util/multibrush.js"></script>
-    <script src="app/util/radialMenu.js"></script>
-    <script src="app/util/sdcurve.js"></script>
     <script src="app/util/lines.js"></script>
-    <script src="app/util/mtouch-events.js"></script>
-
-    <script src="app/constants.js"></script>
-    <!--<script src="app/controls.js"></script>-->
 
     <!--app scripts-->
-    <script src="app/metabrush.js"></script>
+    <script src="app/util/constants.js"></script>
     <script src="app/data.js"></script>
+    <script src="app/brushing/multibrush.js"></script>
+    <script src="app/brushing/radialMenu.js"></script>
+    <script src="app/brushing/metabrush.js"></script>
     <script src="app/views/view.js"></script>
     <script src="app/views/debugview.js"></script>
     <script src="app/views/scatterplot.js"></script>
