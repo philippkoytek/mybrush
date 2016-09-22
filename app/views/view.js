@@ -62,6 +62,11 @@ class View {
                     'path.from-data' + this.idValue(d) + '.from-view-' + this.viewId +', '+
                     'path.to-data' + this.idValue(d) + '.to-view-' + this.viewId
                 ).classed('highlighted', true);
+            d3.select('svg').on('click', function(){
+                if(!d3.event.defaultPrevented){
+                    self.unhover();
+                }
+            });
         }, this);
     }
 
@@ -70,6 +75,7 @@ class View {
         d3.select('.canvas > .links').selectAll('path').classed('highlighted', false);
         this.chart.selectAll('.hover-rect')
             .style({display:'none', opacity:0});
+        d3.select('svg').on('click', null);
     }
 
     addInteractivity(selection){
