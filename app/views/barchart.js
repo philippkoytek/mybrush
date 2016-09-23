@@ -57,7 +57,7 @@ class BarChart extends View {
         var barsData = d3.nest().key(self.keyValue).entries(data);
 
         self.xRange.domain(barsData.map(function(bar){ return bar.key; }));
-        self.yRange.domain([0, d3.max(barsData, function(bar){ return self.rawValues(bar).length; })]);
+        self.yRange.domain([0, d3.max(barsData, function(bar){ return self.rawValues(bar).length; }) + 1]);
 
         var transition = self.chart.transition();
 
