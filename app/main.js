@@ -25,7 +25,7 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
 
     var fullSize = d3.select('body').node().getBoundingClientRect();
     var margin = 30;
-    var cols = 4;
+    var cols = 3;
     var rows = 2;
     var viewWidth = (fullSize.width - margin*(cols+1))/cols; // one margin more than view columns
     var viewHeight = (fullSize.height - margin*(rows+1))/rows; // one margin more than view rows
@@ -52,12 +52,15 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     };
     var parallelcoords = new ParallelCoords(viewWidth, viewHeight, viewPosition(1));
 
-    var scatterplot2 = new ScatterPlot('age', 'acceleration', viewWidth, viewHeight, viewPosition(2));
+    var scatterplot2 = new ScatterPlot('wage', 'height', viewWidth, viewHeight, viewPosition(2));
     scatterplot2.xValue = function(d){
-        return new Date(Date.now() - new Date(d.birthdate.$date)).getTime() / (1000*3600*24*365); // age
+        return d.wage;
+        //return new Date(Date.now() - new Date(d.birthdate.$date)).getTime() / (1000*3600*24*365); // age
     };
     scatterplot2.yValue = function(d){
-        return d.skillProperties[2].subProperties[1].value; // acceleration
+        return d.height;
+        //return d.skillProperties[2].subProperties[1].value; // acceleration
+
     };
 
     var barchart2 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(3));
@@ -67,18 +70,9 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     var barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(5), {top:20, right:20, bottom:30, left:40});
     barchart.keyValue = function(d){ return d.positions[0]; };
 
-    var parallelcoords2 = new ParallelCoords(viewWidth, viewHeight, viewPosition(6));
-    parallelcoords2.calcDimensions = function(d){
-        //return ['dislikes', 'likes', 'height', 'weight', 'overallRating', 'value', 'wage'];
-        return d.skillProperties[0].subProperties.map(s => s.title);
-    };
-    parallelcoords2.yValue = function(d, i, dim){
-        //return d[dim];
-        return d.skillProperties[0].subProperties.find(s => s.title === dim).value;
-    };
 
-    var barchart3 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(7));
-    barchart3.keyValue = function(d){ return d.nationality; };
+
+
 
     // add charts to global views object and fill with data
     VIEWS[scatterplot.viewId] = scatterplot;
@@ -87,8 +81,6 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     VIEWS[listview.viewId] = listview;
     VIEWS[barchart2.viewId] = barchart2;
     VIEWS[scatterplot2.viewId] = scatterplot2;
-    VIEWS[parallelcoords2.viewId] = parallelcoords2;
-    VIEWS[barchart3.viewId] = barchart3;
 
     _.forEach(VIEWS, function(view){
         view.data(DATA);
@@ -99,3 +91,17 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     allBrushMenus.moveToFront();
 });
 
+/*
+var parallelcoords2 = new ParallelCoords(viewWidth, viewHeight, viewPosition(6));
+parallelcoords2.calcDimensions = function(d){
+    //return ['dislikes', 'likes', 'height', 'weight', 'overallRating', 'value', 'wage'];
+    return d.skillProperties[0].subProperties.map(s => s.title);
+};
+parallelcoords2.yValue = function(d, i, dim){
+    //return d[dim];
+    return d.skillProperties[0].subProperties.find(s => s.title === dim).value;
+};
+
+ var barchart3 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(7));
+ /barchart3.keyValue = function(d){ return d.nationality; };
+*/

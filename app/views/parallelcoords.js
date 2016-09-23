@@ -7,12 +7,15 @@ class ParallelCoords extends View {
         super('parallelcoords', width, height, position, padding || {top:30, right:20, bottom:30, left:40});
 
         this.yValue = function (d, i, dim){
+            if(dim == 'HeadingAccuracy'){
+                return d.skillProperties[0].subProperties[2].value;
+            }
             return d.skillProperties.find(p => p.title === dim).sumValue;
         };
 
         this.calcDimensions = function(d){
             //return ['Attacking', 'Movement', 'Defending', 'Goalkeeping']; // reduce dimensions
-            return d.skillProperties.map(p => p.title);
+            return d.skillProperties.map(p => p.title).concat('HeadingAccuracy');
         };
 
         var color = constants.stdColorScale;
