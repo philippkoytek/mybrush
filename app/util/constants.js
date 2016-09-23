@@ -27,6 +27,7 @@ var constants = {
     touchInteraction:false,
     stdColorScale:d3.scale.ordinal().range(["#324bfd"]),
     defaultDataColor:'#5E6C82',
+    defaultTextColor:'#71767f',
     brushColors:colorBrewer2,
     strokeWidth:1.5,
     handleSize:20,

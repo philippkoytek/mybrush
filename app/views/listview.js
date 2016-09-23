@@ -64,7 +64,8 @@ class ListView extends View {
             .text(function(d){return d.name;})
             .style('font-size', self.fontSize + 'px')
             .style('font-weight', 'bold')
-            .style('pointer-events', 'none');
+            .style('pointer-events', 'none')
+            .style('fill', constants.defaultTextColor);
 
         cards.insert('g', ':first-child').classed('card-bg', true)
             .append('rect')

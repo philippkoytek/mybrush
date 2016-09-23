@@ -30,12 +30,13 @@ html, body, svg#main {
 
 .axis {
     font: 11px sans-serif;
+    fill: #444444;
 }
 
 .axis path,
 .axis line {
     fill: none;
-    stroke: #000;
+    stroke: #444444;
     shape-rendering: crispEdges;
 }
 
