@@ -134,4 +134,10 @@ class ParallelCoords extends View {
         var dim = (brush.origin == this) ? brush.dim : this.dimensions[0];
         return this.fromChartToAbsoluteCtx(this.xRange(dim), this.yRange[dim](this.yValue(d, undefined, dim)));
     }
+
+    styleItem (d3Selection, styles){
+        // switch stroke and fill styles
+        _.assign(styles, {fill:styles.stroke, stroke:styles.fill});
+        d3Selection.style(styles);
+    }
 }

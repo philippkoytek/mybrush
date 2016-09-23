@@ -248,6 +248,10 @@ class View {
         var b = visual.getBBox();
         return this.fromChartToAbsoluteCtx(b.x + b.width/2, b.y + b.height/2);
     }
+    
+    styleItem (d3Selection, styles) {
+        d3Selection.style(styles);
+    }
 
     updateView(){
         var thisView = this;
@@ -287,7 +291,7 @@ class View {
                 }, this);
 
                 // style the data item
-                d3This.style(myStyles.point);
+                thisView.styleItem(d3This, myStyles.point);
 
                 // draw the lines
                 var id = thisView.idValue(d);
