@@ -46,7 +46,9 @@ class View {
      */
     hover(d, visual){
         var self = this;
-        d3.event.sourceEvent.stopPropagation();
+        if(d3.event){
+            d3.event.sourceEvent.stopPropagation();
+        }
         this.rawValues(d).forEach(function(v){
             this.chart.selectAll('.hover-rect')
                 .each(function(dim){
