@@ -4,6 +4,7 @@ html, body, svg#main {
     margin:0;
     padding: 0;
     overflow: hidden;
+    font-family:'Roboto', sans-serif;
 }
 #controls {
     position: fixed;
@@ -29,7 +30,7 @@ html, body, svg#main {
 }
 
 .axis {
-    font: 11px sans-serif;
+    font-size: 11px;
     fill: #444444;
 }
 
