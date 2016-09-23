@@ -28,18 +28,19 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     var allBrushMenus = d3.select('.canvas').append('g').classed('all-brush-menus', true);
 
     var fullSize = d3.select('body').node().getBoundingClientRect();
-    var margin = 30;
+    var margin = 80;
+    var padding = 50;
     var cols = 3;
     var rows = 2;
-    var viewWidth = (fullSize.width - margin*(cols+1))/cols; // one margin more than view columns
-    var viewHeight = (fullSize.height - margin*(rows+1))/rows; // one margin more than view rows
+    var viewWidth = (fullSize.width - margin*2 - padding*(cols-1))/cols; // one margin more than view columns
+    var viewHeight = (fullSize.height - margin*2 - padding*(rows-1))/rows; // one margin more than view rows
 
     function viewPosition (i) {
         var xi = i % cols;
         var yi = Math.floor(i *1.0/ cols);
         return {
-            x: xi * viewWidth + (xi+1) * margin,
-            y: yi * viewHeight + (yi + 1) * margin
+            x: xi * viewWidth + margin + xi * padding,
+            y: yi * viewHeight + margin + yi * padding
         };
     }
 
