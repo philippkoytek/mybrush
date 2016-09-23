@@ -85,7 +85,7 @@ function Metabrush (d3brush, multibrush) {
                             {connect:false, icon:'icons/svg/pk-nolink.svg', d:'M -10 5 Q -5 -4 0 0 Q 5 4 10 -5', styles:{'stroke-dasharray':1}}]
                     },
                     {
-                        icon:'icons/svg/pk-animate-none.svg',
+                        icon:'icons/svg/magic-wand.svg',
                         class:'animation',
                         actions:[{animate:'none', icon:'icons/svg/pk-animate-none.svg'},
                             {animate:'draw', icon:'icons/svg/pk-animate-draw.svg'},
