@@ -14,9 +14,8 @@ class BarChart extends View {
 
         this.keyValue = function(d){ return d.club; };
 
-        var color = constants.stdColorScale;
         this.strokeValue = this.fillValue = function(d){
-            return d.key ? color(d.key) : 'transparent';
+            return d.key ? constants.defaultDataColor : 'transparent';
         };
 
         var self = this;

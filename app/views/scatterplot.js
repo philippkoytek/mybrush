@@ -16,9 +16,8 @@ class ScatterPlot extends View {
             return 7;//(d.wage / 50000) - 1;
         };
 
-        var color = constants.stdColorScale;
         this.strokeValue = this.fillValue = function(d){ 
-            return color(d.club); 
+            return constants.defaultDataColor; 
         };
         
         this.idValue = function(d){ 

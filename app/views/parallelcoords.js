@@ -18,13 +18,12 @@ class ParallelCoords extends View {
             return d.skillProperties.map(p => p.title).concat('HeadingAccuracy');
         };
 
-        var color = constants.stdColorScale;
         this.strokeValue = function(d){
-            return color(d.club);
+            return constants.defaultDataColor;
         };
 
         this.fillValue = function(d){
-            return color(d.club);
+            return constants.defaultDataColor;
         };
 
         this.idValue = function(d){
