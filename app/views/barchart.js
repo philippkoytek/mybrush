@@ -66,7 +66,9 @@ class BarChart extends View {
             .call(self.xAxis)
             .selectAll('text')
             .style('text-anchor', 'end')
-            .attr('transform', 'rotate(-65)');
+            .attr('transform', 'rotate(-65)')
+            .attr('x', -7)
+            .attr('y', 0);
 
         transition.select('.y.axis')
             .duration(750)
