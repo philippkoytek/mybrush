@@ -5,6 +5,10 @@
 var DEBUG;
 var DATA = [];
 var VIEWS = {};
+document.addEventListener('contextmenu', function(event){
+    event.preventDefault();
+    return false;
+});
 
 Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data, key) {
 
