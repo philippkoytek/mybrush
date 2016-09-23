@@ -1,6 +1,7 @@
 class View {
     constructor (type, width, height, position, padding) {
         padding = padding || {top:20, right:20, bottom:30, left:40};
+        padding.top += 50;
         this.frameWidth = width || 960;
         this.frameHeight = height || 500;
         this.chartHeight = this.frameHeight - padding.top - padding.bottom;
@@ -21,6 +22,12 @@ class View {
             .attr('y', 0)
             .attr('width', this.frameWidth)
             .attr('height', this.frameHeight);
+
+        this.svg.append('text')
+            .classed('view-title', true)
+            .style({'font-size':40, 'font-weight':'bold', fill:'#eeeeee'})
+            .attr({x:padding.left, y:50})
+            .text('This is the title');
 
         this.svg.append('text')
             .classed('view-number', true)
