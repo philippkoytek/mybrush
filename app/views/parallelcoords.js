@@ -15,7 +15,7 @@ class ParallelCoords extends View {
 
         this.calcDimensions = function(d){
             //return ['Attacking', 'Movement', 'Defending', 'Goalkeeping']; // reduce dimensions
-            return d.skillProperties.map(p => p.title).concat('HeadingAccuracy');
+            return d.skillProperties.map(p => p.title);//.concat('HeadingAccuracy');
         };
 
         this.strokeValue = function(d){
