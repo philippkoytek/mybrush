@@ -36,19 +36,38 @@ function arrayOfNumbers (from, to) {
     return arr;
 }
 
-//TODO: remove this from here eventually
-var positions = {
-    offensive:['LW', 'ST', 'RW', 'CF', 'LF', 'RF'],
-    midfield:['CAM', 'LM', 'RM', 'CM', 'CDM'],
-    defensive:['LWB', 'RWB', 'LB', 'RB', 'CB'],
-    goalkeeper:['GK']
+var positionBin = function(pos){
+    var bin;
+    switch (pos) {
+        case "ST":
+        case "CF":
+        case "LF":
+        case "RF":
+            bin = "Striker";
+            break;
+        case "CM":
+        case "CDM":
+        case "CAM":
+            bin = "Central Midfield";
+            break;
+        case "LW":
+        case "RW":
+        case "LM":
+        case "RM":
+            bin = "Winger";
+            break;
+        case "CB":
+        case "LB":
+        case "RB":
+        case "LWB":
+        case "RWB":
+            bin = "Defender";
+            break;
+        case "GK":
+            bin = "Goalkeeper";
+            break;
+        default:
+            bin = "Unknown";
+    }
+    return bin;
 };
-
-var morePositions = {
-    goalkeeper:['GK'],
-    centerDefense:['CB'],
-    wingDefense:['LWB', 'RWB', 'LB', 'RB'],
-    centerMidfield:['CAM', 'CM', 'CDM'],
-    wingMidfield:['LM', 'RM', 'LW', 'RW'],
-    forward:[]
-}

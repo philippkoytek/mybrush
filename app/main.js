@@ -67,8 +67,8 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
 
     var listview = new ListView(viewWidth, viewHeight, viewPosition(4));
 
-    var barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(5), {top:20, right:20, bottom:30, left:40});
-    barchart.keyValue = function(d){ return d.positions[0]; };
+    var barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(5));
+    barchart.keyValue = function(d){ return d.mainPosition; };
 
 
 

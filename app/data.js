@@ -24,6 +24,7 @@ class DataItem {
         _.extend(this, item);
         this.visuals = new Set();
         this.brushes = new Set();
+        this.mainPosition = positionBin(this.positions[0]);
     }
 
     registerVisual(element, view){
