@@ -12,28 +12,13 @@ document.addEventListener('contextmenu', function(event){
 
 Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data, key) {
 
-    //TODO: positioning of views, make them draggable?
-    var subset = data.filter(function(d){
-        return ['Arsenal', 'FC Barcelona', 'Real Madrid CF', 'FC Bayern Munich', 'Roma'].indexOf(d.club) >= 0;
-    });
-    var groupsOf50 = _.chunk(data, 50);
-    //DATA = groupsOf50[15];// = [data[0], data[1]];
-    for(var i = 0; i < groupsOf50.length; i++){
-        DATA.push(groupsOf50[i][0]);
-        DATA.push(groupsOf50[i][1]);
-    }
     DATA = data;
-
     //add group where all brushes will go
     var allBrushMenus = d3.select('.canvas').append('g').classed('all-brush-menus', true);
 
     var fullSize = d3.select('body').node().getBoundingClientRect();
     var margin = 80;
     var padding = 50;
-    var cols = 3;
-    var rows = 2;
-    var viewWidth = (fullSize.width - margin*2 - padding*(cols-1))/cols; // one margin more than view columns
-    var viewHeight = (fullSize.height - margin*2 - padding*(rows-1))/rows; // one margin more than view rows
 
     function viewPosition (i) {
         var xi = i % cols;
@@ -44,10 +29,26 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
         };
     }
 
+    var config = getParameterByName('config');
 
+    var cols;
+    var rows;
+    if(config == 1){
+        cols = 1;
+        rows = 1;
+    } else if(config == 2){
+        cols = 2;
+        rows = 1;
+    } else {
+        cols = 3;
+        rows = 2;
+    }
+    var viewWidth = (fullSize.width - margin*2 - padding*(cols-1))/cols; // one margin more than view columns
+    var viewHeight = (fullSize.height - margin*2 - padding*(rows-1))/rows; // one margin more than view rows
+    var pos = 0;
 
     // create charts
-    var scatterplot = new ScatterPlot('Attacking', 'Defending', viewWidth, viewHeight, viewPosition(0));
+    var scatterplot = new ScatterPlot('Attacking', 'Defending', viewWidth, viewHeight, viewPosition(pos++));
     scatterplot.xValue = function(d){
         return d.skillProperties[0].sumValue; //Attacking
         //return d.skillProperties[2].subProperties[1].value; // sprintspeed
@@ -55,37 +56,49 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     scatterplot.yValue = function(d){
         return d.skillProperties[5].sumValue; //Defending
     };
-    var parallelcoords = new ParallelCoords(viewWidth, viewHeight, viewPosition(1));
-
-    var scatterplot2 = new ScatterPlot('wage', 'height', viewWidth, viewHeight, viewPosition(2));
-    scatterplot2.xValue = function(d){
-        return d.wage;
-        //return new Date(Date.now() - new Date(d.birthdate.$date)).getTime() / (1000*3600*24*365); // age
-    };
-    scatterplot2.yValue = function(d){
-        return d.height;
-        //return d.skillProperties[2].subProperties[1].value; // acceleration
-
-    };
-
-    var barchart2 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(3));
-
-    var listview = new ListView(viewWidth, viewHeight, viewPosition(4));
-
-    var barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(5));
-    barchart.keyValue = function(d){ return d.mainPosition; };
 
 
+    var parallelcoords;
+    var scatterplot2;
+    var barchart2;
+    if(!config || config > 2){
+        parallelcoords = new ParallelCoords(viewWidth, viewHeight, viewPosition(pos++));
+        scatterplot2 = new ScatterPlot('wage', 'height', viewWidth, viewHeight, viewPosition(pos++));
+        scatterplot2.xValue = function(d){
+            return d.wage;
+            //return new Date(Date.now() - new Date(d.birthdate.$date)).getTime() / (1000*3600*24*365); // age
+        };
+        scatterplot2.yValue = function(d){
+            return d.height;
+            //return d.skillProperties[2].subProperties[1].value; // acceleration
+        };
+        barchart2 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(pos++));
+    }
 
+    var listview;
+    if(!config || config > 1){
+        listview = new ListView(viewWidth, viewHeight, viewPosition(pos++));
+    }
 
+    var barchart;
+    if(!config || config > 2) {
+        barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(pos++));
+        barchart.keyValue = function (d) {
+            return d.mainPosition;
+        };
+    }
 
     // add charts to global views object and fill with data
     VIEWS[scatterplot.viewId] = scatterplot;
-    VIEWS[parallelcoords.viewId] = parallelcoords;
-    VIEWS[barchart.viewId] = barchart;
-    VIEWS[listview.viewId] = listview;
-    VIEWS[barchart2.viewId] = barchart2;
-    VIEWS[scatterplot2.viewId] = scatterplot2;
+    if(!config || config > 1){
+        VIEWS[listview.viewId] = listview;
+    }
+    if(!config || config > 2){
+        VIEWS[parallelcoords.viewId] = parallelcoords;
+        VIEWS[barchart.viewId] = barchart;
+        VIEWS[barchart2.viewId] = barchart2;
+        VIEWS[scatterplot2.viewId] = scatterplot2;
+    }
 
     _.forEach(VIEWS, function(view){
         view.data(DATA);
