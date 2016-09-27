@@ -1,8 +1,8 @@
 
 class ScatterPlot extends View {
-    constructor (xLabel, yLabel, width, height, position, padding){
+    constructor (title, xLabel, yLabel, width, height, position, padding){
 
-        super('scatterplot',width, height, position, padding);
+        super(title, 'scatterplot',width, height, position, padding);
 
         this.xValue = function(d){
             return d.likes;

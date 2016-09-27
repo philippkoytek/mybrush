@@ -48,7 +48,7 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     var pos = 0;
 
     // create charts
-    var scatterplot = new ScatterPlot('Attacking', 'Defending', viewWidth, viewHeight, viewPosition(pos++));
+    var scatterplot = new ScatterPlot('defending vs. attacking', 'Attacking', 'Defending', viewWidth, viewHeight, viewPosition(pos++));
     scatterplot.xValue = function(d){
         return d.skillProperties[0].sumValue; //Attacking
         //return d.skillProperties[2].subProperties[1].value; // sprintspeed
@@ -62,8 +62,8 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
     var scatterplot2;
     var barchart2;
     if(!config || config > 2){
-        parallelcoords = new ParallelCoords(viewWidth, viewHeight, viewPosition(pos++));
-        scatterplot2 = new ScatterPlot('wage', 'height', viewWidth, viewHeight, viewPosition(pos++));
+        parallelcoords = new ParallelCoords('skill characteristics', viewWidth, viewHeight, viewPosition(pos++));
+        scatterplot2 = new ScatterPlot('height vs. wage', 'wage', 'height', viewWidth, viewHeight, viewPosition(pos++));
         scatterplot2.xValue = function(d){
             return d.wage;
             //return new Date(Date.now() - new Date(d.birthdate.$date)).getTime() / (1000*3600*24*365); // age
@@ -72,17 +72,17 @@ Data.request('data/fifaplayers-top50.json', 'fifaplayers', function(error, data,
             return d.height;
             //return d.skillProperties[2].subProperties[1].value; // acceleration
         };
-        barchart2 = new BarChart('number of players', viewWidth, viewHeight, viewPosition(pos++));
+        barchart2 = new BarChart('clubs', 'number of players', viewWidth, viewHeight, viewPosition(pos++));
     }
 
     var listview;
     if(!config || config > 1){
-        listview = new ListView(viewWidth, viewHeight, viewPosition(pos++));
+        listview = new ListView('player names', viewWidth, viewHeight, viewPosition(pos++));
     }
 
     var barchart;
     if(!config || config > 2) {
-        barchart = new BarChart('number of players', viewWidth, viewHeight, viewPosition(pos++));
+        barchart = new BarChart('main positions', 'number of players', viewWidth, viewHeight, viewPosition(pos++));
         barchart.keyValue = function (d) {
             return d.mainPosition;
         };

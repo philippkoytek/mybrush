@@ -1,8 +1,8 @@
 class BarChart extends View {
-    constructor(yLabel, width, height, position, padding){
+    constructor(title, yLabel, width, height, position, padding){
 
         padding = padding || {top:20, right:20, bottom:100, left:40};
-        super('barchart', width, height, position, padding);
+        super(title, 'barchart', width, height, position, padding);
         
         this.rawValues = function(d){
             return d.values || [d];

@@ -1,5 +1,5 @@
 class View {
-    constructor (type, width, height, position, padding) {
+    constructor (title, type, width, height, position, padding) {
         padding = padding || {top:20, right:20, bottom:30, left:40};
         padding.top += 50;
         this.frameWidth = width || 960;
@@ -10,6 +10,7 @@ class View {
         this.viewId = View.counter;
         this.multiBrushes = {};
         this.type = type;
+        this.title = title || 'No title';
 
         this.svg = d3.select('.canvas').append('g')
             .classed('view', true)
@@ -27,7 +28,7 @@ class View {
             .classed('view-title', true)
             .style({'font-size':40, 'font-weight':'bold', fill:'#eeeeee'})
             .attr({x:padding.left, y:50})
-            .text('This is the title');
+            .text(this.title);
 
         this.svg.append('text')
             .classed('view-number', true)

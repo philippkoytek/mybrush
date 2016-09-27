@@ -3,8 +3,8 @@
  */
 
 class ParallelCoords extends View {
-    constructor (width, height, position, padding) {
-        super('parallelcoords', width, height, position, padding || {top:30, right:20, bottom:30, left:40});
+    constructor (title, width, height, position, padding) {
+        super(title, 'parallelcoords', width, height, position, padding || {top:30, right:20, bottom:30, left:40});
 
         this.yValue = function (d, i, dim){
             if(dim == 'HeadingAccuracy'){
