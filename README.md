@@ -19,6 +19,7 @@ run `http-server .` in the root directory of the project: it will tell you the a
 
 the application is developed for and tested in the Google Chrome browser
 
-to disable swipe to go back in the browser history navigation:
 
-chrome://flags -> disable "Overscroll history navigation"
+## touch interaction
+
+To disable swipe for navigating back in the browser history,  disable "Overscroll history navigation" in chrome://flags.
