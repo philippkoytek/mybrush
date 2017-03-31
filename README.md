@@ -1,4 +1,5 @@
-# metavis
+# MyBrush
+MyBrush is a coordinated multiple view interface and a proof of concept prototype that offers personal agency over brushing and linking by giving people the flexibility to configure the source, link, and target of multiple brushes.
 
 ## getting started/installation
 
