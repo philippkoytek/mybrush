@@ -1,7 +1,17 @@
 # MyBrush
 MyBrush is a coordinated multiple view interface and a proof of concept prototype that offers personal agency over brushing and linking by giving people the flexibility to configure the source, link, and target of multiple brushes.
 
+Find more information including a tutorial video at: http://innovis.cpsc.ucalgary.ca/supplemental/MyBrush/
+
 ## getting started
+
+### online demo
+
+you can try an online demo at: 
+
+https://philippkoytek.github.io/mybrush/
+
+or http://innovis.cpsc.ucalgary.ca/supplemental/MyBrush/demo/
 
 ### local installation
 
