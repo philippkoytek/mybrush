@@ -6,6 +6,11 @@ html, body, svg#main {
     overflow: hidden;
     font-family:'Roboto', sans-serif;
 }
+
+.view .frame {
+    fill: white !important;
+}
+
 #controls {
     position: fixed;
     bottom:0;
@@ -38,7 +43,7 @@ html, body, svg#main {
 .axis line {
     fill: none;
     stroke: #444444;
-    shape-rendering: crispEdges;
+    shape-rendering: crispEdges; 
 }
 
 .highlighted {

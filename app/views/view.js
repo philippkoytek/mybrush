@@ -26,14 +26,14 @@ class View {
 
         this.svg.append('text')
             .classed('view-title', true)
-            .style({'font-size':40, 'font-weight':'bold', fill:'#eeeeee'})
+            .style({'font-size':28, 'font-weight':'bold', fill:'#808080'})
             .attr({x:padding.left, y:50})
             .text(this.title);
 
         this.svg.append('text')
             .classed('view-number', true)
-            .style({'font-size':80, 'font-weight':'bold', fill:'#eeeeee'})
-            .attr({x:this.frameWidth - 60, y:70})
+            .style({'font-size':48, 'font-weight':'bold', fill:'#808080'})
+            .attr({x:this.frameWidth - 60, y:52})
             .text(this.viewId);
 
         this.chart = this.svg.append('g')

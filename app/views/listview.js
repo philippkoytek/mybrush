@@ -16,7 +16,7 @@ class ListView extends View {
             return this.xRange(Math.floor(i/this.rows));
         };
 
-        this.fontSize = 16;
+        this.fontSize = 10;
 
         this.yValue = function (d, i) {
             return this.yRange((i % this.rows) + 1) + (this.fontSize*3/4);
