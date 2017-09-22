@@ -9,9 +9,7 @@ Find more information including a tutorial video at: http://innovis.cpsc.ucalgar
 
 you can try an online demo at: 
 
-https://philippkoytek.github.io/mybrush/
-
-or http://innovis.cpsc.ucalgary.ca/supplemental/MyBrush/demo/
+https://philippkoytek.github.io/mybrush/ or http://innovis.cpsc.ucalgary.ca/supplemental/MyBrush/demo/
 
 ### local installation
 
